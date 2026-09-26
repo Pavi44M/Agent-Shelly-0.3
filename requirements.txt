@@ -6,3 +6,4 @@ xgboost>=2.0
 openpyxl>=3.1
 PyYAML>=6.0
 pytest>=7.0
+tabulate>=0.9
