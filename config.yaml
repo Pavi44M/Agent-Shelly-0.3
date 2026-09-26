@@ -1,0 +1,98 @@
+# ------------------------------------------------------------------
+# CRISP-DM Phase 1 - BUSINESS UNDERSTANDING
+# Everything the agent needs to know about the business lives here.
+# Change targets / thresholds without touching code.
+# ------------------------------------------------------------------
+store:
+  name: "Demo Neighbourhood Store (Eden Terrace format)"
+  currency: "NZD"
+  timezone: "Pacific/Auckland"
+  audience: "Store Owner / Operations Manager"
+
+business_objectives:
+  - "Grow weekly sales while protecting gross margin"
+  - "Cut waste on short-life lines (Food To Go, Bakery, Dairy)"
+  - "Catch stock-outs, shrinkage and SAP count errors early"
+  - "Keep delivery channels (Uber Eats / On-Demand) running reliably"
+
+kpi_targets:
+  weekly_sales_growth_pct: 2.0      # vs previous week
+  gross_margin_pct: 38.0
+  waste_pct_of_sales: 3.0           # waste value / sales value
+  delivery_share_pct: 18.0          # delivery channels share of sales
+  count_variance_units: 5           # SAP vs physical, per SKU per count
+
+analysis:
+  digest_period_days: 7             # the "week" being reported
+  forecast_horizon_days: 7
+  backtest_days: 28                 # evaluation window for forecast models
+  anomaly_z_threshold: 3.0          # robust z-score on same-weekday baseline
+  min_units_for_anomaly: 5
+  min_impact_nzd: 40               # ignore anomalies worth less than this
+  segmentation_k_range: [2, 5]      # pick k by silhouette (as in thesis)
+
+# ------------------------------------------------------------------
+# CRISP-DM Phase 3 - column mapping for REAL exports
+# Map your POS / SAP export headers -> the agent's standard names.
+# Leave as-is for the sample data.
+# ------------------------------------------------------------------
+column_map:
+  sales:
+    date: date
+    sku: sku
+    channel: channel
+    units: units
+    net_sales: net_sales
+    cost: cost
+    promo_flag: promo_flag
+  products:
+    sku: sku
+    product_name: product_name
+    category: category
+    unit_price: unit_price
+    unit_cost: unit_cost
+    shelf_life_days: shelf_life_days
+    supplier: supplier
+  inventory:
+    count_date: count_date
+    sku: sku
+    sap_qty: sap_qty
+    physical_qty: physical_qty
+  waste:
+    date: date
+    sku: sku
+    units_wasted: units_wasted
+    units_marked_down: units_marked_down
+
+# ------------------------------------------------------------------
+# Reasoning layer. provider: rules | ollama | anthropic
+#   rules     - offline, deterministic (default, always works)
+#   ollama    - local model, same stack as OpenJarvis (e.g. llama3.1, qwen2.5)
+#   anthropic - Claude API (set ANTHROPIC_API_KEY)
+# If the LLM is unreachable the agent falls back to rules automatically.
+# ------------------------------------------------------------------
+llm:
+  provider: rules
+  ollama_model: "qwen2.5:7b"
+  ollama_url: "http://localhost:11434"
+  anthropic_model: "claude-sonnet-4-5"
+
+# ------------------------------------------------------------------
+# Commercial planning inputs (budget, labour, replenishment, compliance)
+# ------------------------------------------------------------------
+budget:
+  growth_vs_last_year_pct: 4.0      # budget = same weeks last year x (1 + growth)
+
+labour:                             # capacity & workload planning
+  sales_per_labour_hour: 110        # productivity target (NZD sales per paid hour)
+  min_hours_per_day: 24             # two people open-to-close minimum
+  wage_rate: 27.0
+
+replenishment:                      # JIT reorder logic
+  lead_time_days: 2
+  service_level_z: 1.65             # ~95% service level
+  review_period_days: 1
+
+compliance:
+  liquor_categories: ["Beer & Wine"]
+  check_gs1: true

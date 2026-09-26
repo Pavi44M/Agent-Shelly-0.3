@@ -1,0 +1,32 @@
+// ---- Paste into Power BI: Modeling > New measure ----
+// Model: fact_sales[sku] -> dim_product[sku], fact_sales[date] -> dim_date[date],
+//        fact_sales[channel] -> dim_channel[channel]; mark dim_date as date table.
+
+Total Sales = SUM ( fact_sales[net_sales] )
+Total COGS = SUM ( fact_sales[cost] )
+Gross Margin = [Total Sales] - [Total COGS]
+GM % = DIVIDE ( [Gross Margin], [Total Sales] )
+Units = SUM ( fact_sales[units] )
+Avg Selling Price = DIVIDE ( [Total Sales], [Units] )
+
+Sales PW = CALCULATE ( [Total Sales], DATEADD ( dim_date[date], -7, DAY ) )
+WoW % = DIVIDE ( [Total Sales] - [Sales PW], [Sales PW] )
+Sales LY = CALCULATE ( [Total Sales], DATEADD ( dim_date[date], -364, DAY ) )
+YoY % = DIVIDE ( [Total Sales] - [Sales LY], [Sales LY] )
+Budget = [Sales LY] * ( 1 + 0.04 )
+Var to Budget = [Total Sales] - [Budget]
+
+Delivery Sales = CALCULATE ( [Total Sales], dim_channel[is_delivery] = TRUE () )
+Delivery Share % = DIVIDE ( [Delivery Sales], [Total Sales] )
+Promo Share % = DIVIDE ( CALCULATE ( [Total Sales], fact_sales[promo_flag] = 1 ), [Total Sales] )
+
+Waste Value = SUM ( fact_waste[waste_value] )
+Waste % Sales = DIVIDE ( [Waste Value], [Total Sales] )
+Shrink Value = SUM ( fact_stock_count[variance_value] )
+
+Sales 7D Rolling = CALCULATE ( [Total Sales], DATESINPERIOD ( dim_date[date], MAX ( dim_date[date] ), -7, DAY ) )
+Category Rank = RANKX ( ALL ( dim_product[category] ), [Total Sales] )
+ABC Class =
+VAR cum = SUMX ( FILTER ( ALL ( dim_product[sku] ), [Total Sales] >= CALCULATE ( [Total Sales] ) ), [Total Sales] )
+VAR share = DIVIDE ( cum, CALCULATE ( [Total Sales], ALL ( dim_product ) ) )
+RETURN SWITCH ( TRUE (), share <= 0.8, "A", share <= 0.95, "B", "C" )

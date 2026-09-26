@@ -1,0 +1,51 @@
+sku,product_name,category,unit_price,unit_cost,shelf_life_days,supplier,gtin
+MLK001,Milk Standard 2L,Dairy,4.89,3.55,10,Dairy Co-op,9429000000000
+MLK002,Milk Lite 2L,Dairy,4.89,3.55,10,Dairy Co-op,9429000137010
+MLK003,Oat Milk 1L,Dairy,4.29,2.7,60,Plant Foods NZ,9429000274029
+DRY010,Butter 500g,Dairy,7.49,5.6,60,Dairy Co-op,9429000411035
+DRY011,Greek Yoghurt 1kg,Dairy,7.99,5.1,21,Dairy Co-op,9429000548045
+DRY012,Cheese Block 1kg,Dairy,13.99,10.4,90,Dairy Co-op,9429000685054
+BAK001,Toast Bread White,Bakery,3.49,2.2,5,Auckland Bakehouse,9429000822060
+BAK002,Wholemeal Loaf,Bakery,4.29,2.7,5,Auckland Bakehouse,9429000959070
+BAK003,Croissant 4pk,Bakery,5.99,3.3,3,Auckland Bakehouse,9429001096088
+FTG001,Chicken Sandwich,Food To Go,7.49,3.9,2,FreshKitchen,9429001233094
+FTG002,Sushi Pack 8pc,Food To Go,9.99,5.6,1,FreshKitchen,9429001370102
+FTG003,Hot Pie Mince & Cheese,Food To Go,5.49,2.4,2,FreshKitchen,9429001507119
+FTG004,Salad Bowl,Food To Go,10.99,6.2,2,FreshKitchen,9429001644128
+FTG005,Filled Roll,Food To Go,6.49,3.2,2,FreshKitchen,9429001781137
+BEV001,Energy Drink 500ml,Beverages,4.29,2.15,365,Beverage Dist.,9429001918144
+BEV002,Cola 1.5L,Beverages,4.49,2.3,270,Beverage Dist.,9429002055152
+BEV003,Sparkling Water 1L,Beverages,2.49,1.1,365,Beverage Dist.,9429002192161
+BEV004,Iced Coffee 500ml,Beverages,4.99,2.7,30,Dairy Co-op,9429002329178
+BEV005,Kombucha 330ml,Beverages,4.79,2.6,120,Plant Foods NZ,9429002466187
+BEV006,Bottled Water 750ml,Beverages,2.99,0.95,365,Beverage Dist.,9429002603193
+BBT001,Bubble Tea Kit,Beverages,6.99,3.9,90,Asia Imports,9429002740201
+SNK001,Potato Chips 150g,Snacks & Confectionery,3.99,2.1,180,Snack Foods NZ,9429002877211
+SNK002,Chocolate Block 200g,Snacks & Confectionery,5.49,3.2,270,Confectionery Ltd,9429003014226
+SNK003,Muesli Bar 6pk,Snacks & Confectionery,4.29,2.6,240,Snack Foods NZ,9429003151235
+SNK004,Corn Chips 230g,Snacks & Confectionery,4.49,2.4,180,Latin Pantry,9429003288245
+SNK005,Lollies Bag 200g,Snacks & Confectionery,3.49,1.7,300,Confectionery Ltd,9429003425251
+FRZ001,Ice Cream Tub 2L,Frozen,8.99,5.4,365,Frozen Foods NZ,9429003562260
+FRZ002,Ice Block Single,Frozen,2.99,1.2,365,Frozen Foods NZ,9429003699270
+FRZ003,Frozen Pizza,Frozen,7.99,4.7,365,Frozen Foods NZ,9429003836286
+FRZ004,Frozen Dumplings 1kg,Frozen,11.99,7.1,365,Asia Imports,9429003973295
+GRO001,Instant Noodles 5pk,Grocery,4.49,2.6,365,Asia Imports,9429004110309
+GRO002,Canned Soup 500g,Grocery,3.29,1.9,730,Pantry Brands,9429004247319
+GRO003,Pasta 500g,Grocery,2.49,1.3,730,Pantry Brands,9429004384328
+GRO004,Simmer Sauce 485g,Grocery,3.99,2.3,540,Pantry Brands,9429004521334
+GRO005,Salsa 300g,Grocery,4.79,2.9,365,Latin Pantry,9429004658344
+GRO006,Taco Kit,Grocery,6.49,4.0,365,Latin Pantry,9429000822055
+GRO007,Eggs Free Range 12pk,Grocery,10.99,8.2,35,Farm Fresh,9429004932369
+GRO008,Coffee Beans 200g,Grocery,11.99,7.6,180,Pantry Brands,9429005069378
+PRD001,Bananas (each),Produce,0.69,0.38,6,Produce Market,9429005206384
+PRD002,Avocado,Produce,2.49,1.4,5,Produce Market,9429005343393
+PRD003,Tomatoes 500g,Produce,4.49,2.6,7,Produce Market,9429005480401
+HHD001,Toilet Paper 6pk,Household,8.99,5.9,3650,Home Supplies,9429005617418
+HHD002,Dishwash Liquid,Household,4.99,2.9,1095,Home Supplies,9429005754427
+HHD003,Phone Charger Cable,Household,14.99,5.5,3650,Home Supplies,94290008
+PHM001,Paracetamol 20pk,Health & Beauty,3.99,1.6,730,Pharma Dist.,9429006028442
+PHM002,Sunscreen SPF50,Health & Beauty,14.99,8.2,730,Pharma Dist.,9429006165451
+LIQ001,Craft Beer 6pk,Beer & Wine,22.99,15.3,180,Liquor Dist.,9429006302467
+LIQ002,Sauvignon Blanc 750ml,Beer & Wine,15.99,10.2,730,Liquor Dist.,9429006439477
+LIQ003,RTD 4pk,Beer & Wine,17.99,11.9,365,Liquor Dist.,9429006576486
+LIQ004,Pinot Noir 750ml,Beer & Wine,19.99,12.8,730,Liquor Dist.,9429006713492
