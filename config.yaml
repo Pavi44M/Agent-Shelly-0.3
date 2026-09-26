@@ -96,3 +96,23 @@ replenishment:                      # JIT reorder logic
 compliance:
   liquor_categories: ["Beer & Wine"]
   check_gs1: true
+
+# ------------------------------------------------------------------
+# v0.3 governance: which judgements need Pavi's confirmation
+# ------------------------------------------------------------------
+governance:
+  confirm_if_impact_over_nzd: 250      # any action worth more than this per week
+  always_confirm_areas: ["Compliance - recall", "Budget", "Range", "Replenishment", "Category", "Margin",
+                         "Markdown", "Credit", "Customer terms", "Slotting", "Range & stock", "Production", "Quality"]
+  decision_ttl_days: 7                 # pending decisions expire after this
+
+# ------------------------------------------------------------------
+# v0.3 connectors (add more any time; see shelly/core/connectors.py)
+# ------------------------------------------------------------------
+connectors:
+  - {name: store_exports, kind: folder, path: data/sample}
+  - {name: warehouse, kind: sqlite, path: outputs/warehouse.db}
+  - {name: claude, kind: claude_task, services: [Gmail, Google Drive, Google Calendar, Indeed, "SEEK/LinkedIn (web search)", Web news]}
+  # - {name: price_sheet, kind: gsheet_csv, tables: {prices: "https://docs.google.com/.../pub?output=csv"}}
+  # - {name: erp, kind: sql, url_env: SHELLY_ERP_URL}
+  # - {name: mail, kind: smtp_email, to: pavithrasam.s6@gmail.com}

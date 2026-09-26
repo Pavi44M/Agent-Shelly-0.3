@@ -1,13 +1,60 @@
-# Shelly v0.1: Retail Sales Digest Agent
+# Shelly: a personal analytics agent for retail and the businesses around it
 
-![tests](https://github.com/Pavi44M/Shelly-0.1/actions/workflows/tests.yml/badge.svg)
+![tests](https://github.com/Pavi44M/Agent-Shelly-0.1/actions/workflows/tests.yml/badge.svg)
 ![Python](https://img.shields.io/badge/python-3.11-blue) ![License: MIT](https://img.shields.io/badge/license-MIT-green)
 
-**[▶ Live demo digest](https://pavi44m.github.io/Shelly-0.1/)** · [Example Excel output](docs/example/) · [Portfolio](https://pavi44m.github.io/pavibamunu)
+**[▶ Talk to Shelly (live demo)](https://pavi44m.github.io/Agent-Shelly-0.1/)** · [Example Excel output](docs/example/) · [Portfolio](https://pavi44m.github.io/pavibamunu)
 
-![Shelly weekly digest](docs/screenshot.png)
+![Shelly v0.2](docs/screenshot.png)
 
-**Shelly** is an analytics agent that reads a convenience store's sales, stock and waste exports and writes the owner's weekly digest. Every Monday it answers three questions: **what happened, what's wrong, and what to do about it today**, with a dollar figure against each action.
+## What's new in v0.3: Shelly Core
+- **Every capability is a skill** (21 skills across 5 packs). `python -m shelly skills export` writes an agentskills.io `SKILL.md` for each one, so OpenJarvis or any LLM planner can call them.
+- **Industry packs** beyond convenience retail: **consumer electronics** (sell-through, weeks of cover, aged-stock markdowns with a below-cost check, price erosion, attach rate), **wholesale** (customer profitability after cost-to-serve, debtor ageing and DSO, fill rate and OTIF), **warehousing** (ABC-XYZ slotting, pick productivity, capacity runway) and **production** (OEE, scrap cost, schedule adherence).
+- **Decision log: you stay in charge.** Big-money, compliance, price, range, credit and markdown judgements are *proposed*, not acted on. They wait as `pending` until you confirm or reject them (CLI, or buttons in the web app plus import). Every event goes into an append-only audit trail.
+- **Learning loop.** Shelly tracks how often you confirm each kind of alert (Beta precision) and tunes its own thresholds, within safe bounds and only after 5+ answers. It also tracks its forecast error over time to catch model drift. Every change is logged with its reason.
+- **Validation reports** for every run (`reports/<run>/run_report.md`): SHA-256 of each input file, config hash, automated PASS/WARN/FAIL checks (freshness, data quality, beats the baseline, recalls blocked, P&L reconciles, cluster stability), models, decisions and what Shelly learned.
+- **Connectors** you can extend: folder/Excel, SQLite, any SQL database, Google Sheets (published CSV), REST/JSON, SMTP email, plus live Gmail, Drive, Calendar, Indeed and web news through Shelly's Claude scheduled tasks. Drop a new connector into `shelly/connectors_ext/` and it's auto-discovered.
+- **Daily TD Report.** A Technology & Data newsletter at 6:15am NZ time covering retail and grocery, consumer electronics, wholesale/warehousing/production, AI and data, markets (information only) and matching jobs. Every item is confirmed by 2+ sources or an official source, and it learns from your 👍/👎 replies.
+
+```mermaid
+flowchart LR
+  subgraph Sources
+    A[POS / SAP exports] --- B[Warehouse / ERP / Sheets] --- C[Gmail · Drive · Calendar · Indeed · News]
+  end
+  Sources --> K[Connectors]
+  K --> S[Skills<br/>retail · electronics · wholesale<br/>warehousing · production]
+  S --> J{Major judgement?}
+  J -- no --> R[Reports · dashboard · WhatsApp · TD Report]
+  J -- yes --> D[Decision log<br/>pending → you confirm / reject]
+  D --> L[Learning loop<br/>tunes thresholds, tracks model drift]
+  L --> S
+  D --> R
+  R --> V[Validation report<br/>hashes · checks · audit trail]
+```
+
+## Everyday commands
+```bash
+python -m shelly run                         # weekly retail run + decisions + learning + validation report
+python -m shelly decisions                   # what's waiting for you
+python -m shelly decisions confirm D-1a2b3c4d --note "done"
+python -m shelly decisions reject  D-1a2b3c4d --note "false alarm: promo week"
+python -m shelly decisions import shelly-decisions.json    # answers exported from the web app
+python -m shelly pack electronics            # or wholesale | warehousing | production
+python -m shelly learn                       # what Shelly has learned
+python -m shelly skills [export]             # list skills / write SKILL.md files
+python -m shelly connectors                  # connector health
+```
+
+## What's new in v0.2
+- **Ask Shelly.** A chat on the landing page, like talking to Claude. Ask about sales, margin, budget, today's actions, reordering, shrinkage, waste, delivery, forecasts, rostering, segments, models, **any category or any product**. Answers come from the week's computed results, so Shelly never invents a number.
+- **Voice.** 🎙 ask by voice (Chrome, Edge, Safari), 🔊 spoken replies, and **▶ Briefing** reads the week's summary and today's priorities aloud. You can pick the voice and speed in ⚙ Settings.
+- **Loading sequence** that shows the pipeline running (rows loaded, data-quality score, models backtested, exceptions found).
+- **Interactive dashboard.** Hover tooltips on every chart, a tickable action plan that remembers progress, sortable and searchable tables, what-if sliders, and a segment explorer. Tap any number, bar or row to ask Shelly about it.
+- **Optional LLM.** Switch the answer engine in ⚙ Settings to **Ollama** (local, private) or the **Claude API** (your key, stored only in your browser). It only receives computed facts, and falls back to the built-in engine if unreachable.
+- **Auto-update.** A GitHub Action reruns Shelly every Monday at ~7am NZ time and republishes the site.
+- Styled to match [my portfolio](https://pavi44m.github.io/pavibamunu/).
+
+**Shelly** is an analytics agent. Its retail pack reads a convenience store's sales, stock and waste exports and writes the owner's weekly digest. Every Monday it answers three questions: **what happened, what's wrong, and what to do about it today**, with a dollar figure against each action.
 
 It's built as a full **CRISP-DM** pipeline. The forecasting and segmentation methods are the ones from my Master of Applied Business research (SARIMA-X, XGBoost and K-means). The rules come from running a Four Square store day to day: recalls, SAP count variances, Uber Eats outages and short-life waste.
 
@@ -70,13 +117,21 @@ flowchart LR
 - **Segmentation:** silhouette picks k=5, but the scores are low (≈0.28). The **gap statistic suggests k=2**, and two clusters have Jaccard stability below 0.6. The digest labels those clusters "Unstable" instead of overselling them. MANOVA confirms the segments differ (Pillai p < 0.001).
 - **Exceptions found:** everything that was deliberately injected into the demo data: a 2-day Uber Eats outage, a milk stock-out, shrinkage on chocolate and RTDs, a sandwich waste blow-out, a sushi decline, an unbooked Salsa case, a supplier recall and two broken GTINs.
 
+## Talk to Shelly with a local LLM (optional)
+```bash
+ollama pull qwen2.5:7b
+OLLAMA_ORIGINS="https://pavi44m.github.io" ollama serve   # allow the site to call your local model
+```
+Then in the site: ⚙ Settings → Ollama. The built-in engine needs no setup.
+
 ## Run it
 
 ```bash
 pip install -r requirements.txt
 python scripts/generate_sample_data.py          # synthetic 2-year dataset
 python -m shelly.agent --data data/sample # ~35 s
-python -m pytest -q                             # 8 tests
+python -m pytest -q                             # 9 tests
+python scripts/build_site.py                    # rerun Shelly and refresh the website in docs/
 Rscript r/validate.R outputs                    # optional R cross-validation
 ```
 
@@ -107,8 +162,10 @@ shelly/
   forecasting.py  phase 4-5: 5 models + rolling-origin backtest
   insights.py     commercial, anomalies, segmentation, range, JIT, labour, compliance
   strategist.py   prioritised actions + optional LLM summary
-  report.py       HTML dashboard, Markdown, WhatsApp
+  report.py       HTML digest, Markdown, WhatsApp
+  webexport.py    facts bundle for the web app (docs/data/shelly-data.js)
   exports.py      SQLite + SQL, Power BI, Tableau, Excel
+docs/             the website: index.html, app.js (chat + voice + charts), app.css
 sql/              KPI queries        r/validate.R   R cross-validation
 skills/           OpenJarvis skill   tests/         pytest suite
 ```
@@ -117,8 +174,17 @@ skills/           OpenJarvis skill   tests/         pytest suite
 **Pavithra Maduranga Bamunu**, Commercial & Business Analyst, Auckland.
 MAppBus (Business Analytics, First Class Honours) · [LinkedIn](https://linkedin.com/in/pavithra-maduranga-19624675) · [Portfolio](https://pavi44m.github.io/pavibamunu)
 
+## Versions
+- **v0.3**: skills registry, industry packs (electronics, wholesale, warehousing, production), decision log with confirmations, learning loop, validation reports, extensible connectors, daily TD Report
+- **v0.2**: conversational web app, voice in/out, interactive dashboard, optional LLM, weekly auto-update
+- **v0.1**: CRISP-DM pipeline, forecasting, exceptions, digest, Excel/SQL/Power BI/Tableau outputs
+
 ## Roadmap
+- **v0.4: program & portfolio management.** A register for future business projects (like the Catchment study) with budgets, resources, milestones, a RAID log, stage gates and weekly status reports, all run through the decision log.
+- **v0.5: finance hub.** Income, costs and cash flow tracking, business-idea scoring (market size, margin, payback, risk) and reinvestment scenarios. Shelly analyses; you decide. No automated trading and no financial advice.
 - Hourly POS data → hour-level rostering and liquor trading-hours checks
 - Weather feed as a SARIMA-X / XGBoost regressor (ice cream, drinks, soup)
 - Promo-effectiveness model (uplift vs cannibalisation)
-- Streamlit front-end and a scheduled email/WhatsApp send
+- Upload your own CSV in the browser and get a digest (fully client-side)
+- Multi-week memory: "how does this compare to last month?"
+- Scheduled email/WhatsApp send of the briefing

@@ -127,6 +127,8 @@ def _robust_z(x: float, hist: np.ndarray) -> float:
 def anomalies(P, cfg) -> pd.DataFrame:
     a = cfg["analysis"]
     zt, min_u = a["anomaly_z_threshold"], a["min_units_for_anomaly"]
+    spike_z, drop_z = a.get("spike_z", zt), a.get("drop_z", zt)          # tuned by the learning loop
+    waste_mult, decline_ratio = a.get("waste_mult", 2.0), a.get("decline_ratio", 0.75)
     n = a["digest_period_days"]
     out = []
     ds = P.daily_sku.set_index("date")
@@ -143,7 +145,7 @@ def anomalies(P, cfg) -> pd.DataFrame:
                 continue
             z = _robust_z(u.get(d, 0), hist)
             gap_units = u.get(d, 0) - np.median(hist)
-            if abs(z) >= zt and abs(gap_units * price[sku]) >= a.get("min_impact_nzd", 0):
+            if (z >= spike_z or z <= -drop_z) and abs(gap_units * price[sku]) >= a.get("min_impact_nzd", 0):
                 kind = "Sales spike" if z > 0 else "Sales drop / possible stock-out"
                 gap = (u.get(d, 0) - np.median(hist)) * price[sku]
                 out.append({"date": d.date(), "type": kind, "item": names.loc[sku, "product_name"],
@@ -168,7 +170,7 @@ def anomalies(P, cfg) -> pd.DataFrame:
     for sku, g in ds.groupby("sku"):
         recent = g["units"].loc[P.asof - pd.Timedelta(days=13):].mean()
         base = g["units"].loc[P.asof - pd.Timedelta(days=69):P.asof - pd.Timedelta(days=14)].mean()
-        if base >= min_u and recent < base * 0.75:
+        if base >= min_u and recent < base * decline_ratio:
             # same windows last year: is this just seasonality?
             ly_end = P.asof - pd.Timedelta(days=364)
             ly_recent = g["units"].loc[ly_end - pd.Timedelta(days=13):ly_end].mean()
@@ -187,7 +189,7 @@ def anomalies(P, cfg) -> pd.DataFrame:
         base = _window(w, "date", P.asof, 56, n).groupby("sku")["units_wasted"].sum() / 8
         for sku, v in cur.items():
             b = base.get(sku, 0)
-            if v >= 5 and v > max(b * 2, b + 4):
+            if v >= 5 and v > max(b * waste_mult, b + 4):
                 out.append({"date": P.asof.date(), "type": "Waste blow-out",
                             "item": names.loc[sku, "product_name"], "sku": sku,
                             "detail": f"{int(v)} units wasted vs usual {b:.0f}/week",
