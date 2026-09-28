@@ -1,96 +1,229 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Shelly Weekly Digest</title><style>
-:root{--surface:#fcfcfb;--card:#ffffff;--ink:#0b0b0b;--ink2:#52514e;--muted:#8a8984;--line:#e6e5e0;
---s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--pos:#2a78d6;--neg:#e34948;--mid:#f0efec;
---p1:#c62828;--p2:#b26a00;--p3:#5f6b7a;--p1bg:#fdecea;--p2bg:#fff4e0;--p3bg:#eef1f5}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--surface:#1a1a19;--card:#232322;--ink:#fff;--ink2:#c3c2b7;
---muted:#8f8e86;--line:#3a3a37;--s1:#3987e5;--s2:#d95926;--s3:#199e70;--pos:#3987e5;--neg:#e66767;--mid:#383835;
---p1:#ff8a80;--p2:#ffc466;--p3:#b0bac6;--p1bg:#3a1f1d;--p2bg:#3a2e17;--p3bg:#2a2f36}}
-:root[data-theme="dark"]{--surface:#1a1a19;--card:#232322;--ink:#fff;--ink2:#c3c2b7;--muted:#8f8e86;--line:#3a3a37;
---s1:#3987e5;--s2:#d95926;--s3:#199e70;--pos:#3987e5;--neg:#e66767;--mid:#383835;--p1:#ff8a80;--p2:#ffc466;--p3:#b0bac6;
---p1bg:#3a1f1d;--p2bg:#3a2e17;--p3bg:#2a2f36}
-*{box-sizing:border-box}body{margin:0;background:var(--surface);color:var(--ink);
-font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
-.wrap{max-width:1040px;margin:0 auto;padding:24px 16px 64px}
-h1{font-size:26px;margin:0 0 4px}h2{font-size:18px;margin:36px 0 4px}h3{font-size:15px;margin:0 0 8px}
-.sub{color:var(--ink2);margin:0}.phase{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:36px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-top:12px}
-.summary{font-size:16px}.engine{font-size:12px;color:var(--muted);margin-top:8px}
-.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:12px}
-.tile{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
-.tile .l{font-size:12px;color:var(--ink2)}.tile .v{font-size:24px;font-weight:650;margin:2px 0}
-.tile .d{font-size:12px;color:var(--ink2)}
-.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
-th{color:var(--ink2);font-weight:600}td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
-.scroll{overflow-x:auto}
-.pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;white-space:nowrap}
-.P1{background:var(--p1bg);color:var(--p1)}.P2{background:var(--p2bg);color:var(--p2)}.P3{background:var(--p3bg);color:var(--p3)}
-.why{color:var(--ink2);font-size:12px}
-svg{display:block;width:100%;height:auto}.wide{min-width:620px}svg text{fill:var(--ink2);font-size:11px}
-.legend{display:flex;gap:16px;font-size:12px;color:var(--ink2);margin:4px 0 0}.legend i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
-.note{font-size:12px;color:var(--ink2);margin-top:8px}
-details summary{cursor:pointer;color:var(--ink2);font-size:13px;margin-top:8px}
-footer{margin-top:40px;font-size:12px;color:var(--muted)}
-@media (max-width:640px){table.actions thead{display:none}table.actions tr{display:block;padding:10px 0;border-bottom:1px solid var(--line)}
-table.actions td{display:block;border:0;padding:2px 0;text-align:left}table.actions td.n:not(:empty){font-weight:600}}
-</style></head><body><div class="wrap">
-<h1>Shelly · Weekly Sales Digest</h1>
-<p class="sub">Demo Neighbourhood Store (Eden Terrace format) · week ending Friday 25 September 2026 · for Store Owner / Operations Manager</p>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shelly — Analytics Agent</title>
+<meta name="author" content="Pavithra Bamunu">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' http://localhost:* http://127.0.0.1:* https://api.anthropic.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Shelly: a retail analytics agent you can talk to. Weekly sales digest, forecasts, exceptions and actions for a neighbourhood store.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
 
-<div class="card summary">Sales were $18,857 this week (+0.1% on last week, -2.9% on last year, -6.6% vs budget). Gross margin held at 41.2%, and delivery channels made up 18.1% of sales. 4 items need action today, starting with: Pull Simmer Sauce 485g (GTIN 9429004521334) from shelf and quarantine ~9 units. Next 7 days forecast: $19,075. SARIMA-X was the most accurate model in backtesting (WAPE 16.4%).<div class="engine">Summary written by: Rules engine</div></div>
-<div class="tiles"><div class="tile"><div class="l">Sales (7 days)</div><div class="v">$18,857</div><div class="d">+0.1% WoW · -2.9% YoY</div></div><div class="tile"><div class="l">vs Budget</div><div class="v">-6.6%</div><div class="d">Budget $20,189</div></div><div class="tile"><div class="l">Gross margin</div><div class="v">41.2%</div><div class="d">Target 38.0% · $7,778</div></div><div class="tile"><div class="l">Waste + markdown</div><div class="v">2.5%</div><div class="d">Target ≤3.0% · $462</div></div><div class="tile"><div class="l">Delivery share</div><div class="v">18.1%</div><div class="d">Target 18.0%</div></div><div class="tile"><div class="l">Next 7 days (forecast)</div><div class="v">$19,075</div><div class="d">+1.2% vs this week</div></div></div>
-
-<div class="phase">Action plan</div>
-<h2>What to do, in priority order</h2>
-<div class="card"><div class="scroll"><table class="actions"><thead><tr><th>Priority</th><th>Action</th><th class="n">$ / week</th><th>Owner</th></tr></thead>
-<tbody><tr><td><span class="pill P1">P1 · Today</span></td><td><b>Compliance - recall</b><br>Pull Simmer Sauce 485g (GTIN 9429004521334) from shelf and quarantine ~9 units; block the item at POS and follow the supplier recall steps<div class="why">Supplier recall 2026-09-24: Undeclared allergen (milk). 31 units sold in the last 7 days.</div></td><td class="n">–</td><td>Duty Manager</td></tr><tr><td><span class="pill P1">P1 · Today</span></td><td><b>Delivery channel</b><br>Check the Uber Eats tablet/app on shift start and add it to the opening checklist<div class="why">uber_eats fell to $0 vs usual $479 on 2026-09-21.</div></td><td class="n">−$479</td><td>Duty Manager</td></tr><tr><td><span class="pill P1">P1 · Today</span></td><td><b>Availability</b><br>Check stock and on-shelf availability for Milk Standard 2L; raise an emergency order if gapped<div class="why">2026-09-19: 3 units vs usual 31 - looks like a stock-out, not a demand drop.</div></td><td class="n">−$137</td><td>Duty Manager</td></tr><tr><td><span class="pill P1">P1 · Today</span></td><td><b>Replenishment</b><br>Place today&#x27;s order: 15 lines are below lead-time cover ($1,705 at cost). Top lines: Chocolate Block 200g, Energy Drink 500ml, Butter 500g, Pinot Noir 750ml, Frozen Dumplings 1kg<div class="why">JIT reorder point = lead-time demand + safety stock (95% service level).</div></td><td class="n">–</td><td>Duty Manager</td></tr><tr><td><span class="pill P2">P2 · This week</span></td><td><b>Budget</b><br>Recovery plan for the categories furthest behind budget: Beer &amp; Wine, Dairy<div class="why">Store -6.6% vs budget; Beer &amp; Wine $879 behind; Dairy $363 behind</div></td><td class="n">−$1,241</td><td>Owner</td></tr><tr><td><span class="pill P2">P2 · This week</span></td><td><b>Category</b><br>Investigate Sushi Pack 8pc: price, quality, range position or a new competitor<div class="why">8.6/day vs 12.7/day (-32%) over 14 days, and it isn&#x27;t seasonal (last year held steady).</div></td><td class="n">−$288</td><td>Store Manager</td></tr><tr><td><span class="pill P2">P2 · This week</span></td><td><b>Category</b><br>Investigate Frozen Pizza: price, quality, range position or a new competitor<div class="why">4.1/day vs 7.3/day (-43%) over 14 days, and it isn&#x27;t seasonal (last year held steady).</div></td><td class="n">−$176</td><td>Store Manager</td></tr><tr><td><span class="pill P2">P2 · This week</span></td><td><b>Shrinkage</b><br>Re-count RTD 4pk, move to a higher-visibility location, and review CCTV around the gap<div class="why">SAP 45 vs shelf 35 (repeat). Loss at cost $119.</div></td><td class="n">−$119</td><td>Store Manager</td></tr><tr><td><span class="pill P2">P2 · This week</span></td><td><b>Shrinkage</b><br>Re-count Chocolate Block 200g, move to a higher-visibility location, and review CCTV around the gap<div class="why">SAP 137 vs shelf 105 (repeat). Loss at cost $102.</div></td><td class="n">−$102</td><td>Store Manager</td></tr><tr><td><span class="pill P2">P2 · This week</span></td><td><b>Waste</b><br>Cut the Chicken Sandwich order by ~30% and move markdowns to 2pm<div class="why">29 units wasted vs usual 10/week.</div></td><td class="n">−$73</td><td>Duty Manager</td></tr><tr><td><span class="pill P2">P2 · This week</span></td><td><b>Data quality - GS1</b><br>Fix 2 invalid barcode(s) in the product master: Taco Kit, Phone Charger Cable<div class="why">An invalid GTIN check digit means scan failures, wrong prices and recall matching gaps.</div></td><td class="n">–</td><td>Admin / SAP</td></tr><tr><td><span class="pill P2">P2 · This week</span></td><td><b>SAP / receiving</b><br>Check the GR for Salsa 300g against the supplier invoice and raise a DDN if needed<div class="why">SAP 29 vs shelf 35 (first time) - usually an extra case received but not booked.</div></td><td class="n">+$17</td><td>Admin / SAP</td></tr><tr><td><span class="pill P3">P3 · Next review</span></td><td><b>Compliance - liquor</b><br>Spot-check ID verification on 12 liquor units sent by delivery this week<div class="why">Sale and Supply of Alcohol Act 2012 - remote sales need age verification at the door.</div></td><td class="n">–</td><td>Licensee / Duty Manager</td></tr><tr><td><span class="pill P3">P3 · Next review</span></td><td><b>Range</b><br>Range review candidates (C-class and high waste): Avocado<div class="why">Space could go to A-class lines that are stocking out.</div></td><td class="n">–</td><td>Owner</td></tr><tr><td><span class="pill P3">P3 · Next review</span></td><td><b>Rostering</b><br>Roster 181 hours next week; peak day Fri 02 Oct<div class="why">Forecast sales $19,075 at $110/labour hour, wage cost 25.7% of sales.</div></td><td class="n">–</td><td>Store Manager</td></tr><tr><td><span class="pill P3">P3 · Next review</span></td><td><b>Demand</b><br>Find out what drove the Energy Drink 500ml spike (local event? competitor out?) and hold extra cover if it repeats<div class="why">2026-09-22: 67 units vs usual 22.</div></td><td class="n">+$193</td><td>Duty Manager</td></tr></tbody></table></div></div>
-
-<div class="phase">Performance</div>
-<h2>Daily sales and 7-day forecast</h2>
-<div class="card"><div class="scroll"><div class="wide"><svg viewBox="0 0 960 300" role="img" aria-label="Daily sales, actual and forecast"><line x1="52" x2="930" y1="272.0" y2="272.0" stroke="var(--line)"/><text x="46" y="276.0" text-anchor="end">$0.0k</text><line x1="52" x2="930" y1="207.0" y2="207.0" stroke="var(--line)"/><text x="46" y="211.0" text-anchor="end">$0.9k</text><line x1="52" x2="930" y1="142.0" y2="142.0" stroke="var(--line)"/><text x="46" y="146.0" text-anchor="end">$1.9k</text><line x1="52" x2="930" y1="77.0" y2="77.0" stroke="var(--line)"/><text x="46" y="81.0" text-anchor="end">$2.8k</text><line x1="52" x2="930" y1="12.0" y2="12.0" stroke="var(--line)"/><text x="46" y="16.0" text-anchor="end">$3.7k</text><polyline points="52.0,105.9 66.2,140.6 80.3,59.9 94.5,69.5 108.6,71.3 122.8,58.8 137.0,80.6 151.1,124.7 165.3,135.9 179.5,66.3 193.6,88.6 207.8,75.1 221.9,84.7 236.1,52.3 250.3,110.1 264.4,117.2 278.6,80.4 292.7,68.1 306.9,66.9 321.1,75.4 335.2,75.9 349.4,93.8 363.5,127.5 377.7,71.4 391.9,78.2 406.0,70.3 420.2,41.3 434.4,76.2 448.5,112.3 462.7,128.9 476.8,63.7 491.0,69.3 505.2,62.0 519.3,50.4 533.5,51.1 547.6,92.2 561.8,138.2 576.0,57.7 590.1,91.0 604.3,57.1 618.5,48.4 632.6,64.6 646.8,96.5 660.9,116.4 675.1,60.5 689.3,76.6 703.4,66.1 717.6,84.6 731.7,87.2 745.9,107.3 760.1,154.5 774.2,99.9 788.4,64.9 802.5,61.6 816.7,35.6 830.9,63.4" fill="none" stroke="var(--s1)" stroke-width="2"/><polyline points="830.9,63.4 845.0,106.5 859.2,130.8 873.4,78.1 887.5,67.3 901.7,66.5 915.8,63.2 930.0,59.7" fill="none" stroke="var(--s2)" stroke-width="2" stroke-dasharray="5 4"/><line x1="830.9" x2="830.9" y1="12" y2="272" stroke="var(--muted)" stroke-dasharray="2 3"/><circle cx="52.0" cy="105.9" r="6" fill="transparent"><title>Sat 01 Aug: $2,379</title></circle><circle cx="66.2" cy="140.6" r="6" fill="transparent"><title>Sun 02 Aug: $1,882</title></circle><circle cx="80.3" cy="59.9" r="6" fill="transparent"><title>Mon 03 Aug: $3,037</title></circle><circle cx="94.5" cy="69.5" r="6" fill="transparent"><title>Tue 04 Aug: $2,900</title></circle><circle cx="108.6" cy="71.3" r="6" fill="transparent"><title>Wed 05 Aug: $2,875</title></circle><circle cx="122.8" cy="58.8" r="6" fill="transparent"><title>Thu 06 Aug: $3,054</title></circle><circle cx="137.0" cy="80.6" r="6" fill="transparent"><title>Fri 07 Aug: $2,740</title></circle><circle cx="151.1" cy="124.7" r="6" fill="transparent"><title>Sat 08 Aug: $2,110</title></circle><circle cx="165.3" cy="135.9" r="6" fill="transparent"><title>Sun 09 Aug: $1,948</title></circle><circle cx="179.5" cy="66.3" r="6" fill="transparent"><title>Mon 10 Aug: $2,945</title></circle><circle cx="193.6" cy="88.6" r="6" fill="transparent"><title>Tue 11 Aug: $2,626</title></circle><circle cx="207.8" cy="75.1" r="6" fill="transparent"><title>Wed 12 Aug: $2,820</title></circle><circle cx="221.9" cy="84.7" r="6" fill="transparent"><title>Thu 13 Aug: $2,682</title></circle><circle cx="236.1" cy="52.3" r="6" fill="transparent"><title>Fri 14 Aug: $3,146</title></circle><circle cx="250.3" cy="110.1" r="6" fill="transparent"><title>Sat 15 Aug: $2,318</title></circle><circle cx="264.4" cy="117.2" r="6" fill="transparent"><title>Sun 16 Aug: $2,216</title></circle><circle cx="278.6" cy="80.4" r="6" fill="transparent"><title>Mon 17 Aug: $2,744</title></circle><circle cx="292.7" cy="68.1" r="6" fill="transparent"><title>Tue 18 Aug: $2,920</title></circle><circle cx="306.9" cy="66.9" r="6" fill="transparent"><title>Wed 19 Aug: $2,938</title></circle><circle cx="321.1" cy="75.4" r="6" fill="transparent"><title>Thu 20 Aug: $2,815</title></circle><circle cx="335.2" cy="75.9" r="6" fill="transparent"><title>Fri 21 Aug: $2,809</title></circle><circle cx="349.4" cy="93.8" r="6" fill="transparent"><title>Sat 22 Aug: $2,552</title></circle><circle cx="363.5" cy="127.5" r="6" fill="transparent"><title>Sun 23 Aug: $2,069</title></circle><circle cx="377.7" cy="71.4" r="6" fill="transparent"><title>Mon 24 Aug: $2,872</title></circle><circle cx="391.9" cy="78.2" r="6" fill="transparent"><title>Tue 25 Aug: $2,775</title></circle><circle cx="406.0" cy="70.3" r="6" fill="transparent"><title>Wed 26 Aug: $2,889</title></circle><circle cx="420.2" cy="41.3" r="6" fill="transparent"><title>Thu 27 Aug: $3,303</title></circle><circle cx="434.4" cy="76.2" r="6" fill="transparent"><title>Fri 28 Aug: $2,804</title></circle><circle cx="448.5" cy="112.3" r="6" fill="transparent"><title>Sat 29 Aug: $2,287</title></circle><circle cx="462.7" cy="128.9" r="6" fill="transparent"><title>Sun 30 Aug: $2,049</title></circle><circle cx="476.8" cy="63.7" r="6" fill="transparent"><title>Mon 31 Aug: $2,983</title></circle><circle cx="491.0" cy="69.3" r="6" fill="transparent"><title>Tue 01 Sep: $2,902</title></circle><circle cx="505.2" cy="62.0" r="6" fill="transparent"><title>Wed 02 Sep: $3,007</title></circle><circle cx="519.3" cy="50.4" r="6" fill="transparent"><title>Thu 03 Sep: $3,174</title></circle><circle cx="533.5" cy="51.1" r="6" fill="transparent"><title>Fri 04 Sep: $3,164</title></circle><circle cx="547.6" cy="92.2" r="6" fill="transparent"><title>Sat 05 Sep: $2,575</title></circle><circle cx="561.8" cy="138.2" r="6" fill="transparent"><title>Sun 06 Sep: $1,916</title></circle><circle cx="576.0" cy="57.7" r="6" fill="transparent"><title>Mon 07 Sep: $3,069</title></circle><circle cx="590.1" cy="91.0" r="6" fill="transparent"><title>Tue 08 Sep: $2,592</title></circle><circle cx="604.3" cy="57.1" r="6" fill="transparent"><title>Wed 09 Sep: $3,078</title></circle><circle cx="618.5" cy="48.4" r="6" fill="transparent"><title>Thu 10 Sep: $3,203</title></circle><circle cx="632.6" cy="64.6" r="6" fill="transparent"><title>Fri 11 Sep: $2,971</title></circle><circle cx="646.8" cy="96.5" r="6" fill="transparent"><title>Sat 12 Sep: $2,513</title></circle><circle cx="660.9" cy="116.4" r="6" fill="transparent"><title>Sun 13 Sep: $2,228</title></circle><circle cx="675.1" cy="60.5" r="6" fill="transparent"><title>Mon 14 Sep: $3,028</title></circle><circle cx="689.3" cy="76.6" r="6" fill="transparent"><title>Tue 15 Sep: $2,798</title></circle><circle cx="703.4" cy="66.1" r="6" fill="transparent"><title>Wed 16 Sep: $2,948</title></circle><circle cx="717.6" cy="84.6" r="6" fill="transparent"><title>Thu 17 Sep: $2,684</title></circle><circle cx="731.7" cy="87.2" r="6" fill="transparent"><title>Fri 18 Sep: $2,646</title></circle><circle cx="745.9" cy="107.3" r="6" fill="transparent"><title>Sat 19 Sep: $2,358</title></circle><circle cx="760.1" cy="154.5" r="6" fill="transparent"><title>Sun 20 Sep: $1,682</title></circle><circle cx="774.2" cy="99.9" r="6" fill="transparent"><title>Mon 21 Sep: $2,465</title></circle><circle cx="788.4" cy="64.9" r="6" fill="transparent"><title>Tue 22 Sep: $2,965</title></circle><circle cx="802.5" cy="61.6" r="6" fill="transparent"><title>Wed 23 Sep: $3,013</title></circle><circle cx="816.7" cy="35.6" r="6" fill="transparent"><title>Thu 24 Sep: $3,385</title></circle><circle cx="830.9" cy="63.4" r="6" fill="transparent"><title>Fri 25 Sep: $2,988</title></circle><circle cx="845.0" cy="106.5" r="4" fill="var(--s2)" stroke="var(--card)" stroke-width="2"><title>Sat 26 Sep forecast: $2,370</title></circle><circle cx="859.2" cy="130.8" r="4" fill="var(--s2)" stroke="var(--card)" stroke-width="2"><title>Sun 27 Sep forecast: $2,023</title></circle><circle cx="873.4" cy="78.1" r="4" fill="var(--s2)" stroke="var(--card)" stroke-width="2"><title>Mon 28 Sep forecast: $2,777</title></circle><circle cx="887.5" cy="67.3" r="4" fill="var(--s2)" stroke="var(--card)" stroke-width="2"><title>Tue 29 Sep forecast: $2,931</title></circle><circle cx="901.7" cy="66.5" r="4" fill="var(--s2)" stroke="var(--card)" stroke-width="2"><title>Wed 30 Sep forecast: $2,943</title></circle><circle cx="915.8" cy="63.2" r="4" fill="var(--s2)" stroke="var(--card)" stroke-width="2"><title>Thu 01 Oct forecast: $2,990</title></circle><circle cx="930.0" cy="59.7" r="4" fill="var(--s2)" stroke="var(--card)" stroke-width="2"><title>Fri 02 Oct forecast: $3,041</title></circle><text x="52.0" y="292" text-anchor="middle">01 Aug</text><text x="250.3" y="292" text-anchor="middle">15 Aug</text><text x="448.5" y="292" text-anchor="middle">29 Aug</text><text x="646.8" y="292" text-anchor="middle">12 Sep</text><text x="845.0" y="292" text-anchor="middle">26 Sep</text><text x="930.0" y="292" text-anchor="middle">02 Oct</text></svg><div class="legend"><span><i style="background:var(--s1)"></i>Actual</span><span><i style="background:var(--s2)"></i>Forecast (best model per category)</span></div></div></div></div>
-<div class="grid2">
- <div><h2>What moved sales vs last week</h2><div class="card"><svg viewBox="0 0 460 230" role="img" aria-label="Sales bridge: volume, mix, price"><rect x="36.8" y="104.2" width="50.4" height="97.8" rx="4" fill="var(--s1)"><title>Last week: $18,846</title></rect><text x="62.0" y="100.2" text-anchor="middle">$18,846</text><text x="62.0" y="222" text-anchor="middle">Last week</text><rect x="120.8" y="49.2" width="50.4" height="55.0" rx="4" fill="var(--pos)"><title>Volume: +$318</title></rect><text x="146.0" y="45.2" text-anchor="middle">+$318</text><text x="146.0" y="222" text-anchor="middle">Volume</text><rect x="204.8" y="49.2" width="50.4" height="55.5" rx="4" fill="var(--neg)"><title>Mix: −$321</title></rect><text x="230.0" y="45.2" text-anchor="middle">−$321</text><text x="230.0" y="222" text-anchor="middle">Mix</text><rect x="288.8" y="102.2" width="50.4" height="2.4" rx="4" fill="var(--pos)"><title>Price: +$14</title></rect><text x="314.0" y="98.2" text-anchor="middle">+$14</text><text x="314.0" y="222" text-anchor="middle">Price</text><rect x="372.8" y="102.2" width="50.4" height="99.8" rx="4" fill="var(--s1)"><title>This week: $18,857</title></rect><text x="398.0" y="98.2" text-anchor="middle">$18,857</text><text x="398.0" y="222" text-anchor="middle">This week</text></svg>
- <p class="note">Volume = more or fewer units, mix = shift toward cheaper or dearer lines, price = selling-price change (promos).</p></div></div>
- <div><h2>Delivery channels, last 14 days</h2><div class="card"><svg viewBox="0 0 460 230" role="img" aria-label="Delivery channel sales, last 14 days"><line x1="44" x2="390" y1="204.0" y2="204.0" stroke="var(--line)"/><text x="38" y="39.3" text-anchor="end">$523</text><polyline points="44.0,72.8 70.6,80.5 97.2,52.3 123.8,74.1 150.5,72.9 177.1,106.7 203.7,72.6 230.3,108.4 256.9,204.0 283.5,204.0 310.2,72.4 336.8,52.8 363.4,35.3 390.0,70.6" fill="none" stroke="var(--s1)" stroke-width="2"/><circle cx="44.0" cy="72.8" r="3.5" fill="var(--s1)"><title>Sat 12 Sep Uber Eats: $407</title></circle><circle cx="70.6" cy="80.5" r="3.5" fill="var(--s1)"><title>Sun 13 Sep Uber Eats: $383</title></circle><circle cx="97.2" cy="52.3" r="3.5" fill="var(--s1)"><title>Mon 14 Sep Uber Eats: $470</title></circle><circle cx="123.8" cy="74.1" r="3.5" fill="var(--s1)"><title>Tue 15 Sep Uber Eats: $403</title></circle><circle cx="150.5" cy="72.9" r="3.5" fill="var(--s1)"><title>Wed 16 Sep Uber Eats: $406</title></circle><circle cx="177.1" cy="106.7" r="3.5" fill="var(--s1)"><title>Thu 17 Sep Uber Eats: $302</title></circle><circle cx="203.7" cy="72.6" r="3.5" fill="var(--s1)"><title>Fri 18 Sep Uber Eats: $407</title></circle><circle cx="230.3" cy="108.4" r="3.5" fill="var(--s1)"><title>Sat 19 Sep Uber Eats: $296</title></circle><circle cx="256.9" cy="204.0" r="3.5" fill="var(--s1)"><title>Sun 20 Sep Uber Eats: $0</title></circle><circle cx="283.5" cy="204.0" r="3.5" fill="var(--s1)"><title>Mon 21 Sep Uber Eats: $0</title></circle><circle cx="310.2" cy="72.4" r="3.5" fill="var(--s1)"><title>Tue 22 Sep Uber Eats: $408</title></circle><circle cx="336.8" cy="52.8" r="3.5" fill="var(--s1)"><title>Wed 23 Sep Uber Eats: $469</title></circle><circle cx="363.4" cy="35.3" r="3.5" fill="var(--s1)"><title>Thu 24 Sep Uber Eats: $523</title></circle><circle cx="390.0" cy="70.6" r="3.5" fill="var(--s1)"><title>Fri 25 Sep Uber Eats: $413</title></circle><text x="398.0" y="74.6">Uber Eats</text><polyline points="44.0,151.9 70.6,143.4 97.2,145.0 123.8,153.8 150.5,126.5 177.1,152.4 203.7,161.9 230.3,148.4 256.9,157.5 283.5,145.7 310.2,130.5 336.8,158.9 363.4,143.3 390.0,125.2" fill="none" stroke="var(--s3)" stroke-width="2"/><circle cx="44.0" cy="151.9" r="3.5" fill="var(--s3)"><title>Sat 12 Sep On-Demand: $162</title></circle><circle cx="70.6" cy="143.4" r="3.5" fill="var(--s3)"><title>Sun 13 Sep On-Demand: $188</title></circle><circle cx="97.2" cy="145.0" r="3.5" fill="var(--s3)"><title>Mon 14 Sep On-Demand: $183</title></circle><circle cx="123.8" cy="153.8" r="3.5" fill="var(--s3)"><title>Tue 15 Sep On-Demand: $155</title></circle><circle cx="150.5" cy="126.5" r="3.5" fill="var(--s3)"><title>Wed 16 Sep On-Demand: $240</title></circle><circle cx="177.1" cy="152.4" r="3.5" fill="var(--s3)"><title>Thu 17 Sep On-Demand: $160</title></circle><circle cx="203.7" cy="161.9" r="3.5" fill="var(--s3)"><title>Fri 18 Sep On-Demand: $131</title></circle><circle cx="230.3" cy="148.4" r="3.5" fill="var(--s3)"><title>Sat 19 Sep On-Demand: $172</title></circle><circle cx="256.9" cy="157.5" r="3.5" fill="var(--s3)"><title>Sun 20 Sep On-Demand: $144</title></circle><circle cx="283.5" cy="145.7" r="3.5" fill="var(--s3)"><title>Mon 21 Sep On-Demand: $181</title></circle><circle cx="310.2" cy="130.5" r="3.5" fill="var(--s3)"><title>Tue 22 Sep On-Demand: $228</title></circle><circle cx="336.8" cy="158.9" r="3.5" fill="var(--s3)"><title>Wed 23 Sep On-Demand: $140</title></circle><circle cx="363.4" cy="143.3" r="3.5" fill="var(--s3)"><title>Thu 24 Sep On-Demand: $188</title></circle><circle cx="390.0" cy="125.2" r="3.5" fill="var(--s3)"><title>Fri 25 Sep On-Demand: $244</title></circle><text x="398.0" y="129.2">On-Demand</text><text x="44.0" y="222" text-anchor="middle">Sat 12</text><text x="97.2" y="222" text-anchor="middle">Mon 14</text><text x="150.5" y="222" text-anchor="middle">Wed 16</text><text x="203.7" y="222" text-anchor="middle">Fri 18</text><text x="256.9" y="222" text-anchor="middle">Sun 20</text><text x="310.2" y="222" text-anchor="middle">Tue 22</text><text x="363.4" y="222" text-anchor="middle">Thu 24</text></svg>
- <p class="note">Each point is one day's sales. A drop to zero is an outage, not a demand change.</p></div></div>
-</div>
-<h2>Category vs budget</h2>
-<div class="card"><div class="scroll"><div class="wide"><svg viewBox="0 0 960 320" role="img" aria-label="Category sales vs budget"><line x1="525.0" x2="525.0" y1="0" y2="320" stroke="var(--muted)"/><text x="162" y="20" text-anchor="end">Beer &amp; Wine</text><rect x="178.0" y="9" width="347.0" height="18" rx="4" fill="var(--neg)"><title>Beer &amp; Wine: -$879 vs budget</title></rect><text x="956" y="20" text-anchor="end">−$879</text><text x="162" y="48" text-anchor="end">Dairy</text><rect x="381.9" y="37" width="143.1" height="18" rx="4" fill="var(--neg)"><title>Dairy: -$363 vs budget</title></rect><text x="956" y="48" text-anchor="end">−$363</text><text x="162" y="76" text-anchor="end">Frozen</text><rect x="421.0" y="65" width="104.0" height="18" rx="4" fill="var(--neg)"><title>Frozen: -$263 vs budget</title></rect><text x="956" y="76" text-anchor="end">−$263</text><text x="162" y="104" text-anchor="end">Food To Go</text><rect x="449.2" y="93" width="75.8" height="18" rx="4" fill="var(--neg)"><title>Food To Go: -$192 vs budget</title></rect><text x="956" y="104" text-anchor="end">−$192</text><text x="162" y="132" text-anchor="end">Snacks &amp; Confectionery</text><rect x="463.5" y="121" width="61.5" height="18" rx="4" fill="var(--neg)"><title>Snacks &amp; Confectionery: -$156 vs budget</title></rect><text x="956" y="132" text-anchor="end">−$156</text><text x="162" y="160" text-anchor="end">Produce</text><rect x="506.5" y="149" width="18.5" height="18" rx="4" fill="var(--neg)"><title>Produce: -$47 vs budget</title></rect><text x="956" y="160" text-anchor="end">−$47</text><text x="162" y="188" text-anchor="end">Grocery</text><rect x="519.5" y="177" width="5.5" height="18" rx="4" fill="var(--neg)"><title>Grocery: -$14 vs budget</title></rect><text x="956" y="188" text-anchor="end">−$14</text><text x="162" y="216" text-anchor="end">Household</text><rect x="525.0" y="205" width="1.0" height="18" rx="4" fill="var(--pos)"><title>Household: +$1 vs budget</title></rect><text x="956" y="216" text-anchor="end">+$1</text><text x="162" y="244" text-anchor="end">Health &amp; Beauty</text><rect x="525.0" y="233" width="50.8" height="18" rx="4" fill="var(--pos)"><title>Health &amp; Beauty: +$129 vs budget</title></rect><text x="956" y="244" text-anchor="end">+$129</text><text x="162" y="272" text-anchor="end">Bakery</text><rect x="525.0" y="261" width="69.7" height="18" rx="4" fill="var(--pos)"><title>Bakery: +$177 vs budget</title></rect><text x="956" y="272" text-anchor="end">+$177</text><text x="162" y="300" text-anchor="end">Beverages</text><rect x="525.0" y="289" width="108.6" height="18" rx="4" fill="var(--pos)"><title>Beverages: +$275 vs budget</title></rect><text x="956" y="300" text-anchor="end">+$275</text></svg></div></div></div>
-<h2>Category P&amp;L</h2><div class="card"><div class="scroll"><table><thead><tr><th class="">Category</th><th class="n">Sales</th><th class="n">GM %</th><th class="n">WoW %</th><th class="n">YoY %</th><th class="n">vs Budget</th><th class="n">Waste</th><th class="n">Contribution</th></tr></thead><tbody><tr><td class="">Food To Go</td><td class="n">$3,392</td><td class="n">48.8</td><td class="n">+8.6%</td><td class="n">-1.6%</td><td class="n">−$192</td><td class="n">$235</td><td class="n">$1,320</td></tr><tr><td class="">Dairy</td><td class="n">$3,059</td><td class="n">27.8</td><td class="n">+10.4%</td><td class="n">-7.0%</td><td class="n">−$363</td><td class="n">$48</td><td class="n">$794</td></tr><tr><td class="">Beverages</td><td class="n">$2,866</td><td class="n">50.2</td><td class="n">+5.8%</td><td class="n">+15.0%</td><td class="n">+$275</td><td class="n">$0</td><td class="n">$1,439</td></tr><tr><td class="">Snacks &amp; Confectionery</td><td class="n">$2,085</td><td class="n">44.9</td><td class="n">-4.9%</td><td class="n">-3.2%</td><td class="n">−$156</td><td class="n">$0</td><td class="n">$937</td></tr><tr><td class="">Beer &amp; Wine</td><td class="n">$1,908</td><td class="n">34.5</td><td class="n">-21.8%</td><td class="n">-28.8%</td><td class="n">−$879</td><td class="n">$0</td><td class="n">$659</td></tr><tr><td class="">Grocery</td><td class="n">$1,839</td><td class="n">35.5</td><td class="n">-10.5%</td><td class="n">+3.2%</td><td class="n">−$14</td><td class="n">$0</td><td class="n">$653</td></tr><tr><td class="">Bakery</td><td class="n">$1,228</td><td class="n">39.2</td><td class="n">+23.6%</td><td class="n">+21.5%</td><td class="n">+$177</td><td class="n">$21</td><td class="n">$427</td></tr><tr><td class="">Frozen</td><td class="n">$1,131</td><td class="n">44.2</td><td class="n">-8.8%</td><td class="n">-15.6%</td><td class="n">−$263</td><td class="n">$0</td><td class="n">$500</td></tr><tr><td class="">Household</td><td class="n">$598</td><td class="n">44.3</td><td class="n">+16.8%</td><td class="n">+4.2%</td><td class="n">+$1</td><td class="n">$0</td><td class="n">$265</td></tr><tr><td class="">Health &amp; Beauty</td><td class="n">$392</td><td class="n">46.9</td><td class="n">+3.2%</td><td class="n">+54.7%</td><td class="n">+$129</td><td class="n">$0</td><td class="n">$184</td></tr><tr><td class="">Produce</td><td class="n">$357</td><td class="n">43.7</td><td class="n">-16.6%</td><td class="n">-8.1%</td><td class="n">−$47</td><td class="n">$10</td><td class="n">$139</td></tr></tbody></table></div></div>
-
-<div class="phase">Exceptions</div>
-<h2>What the agent flagged</h2>
-<div class="card"><div class="scroll"><table><thead><tr><th class="">Date</th><th class="">Signal</th><th class="">Item</th><th class="">Detail</th><th class="n">Impact</th></tr></thead><tbody><tr><td class="">2026-09-21</td><td class="">Channel outage / drop</td><td class="">uber_eats</td><td class="">$0 vs usual $479</td><td class="n">−$479</td></tr><tr><td class="">2026-09-25</td><td class="">Sustained decline (14 days)</td><td class="">Sushi Pack 8pc</td><td class="">8.6/day vs 12.7/day (-32%)</td><td class="n">−$288</td></tr><tr><td class="">2026-09-22</td><td class="">Sales spike</td><td class="">Energy Drink 500ml</td><td class="">67 units vs usual 22</td><td class="n">+$193</td></tr><tr><td class="">2026-09-25</td><td class="">Sustained decline (14 days)</td><td class="">Frozen Pizza</td><td class="">4.1/day vs 7.3/day (-43%)</td><td class="n">−$176</td></tr><tr><td class="">2026-09-19</td><td class="">Sales drop / possible stock-out</td><td class="">Milk Standard 2L</td><td class="">3 units vs usual 31</td><td class="n">−$137</td></tr><tr><td class="">2026-09-20</td><td class="">Shrinkage (physical &lt; SAP)</td><td class="">RTD 4pk</td><td class="">SAP 45 vs shelf 35 (repeat)</td><td class="n">−$119</td></tr><tr><td class="">2026-09-20</td><td class="">Shrinkage (physical &lt; SAP)</td><td class="">Chocolate Block 200g</td><td class="">SAP 137 vs shelf 105 (repeat)</td><td class="n">−$102</td></tr><tr><td class="">2026-09-23</td><td class="">Sales spike</td><td class="">Sushi Pack 8pc</td><td class="">19 units vs usual 11</td><td class="n">+$80</td></tr><tr><td class="">2026-09-25</td><td class="">Waste blow-out</td><td class="">Chicken Sandwich</td><td class="">29 units wasted vs usual 10/week</td><td class="n">−$73</td></tr><tr><td class="">2026-09-24</td><td class="">Sales spike</td><td class="">Ice Cream Tub 2L</td><td class="">12 units vs usual 6</td><td class="n">+$58</td></tr><tr><td class="">2026-09-24</td><td class="">Sales spike</td><td class="">Croissant 4pk</td><td class="">15 units vs usual 6</td><td class="n">+$57</td></tr><tr><td class="">2026-09-24</td><td class="">Sales spike</td><td class="">Butter 500g</td><td class="">11 units vs usual 5</td><td class="n">+$45</td></tr><tr><td class="">2026-09-19</td><td class="">Sales spike</td><td class="">Lollies Bag 200g</td><td class="">22 units vs usual 9</td><td class="n">+$45</td></tr><tr><td class="">2026-09-20</td><td class="">Count gain (physical &gt; SAP) - check receiving / GR</td><td class="">Salsa 300g</td><td class="">SAP 29 vs shelf 35 (first time)</td><td class="n">+$17</td></tr></tbody></table></div><p class="note">Method: robust z-score (median/MAD) against the same weekday over the previous 8 weeks.
-Declines are checked against last year to separate seasonality from real problems. SAP counts are compared with shelf counts.</p></div>
-
-<div class="phase">Operations</div>
-<h2>Reorder list (JIT)</h2><div class="card"><div class="scroll"><table><thead><tr><th class="">Product</th><th class="">Supplier</th><th class="n">On hand (est.)</th><th class="n">Days cover</th><th class="n">Reorder pt</th><th class="n">Order qty</th><th class="n">Order $</th><th class="">Status</th></tr></thead><tbody><tr><td class="">Chocolate Block 200g</td><td class="">Confectionery Ltd</td><td class="n">6</td><td class="n">0.3</td><td class="n">69</td><td class="n">81</td><td class="n">$259</td><td class="">Order now - below lead time</td></tr><tr><td class="">Energy Drink 500ml</td><td class="">Beverage Dist.</td><td class="n">24</td><td class="n">0.9</td><td class="n">115</td><td class="n">118</td><td class="n">$254</td><td class="">Order now - below lead time</td></tr><tr><td class="">Butter 500g</td><td class="">Dairy Co-op</td><td class="n">9</td><td class="n">1.2</td><td class="n">35</td><td class="n">34</td><td class="n">$190</td><td class="">Order now - below lead time</td></tr><tr><td class="">Pinot Noir 750ml</td><td class="">Liquor Dist.</td><td class="n">0</td><td class="n">0.0</td><td class="n">11</td><td class="n">14</td><td class="n">$179</td><td class="">Order now - below lead time</td></tr><tr><td class="">Frozen Dumplings 1kg</td><td class="">Asia Imports</td><td class="n">4</td><td class="n">0.8</td><td class="n">19</td><td class="n">20</td><td class="n">$142</td><td class="">Order now - below lead time</td></tr><tr><td class="">Instant Noodles 5pk</td><td class="">Asia Imports</td><td class="n">25</td><td class="n">1.8</td><td class="n">55</td><td class="n">44</td><td class="n">$114</td><td class="">Order now - below lead time</td></tr><tr><td class="">Coffee Beans 200g</td><td class="">Pantry Brands</td><td class="n">5</td><td class="n">1.5</td><td class="n">15</td><td class="n">14</td><td class="n">$106</td><td class="">Order now - below lead time</td></tr><tr><td class="">Muesli Bar 6pk</td><td class="">Snack Foods NZ</td><td class="n">16</td><td class="n">1.5</td><td class="n">42</td><td class="n">37</td><td class="n">$96</td><td class="">Order now - below lead time</td></tr><tr><td class="">Sunscreen SPF50</td><td class="">Pharma Dist.</td><td class="n">3</td><td class="n">1.3</td><td class="n">11</td><td class="n">11</td><td class="n">$90</td><td class="">Order now - below lead time</td></tr><tr><td class="">Taco Kit</td><td class="">Latin Pantry</td><td class="n">1</td><td class="n">0.4</td><td class="n">15</td><td class="n">17</td><td class="n">$68</td><td class="">Order now - below lead time</td></tr><tr><td class="">Lollies Bag 200g</td><td class="">Confectionery Ltd</td><td class="n">20</td><td class="n">1.9</td><td class="n">46</td><td class="n">38</td><td class="n">$65</td><td class="">Order now - below lead time</td></tr><tr><td class="">Croissant 4pk</td><td class="">Auckland Bakehouse</td><td class="n">7</td><td class="n">1.0</td><td class="n">20</td><td class="n">14</td><td class="n">$46</td><td class="">Order now - below lead time</td></tr><tr><td class="">Canned Soup 500g</td><td class="">Pantry Brands</td><td class="n">10</td><td class="n">1.6</td><td class="n">25</td><td class="n">22</td><td class="n">$42</td><td class="">Order now - below lead time</td></tr><tr><td class="">Paracetamol 20pk</td><td class="">Pharma Dist.</td><td class="n">8</td><td class="n">1.7</td><td class="n">21</td><td class="n">18</td><td class="n">$29</td><td class="">Order now - below lead time</td></tr><tr><td class="">Hot Pie Mince &amp; Cheese</td><td class="">FreshKitchen</td><td class="n">27</td><td class="n">1.5</td><td class="n">36</td><td class="n">10</td><td class="n">$24</td><td class="">Order now - below lead time</td></tr></tbody></table></div><p class="note">Reorder point = demand over lead time + review period, plus safety stock
-(z=1.65). Order-up-to is capped at the product's shelf life so we don't order in waste. Recalled lines are blocked.
-Showing the top 15. The full list is in the Excel workbook.</p></div>
-<h2>Roster plan, next 7 days</h2><div class="card"><div class="scroll"><table><thead><tr><th class="">Day</th><th class="n">Forecast sales</th><th class="n">Hours</th><th class="n">Wage cost</th><th class="n">Wage % sales</th></tr></thead><tbody><tr><td class="">Sat 26 Sep</td><td class="n">$2,370</td><td class="n">24.0</td><td class="n">$648</td><td class="n">27.3%</td></tr><tr><td class="">Sun 27 Sep</td><td class="n">$2,023</td><td class="n">24.0</td><td class="n">$648</td><td class="n">32.0%</td></tr><tr><td class="">Mon 28 Sep</td><td class="n">$2,777</td><td class="n">25.2</td><td class="n">$680</td><td class="n">24.5%</td></tr><tr><td class="">Tue 29 Sep</td><td class="n">$2,931</td><td class="n">26.6</td><td class="n">$718</td><td class="n">24.5%</td></tr><tr><td class="">Wed 30 Sep</td><td class="n">$2,943</td><td class="n">26.8</td><td class="n">$724</td><td class="n">24.6%</td></tr><tr><td class="">Thu 01 Oct</td><td class="n">$2,990</td><td class="n">27.2</td><td class="n">$734</td><td class="n">24.6%</td></tr><tr><td class="">Fri 02 Oct</td><td class="n">$3,041</td><td class="n">27.6</td><td class="n">$745</td><td class="n">24.5%</td></tr></tbody></table></div><p class="note">Hours = forecast sales ÷ $110 per labour hour,
-minimum 24 h/day.</p></div>
-
-<div class="phase">Strategy</div>
-<h2>Product segments (K-means)</h2>
-<div class="card"><div class="scroll"><table><thead><tr><th class="">Segment</th><th class="n">SKUs</th><th class="n">Units/day</th><th class="n">GM %</th><th class="n">Waste %</th><th class="n">Delivery %</th><th class="n">Promo uplift %</th><th class="n">Jaccard</th><th class="">Stability</th></tr></thead><tbody><tr><td class="">Volatile / irregular demand</td><td class="n">11</td><td class="n">3.9</td><td class="n">45.3</td><td class="n">0.5</td><td class="n">19.2</td><td class="n">51.7</td><td class="n">0.58</td><td class="">Unstable</td></tr><tr><td class="">Traffic drivers (high velocity)</td><td class="n">6</td><td class="n">22.0</td><td class="n">35.9</td><td class="n">2.7</td><td class="n">19.0</td><td class="n">8.9</td><td class="n">0.46</td><td class="">Unstable</td></tr><tr><td class="">Delivery favourites</td><td class="n">11</td><td class="n">13.6</td><td class="n">50.1</td><td class="n">0.0</td><td class="n">24.2</td><td class="n">15.1</td><td class="n">0.76</td><td class="">Stable</td></tr><tr><td class="">Long tail / slow movers</td><td class="n">16</td><td class="n">5.4</td><td class="n">35.5</td><td class="n">0.3</td><td class="n">17.8</td><td class="n">3.4</td><td class="n">0.75</td><td class="">Pattern</td></tr><tr><td class="">Waste-exposed perishables</td><td class="n">6</td><td class="n">12.0</td><td class="n">47.6</td><td class="n">8.2</td><td class="n">23.7</td><td class="n">14.5</td><td class="n">0.71</td><td class="">Pattern</td></tr></tbody></table></div>
-<p class="note">Features: velocity, margin, demand volatility, waste rate, delivery share and promo uplift (last 13 weeks, standardised).
-Silhouette by k: k=2: 0.25, k=3: 0.22, k=4: 0.25, k=5: 0.28, so k=5 was chosen. Stability is the bootstrap Jaccard over 100 resamples (Hennig: under 0.6 means the cluster doesn't hold up).
-PCA explains 61% of variance in 2 components.</p>
-<details><summary>Products in each segment</summary><div class="scroll"><table><thead><tr><th class="">Segment</th><th class="">Products</th></tr></thead><tbody><tr><td class="">Delivery favourites</td><td class="">Energy Drink 500ml, Cola 1.5L, Sparkling Water 1L, Iced Coffee 500ml, Bottled Water 750ml, Potato Chips 150g, Chocolate Block 200g, Muesli Bar 6pk, Corn Chips 230g, Lollies Bag 200g, Ice Block Single</td></tr><tr><td class="">Long tail / slow movers</td><td class="">Oat Milk 1L, Butter 500g, Greek Yoghurt 1kg, Cheese Block 1kg, Ice Cream Tub 2L, Frozen Pizza, Frozen Dumplings 1kg, Canned Soup 500g, Simmer Sauce 485g, Eggs Free Range 12pk, Tomatoes 500g, Toilet Paper 6pk, Craft Beer 6pk, Sauvignon Blanc 750ml, RTD 4pk, Pinot Noir 750ml</td></tr><tr><td class="">Traffic drivers (high velocity)</td><td class="">Milk Standard 2L, Milk Lite 2L, Toast Bread White, Wholemeal Loaf, Instant Noodles 5pk, Bananas (each)</td></tr><tr><td class="">Volatile / irregular demand</td><td class="">Kombucha 330ml, Bubble Tea Kit, Pasta 500g, Salsa 300g, Taco Kit, Coffee Beans 200g, Avocado, Dishwash Liquid, Phone Charger Cable, Paracetamol 20pk, Sunscreen SPF50</td></tr><tr><td class="">Waste-exposed perishables</td><td class="">Croissant 4pk, Chicken Sandwich, Sushi Pack 8pc, Hot Pie Mince &amp; Cheese, Salad Bowl, Filled Roll</td></tr></tbody></table></div></details></div>
-
-<div class="phase">Model evaluation (CRISP-DM phase 5)</div>
-<div class="grid2">
- <div><h2>Forecast accuracy by model</h2><div class="card"><svg viewBox="0 0 460 148" role="img" aria-label="Forecast model error (lower is better)"><text x="102" y="18" text-anchor="end">SARIMA-X</text><rect x="110" y="7" width="163.3" height="18" rx="4" fill="var(--s1)"><title>SARIMA-X: WAPE 16.4%, MAPE 23.3%</title></rect><text x="279.3" y="18">16.4%</text><text x="102" y="46" text-anchor="end">XGBoost</text><rect x="110" y="35" width="165.1" height="18" rx="4" fill="var(--muted)"><title>XGBoost: WAPE 16.6%, MAPE 23.8%</title></rect><text x="281.1" y="46">16.6%</text><text x="102" y="74" text-anchor="end">Seasonal Naive</text><rect x="110" y="63" width="215.3" height="18" rx="4" fill="var(--muted)"><title>Seasonal Naive: WAPE 21.6%, MAPE 30.1%</title></rect><text x="331.3" y="74">21.6%</text><text x="102" y="102" text-anchor="end">Naive</text><rect x="110" y="91" width="251.6" height="18" rx="4" fill="var(--muted)"><title>Naive: WAPE 25.3%, MAPE 35.7%</title></rect><text x="367.6" y="102">25.3%</text><text x="102" y="130" text-anchor="end">Drift</text><rect x="110" y="119" width="252.2" height="18" rx="4" fill="var(--muted)"><title>Drift: WAPE 25.3%, MAPE 35.8%</title></rect><text x="368.2" y="130">25.3%</text></svg>
- <p class="note">WAPE = total absolute error ÷ total actual sales, lower is better. Rolling-origin backtest: 4 folds × 7 days.
- SARIMA-X beat the seasonal-naive baseline by 5.2 WAPE points, so the extra complexity pays for itself here.</p></div></div>
- <div><h2>Model chosen for each category</h2><div class="card"><div class="scroll"><table><thead><tr><th class="">Category</th><th class="">Best model</th><th class="n">WAPE %</th></tr></thead><tbody><tr><td class="">Bakery</td><td class="">SARIMA-X</td><td class="n">18.0</td></tr><tr><td class="">Beer &amp; Wine</td><td class="">SARIMA-X</td><td class="n">19.3</td></tr><tr><td class="">Beverages</td><td class="">SARIMA-X</td><td class="n">12.9</td></tr><tr><td class="">Dairy</td><td class="">XGBoost</td><td class="n">13.5</td></tr><tr><td class="">Food To Go</td><td class="">XGBoost</td><td class="n">13.7</td></tr><tr><td class="">Frozen</td><td class="">SARIMA-X</td><td class="n">21.2</td></tr><tr><td class="">Grocery</td><td class="">SARIMA-X</td><td class="n">17.0</td></tr><tr><td class="">Health &amp; Beauty</td><td class="">XGBoost</td><td class="n">35.7</td></tr><tr><td class="">Household</td><td class="">XGBoost</td><td class="n">30.4</td></tr><tr><td class="">Produce</td><td class="">SARIMA-X</td><td class="n">18.4</td></tr><tr><td class="">Snacks &amp; Confectionery</td><td class="">SARIMA-X</td><td class="n">12.2</td></tr></tbody></table></div></div></div>
+<!-- ============ BOOT / LOADING ============ -->
+<div id="boot" aria-live="polite">
+  <div class="boot-in">
+    <span class="tag">Shelly · retail analytics agent · <span id="bootVer">v0.2</span></span>
+    <div class="orb" aria-hidden="true"><i></i><i></i><i></i></div>
+    <pre id="bootLog"></pre>
+    <button id="skipBoot" class="ghost">Skip</button>
+  </div>
 </div>
 
-<div class="phase">Data understanding (CRISP-DM phase 2)</div>
-<h2>Data quality score: 90/100</h2>
-<div class="card"><ul><li><b>Medium</b> – 12 exact duplicate sales rows (removed)</li><li><b>Low</b> – 5 negative-unit rows - likely refunds keyed as sales (excluded)</li><li><b>Low</b> – 4 rows missing net_sales (rebuilt from units x price)</li></ul><p class="note">80,579 rows across 5 tables · 2024-09-26 to 2026-09-25</p></div>
+<div class="wrap">
 
-<footer>Generated 26 Sep 2026 01:43 by Shelly v0.1 · CRISP-DM pipeline · Python (pandas, scikit-learn, statsmodels, XGBoost) ·
-The Excel, Power BI, Tableau and SQL outputs are in the same folder.</footer>
-</div></body></html>
+<!-- ============ HERO + CHAT ============ -->
+<header>
+  <span class="tag">Shelly <span id="ver"></span> · Auckland, New Zealand</span>
+  <h1>Ask Shelly about <b>this week's trade.</b></h1>
+  <p class="sub">An analytics agent for a neighbourhood store. It forecasts, spots problems and tells you what to do today, and you can just ask it. Type, tap a question, or use the mic.</p>
+  <div class="who"><span id="asofLbl"></span><span id="storeLbl"></span><span>Demo · synthetic data</span></div>
+</header>
+
+<section class="chat" id="chat" aria-label="Ask Shelly">
+  <div class="chat-top">
+    <div class="me"><span class="dot" id="statusDot"></span><span id="statusTxt">Shelly · ready</span></div>
+    <div class="tools">
+      <a class="pill-btn" href="guide/index.html" title="How Shelly works">📖 Guide</a>
+      <button id="briefBtn" class="pill-btn" title="Hear this week's briefing">▶ Briefing</button>
+      <button id="voiceBtn" class="icon-btn" aria-pressed="true" title="Voice replies on/off">🔊</button>
+      <button id="setBtn" class="icon-btn" title="Settings">⚙</button>
+    </div>
+  </div>
+  <div id="log" class="log" role="log" aria-live="polite"></div>
+  <div id="chips" class="chips"></div>
+  <form id="ask" class="ask" autocomplete="off">
+    <button type="button" id="micBtn" class="icon-btn mic" title="Speak a question" aria-pressed="false">🎙</button>
+    <input id="q" type="text" placeholder="e.g. What should I do today?" aria-label="Ask Shelly a question">
+    <button type="submit" class="send" aria-label="Send">↑</button>
+  </form>
+  <div class="hint" id="hint">Answers come from this week's computed results. Shelly doesn't guess numbers.</div>
+<!--about:agents--><details class="about in-chat"><summary>What is this?</summary><p>Shelly tells you when a question is outside its skills (travel, email, writing, coding, investment advice, medical or legal questions, weather) and which kind of agent to connect in Settings. Nothing is sent to another agent unless you tap Send.</p><a href="guide/agents.html">In-depth guide →</a></details><!--/about-->
+<!--about:chat-voice--><details class="about in-chat"><summary>What is this?</summary><p>Ask by typing, tapping a suggestion or speaking. Shelly checks whether the question fits its skills, answers from computed results, and can read answers aloud in your chosen region&#x27;s voice.</p><a href="guide/chat-voice.html">In-depth guide →</a></details><!--/about-->
+</section>
+
+<!-- settings drawer -->
+<dialog id="settings">
+  <form method="dialog" class="set-in">
+    <span class="tag">Settings</span>
+    <h3>Answer engine</h3>
+    <label><input type="radio" name="eng" value="rules" checked> Built-in (offline, instant, private)</label>
+    <label><input type="radio" name="eng" value="ollama"> Ollama on this computer (private)</label>
+    <label><input type="radio" name="eng" value="claude"> Claude API (your key)</label>
+    <div class="fld" data-for="ollama"><span>Ollama model</span><input id="olModel" value="qwen2.5:7b" maxlength="60" autocomplete="off"></div>
+    <div class="fld" data-for="claude"><span>API key</span><input id="apiKey" type="password" placeholder="sk-ant-…" maxlength="200" autocomplete="off" spellcheck="false"></div>
+    <label class="small" data-for="claude"><input type="checkbox" id="keyRemember"> Remember the key on this device. If unticked, it's forgotten when you close the tab.</label>
+    <div class="fld" data-for="claude"><span>Model</span><input id="clModel" value="claude-sonnet-4-5" maxlength="60" autocomplete="off"></div>
+
+    <h3>Voice &amp; language</h3>
+    <div class="fld"><span>Region / language (speech input and voice)</span><select id="regionSel"></select></div>
+    <div class="fld"><span>Voice</span><select id="voiceSel"></select></div>
+    <p class="small" id="voiceNote"></p>
+    <div class="fld"><span>Speed <b id="rateV">1.0</b></span><input id="rate" type="range" min="0.7" max="1.4" step="0.05" value="1"></div>
+    <div class="fld"><span>Pitch <b id="pitchV">1.0</b></span><input id="pitch" type="range" min="0.7" max="1.3" step="0.05" value="1"></div>
+    <button type="button" class="pill-btn" id="voiceTest">▶ Test voice</button>
+
+    <h3>Connected agents</h3>
+    <p class="small">Shelly answers analytics questions itself. When a question is outside its skills, it tells you and, if an agent is connected here, offers to send the question there. Nothing is sent unless you tap <b>Send</b>.</p>
+    <div class="fld"><span>Agent for other questions</span><select id="agentSel">
+      <option value="none">None (Shelly only)</option>
+      <option value="claude">General assistant · Claude API (uses the key above)</option>
+      <option value="ollama">General assistant · Ollama on this computer</option>
+      <option value="local">OpenJarvis / any OpenAI-compatible server on this computer</option>
+    </select></div>
+    <div class="fld" data-agent="local"><span>Local agent URL (localhost only)</span><input id="localUrl" value="http://localhost:8000/v1/chat/completions" maxlength="200" autocomplete="off"></div>
+
+    <h3>Privacy &amp; security</h3>
+    <p class="small">Locked-down page (Content Security Policy): scripts only from this site; network calls only to your own computer (Ollama/OpenJarvis) or the Claude API when you choose them. The LLM gets computed facts only, never raw data. <a href="guide/security.html">Security details</a></p>
+    <button type="button" class="pill-btn" id="clearData">Clear all Shelly data from this browser</button>
+    <button class="pill-btn" value="ok">Done</button>
+  </form>
+</dialog>
+
+<!-- ============ KPIs ============ -->
+<section id="s-kpi">
+  <h2>This week</h2>
+<!--about:kpis--><details class="about"><summary>What is this?</summary><p>Six headline numbers for the last 7 days: sales, budget gap, gross margin, waste, delivery share and next week&#x27;s forecast. Each is compared with last week, last year or a target.</p><a href="guide/kpis.html">In-depth guide →</a></details><!--/about-->
+  <div class="facts" id="kpis"></div>
+  <p class="note small">Tap any number to ask Shelly about it.</p>
+</section>
+
+<!-- ============ ACTIONS ============ -->
+<section id="s-act">
+  <h2>Today's plan</h2>
+<!--about:actions--><details class="about"><summary>What is this?</summary><p>A ranked to-do list built from everything Shelly found. P1 = today, P2 = this week, P3 = next review. Each item gives the reason, the $ impact per week and an owner. Tick items off as you go.</p><a href="guide/actions.html">In-depth guide →</a></details><!--/about-->
+  <div class="bar"><div class="seg-ctl" id="actFilter"></div><span class="prog" id="actProg"></span></div>
+  <div id="actions" class="acts"></div>
+</section>
+
+<!-- ============ DECISIONS ============ -->
+<section id="s-dec">
+  <h2>Needs your confirmation</h2>
+<!--about:decisions--><details class="about"><summary>What is this?</summary><p>Major judgements (big $, compliance, price, range, credit, markdowns) are proposals, not actions. Confirm or reject each one. Shelly records who decided what and when, and learns from your answers.</p><a href="guide/decisions.html">In-depth guide →</a></details><!--/about-->
+  <p class="note small">Major judgements (big $, compliance, price, range, credit) wait for you. Confirm or reject here, then <b>Download</b> and run <code>python -m shelly decisions import shelly-decisions.json</code>. Shelly learns from every answer.</p>
+  <div id="decisions" class="acts"></div>
+  <div class="bar" style="margin-top:12px"><span class="prog" id="decProg"></span><button class="pill-btn" id="decDl">⬇ Download decisions</button></div>
+  <div class="panel" id="learnBox"></div>
+</section>
+
+<!-- ============ PERFORMANCE ============ -->
+<section id="s-perf">
+  <h2>Performance</h2>
+<!--about:performance--><details class="about"><summary>What is this?</summary><p>The daily sales line with next week&#x27;s forecast (dashed), a bridge that splits the week-on-week change into volume, mix and price, and the delivery channels for 14 days so outages stand out.</p><a href="guide/performance.html">In-depth guide →</a></details><!--/about-->
+  <div class="panel"><div class="ph"><span class="t">Daily sales and 7-day forecast</span>
+    <span class="legend"><i style="background:var(--s1)"></i>Actual <i style="background:var(--s2)"></i>Forecast</span></div>
+    <div id="lineChart" class="chart"></div></div>
+  <div class="grid2">
+    <div class="panel"><div class="ph"><span class="t">What moved sales vs last week</span></div><div id="bridge" class="chart"></div>
+      <p class="small">Volume = units, mix = cheaper or dearer lines, price = promos and price changes.</p></div>
+    <div class="panel"><div class="ph"><span class="t">Delivery channels, 14 days</span>
+      <span class="legend"><i style="background:var(--s1)"></i>Uber Eats <i style="background:var(--s3)"></i>On-Demand</span></div>
+      <div id="chanChart" class="chart"></div><p class="small">A drop to zero is an outage, not a change in demand.</p></div>
+  </div>
+</section>
+
+<!-- ============ CATEGORIES ============ -->
+<section id="s-cat">
+  <h2>Categories</h2>
+<!--about:categories--><details class="about"><summary>What is this?</summary><p>A profit and loss for each category (sales, margin, waste, contribution) plus the gap to budget. Tap a bar or row to ask Shelly about that category.</p><a href="guide/categories.html">In-depth guide →</a></details><!--/about-->
+  <div class="panel"><div class="ph"><span class="t">Sales vs budget</span><span class="small">Tap a bar to ask</span></div><div id="budgetChart" class="chart"></div></div>
+  <div class="panel scroll"><table id="catTbl" class="tbl sortable"></table></div>
+</section>
+
+<!-- ============ EXCEPTIONS ============ -->
+<section id="s-exc">
+  <h2>What Shelly flagged</h2>
+<!--about:exceptions--><details class="about"><summary>What is this?</summary><p>Unusual events found by statistics, not guesswork: stock-outs, spikes, delivery outages, sustained declines (checked against last year for seasonality), waste blow-outs and SAP vs shelf count differences.</p><a href="guide/exceptions.html">In-depth guide →</a></details><!--/about-->
+  <div id="exceptions" class="work"></div>
+</section>
+
+<!-- ============ OPERATIONS ============ -->
+<section id="s-ops">
+  <h2>Operations</h2>
+<!--about:operations--><details class="about"><summary>What is this?</summary><p>Just-in-time reorder points with safety stock, capped at shelf life so fresh lines don&#x27;t turn into waste. Recalled items are blocked. Roster hours come from forecast sales ÷ a productivity target.</p><a href="guide/operations.html">In-depth guide →</a></details><!--/about-->
+  <div class="panel">
+    <div class="ph"><span class="t">Reorder list (JIT)</span>
+      <input id="reSearch" class="search" placeholder="Search product or supplier"></div>
+    <div class="scroll"><table id="reTbl" class="tbl sortable"></table></div>
+    <p class="small" id="reNote"></p>
+  </div>
+  <div class="panel"><div class="ph"><span class="t">Roster plan, next 7 days</span><span class="small" id="rosterNote"></span></div><div id="rosterChart" class="chart"></div></div>
+</section>
+
+<!-- ============ WHAT-IF ============ -->
+<section id="s-whatif">
+  <h2>What-if</h2>
+<!--about:whatif--><details class="about"><summary>What is this?</summary><p>Move the sliders to see the weekly and yearly gross-margin effect of a price change (with elasticity), a waste reduction or fewer delivery outage days.</p><a href="guide/whatif.html">In-depth guide →</a></details><!--/about-->
+  <div class="panel whatif">
+    <div class="sliders" id="sliders"></div>
+    <div class="wi-out" id="wiOut"></div>
+  </div>
+</section>
+
+<!-- ============ PACKS ============ -->
+<section id="s-packs">
+  <h2>Beyond retail</h2>
+<!--about:packs--><details class="about"><summary>What is this?</summary><p>The same engine applied to consumer electronics (stock cover, aged stock, markdowns, price erosion, attach), wholesale (cost-to-serve, debtors, OTIF), warehousing (ABC-XYZ slotting, pick rates, capacity) and production (OEE, scrap, schedule adherence).</p><a href="guide/packs.html">In-depth guide →</a></details><!--/about-->
+  <p class="note small">The same engine runs industry packs for consumer electronics, wholesale, warehousing and production. Demo data; full reports in <a href="https://github.com/Pavi44M/Agent-Shelly-0.3/tree/main/docs/example">docs/example</a>.</p>
+  <div id="packs" class="grid2"></div>
+</section>
+
+<!-- ============ SEGMENTS ============ -->
+<section id="s-seg">
+  <h2>Product segments</h2>
+<!--about:segments--><details class="about"><summary>What is this?</summary><p>Products grouped by how they behave (speed, margin, volatility, waste, delivery share, promo response) using K-means, shown on 2 PCA axes. Stability scores show which groups are real and which are noise.</p><a href="guide/segments.html">In-depth guide →</a></details><!--/about-->
+  <div class="panel"><div class="ph"><span class="t">K-means on 6 behaviours, shown on 2 PCA axes</span></div>
+    <div class="seg-ctl" id="segFilter"></div>
+    <div id="segChart" class="chart"></div>
+    <p class="small" id="segNote"></p></div>
+  <div class="panel scroll"><table id="segTbl" class="tbl"></table></div>
+</section>
+
+<!-- ============ MODELS ============ -->
+<section id="s-mod">
+  <h2>How good are the forecasts?</h2>
+<!--about:models--><details class="about"><summary>What is this?</summary><p>Five models compete on each category: Naive, Seasonal Naive, Drift, SARIMA-X and XGBoost. Each is scored on the last 4 weeks (rolling origin) and the winner is used. A simple model is allowed to win.</p><a href="guide/models.html">In-depth guide →</a></details><!--/about-->
+  <div class="grid2">
+    <div class="panel"><div class="ph"><span class="t">Error by model (WAPE, lower is better)</span></div><div id="modelChart" class="chart"></div>
+      <p class="small" id="modelNote"></p></div>
+    <div class="panel scroll"><table id="bestTbl" class="tbl"></table></div>
+  </div>
+</section>
+
+<!-- ============ METHOD ============ -->
+<section id="s-method">
+  <h2>Method &amp; data</h2>
+<!--about:method--><details class="about"><summary>What is this?</summary><p>How Shelly works end to end (CRISP-DM) and how it checks the data first: duplicates, refunds keyed as sales, missing values, calendar gaps and unknown SKUs, summarised in a quality score.</p><a href="guide/method.html">In-depth guide →</a></details><!--/about-->
+  <div class="facts" id="dq"></div>
+  <p class="note">Shelly follows <b>CRISP-DM</b>: business targets → data-quality checks → preparation → five competing forecast models, anomaly detection, K-means segmentation, JIT reorder and labour planning → rolling-origin evaluation (cross-checked in R) → this page, an Excel workbook, SQL, Power BI and Tableau outputs.</p>
+  <p class="note">All data here is <b>synthetic</b>, generated to behave like a small Auckland convenience store. No employer data is used.</p>
+</section>
+
+<footer>
+  <span>Built by <a href="https://pavi44m.github.io/pavibamunu/">Pavithra Bamunu</a></span>
+  <span><a href="https://github.com/Pavi44M/Agent-Shelly-0.3">Source on GitHub</a></span>
+  <span><a href="guide/index.html">How Shelly works (guide)</a></span><span><a href="guide/security.html">Security</a></span><span><a href="digest.html">Classic digest (v0.1)</a></span>
+  <span id="genLbl"></span>
+</footer>
+</div>
+
+<div id="tip" role="tooltip"></div>
+<script src="data/shelly-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

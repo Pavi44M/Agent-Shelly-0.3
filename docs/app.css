@@ -179,3 +179,13 @@ footer a{color:var(--ink-3)}footer a:hover{color:var(--accent)}
   header{padding-top:48px}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* v0.3.1: section notes + guide links */
+details.about{margin:-8px 0 14px;max-width:72ch}
+details.about summary{cursor:pointer;list-style:none;font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--accent);display:inline-flex;align-items:center;gap:6px}
+details.about summary::-webkit-details-marker{display:none}
+details.about summary::after{content:"▾";transition:transform .2s}
+details.about[open] summary::after{transform:rotate(180deg)}
+details.about p{font-size:14px;line-height:1.6;margin:8px 0 6px;color:var(--ink-2)}
+details.about a{font-size:13px}
+details.about.in-chat{margin:0 14px 12px}

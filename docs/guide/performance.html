@@ -1,0 +1,44 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Performance: daily sales, bridge and channels · Shelly guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../app.css">
+<style>
+.guide h1{font-size:clamp(28px,5vw,44px)} .guide h2{margin-top:34px}
+.guide ul,.guide ol{padding-left:20px;max-width:70ch} .guide li{margin:6px 0;line-height:1.55}
+.formula{display:grid;grid-template-columns:minmax(120px,200px) 1fr;gap:1px;background:var(--etch-2);border:1px solid var(--etch-2);border-radius:3px;overflow:hidden}
+.formula div{background:var(--panel);padding:10px 12px;font-size:14px} .formula div:nth-child(odd){color:var(--ink);font-weight:500}
+.formula div:nth-child(even){font-family:var(--mono);font-size:12.5px;color:var(--ink-2)}
+.crumbs{font-family:var(--mono);font-size:11px;letter-spacing:.08em;margin-top:28px} .crumbs a{color:var(--ink-3)}
+.asks span{display:inline-block;border:1px solid var(--etch);border-radius:99px;padding:5px 12px;margin:4px 6px 0 0;font-size:13px}
+.toc{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.toc a{text-decoration:none}
+</style></head><body><div class="wrap guide">
+<div class="crumbs"><a href="../index.html">Shelly</a> / <a href="index.html">Guide</a></div>
+<header style="padding-top:18px"><span class="tag">Shelly guide</span><h1>Performance: daily sales, bridge and channels</h1>
+<p class="sub">Three views that explain why the headline number moved.</p></header>
+<section><h2>At a glance</h2>
+<ul><li>Daily sales for 8 weeks plus the 7-day forecast (hover any day)</li><li>Sales bridge: last week → +volume → +mix → +price → this week</li><li>Delivery channels: Uber Eats and On-Demand per day for 14 days</li></ul>
+</section>
+<section><h2>How it works</h2>
+<ol><li>The forecast is the sum of the best model per category (see Forecasts).</li><li>The bridge uses per-SKU prices and units in both weeks.</li><li>Channel lines come from the channel column in the sales export.</li></ol>
+</section>
+<section><h2>Method &amp; formulas</h2><div class="formula">
+<div>Volume</div><div>(units this week − units last week) × last week&#x27;s average price</div><div>Mix</div><div>(Σ mix share this week × last week&#x27;s SKU price − last week&#x27;s average price) × units this week</div><div>Price</div><div>Σ (price this week − price last week) × units this week</div>
+</div></section>
+<section><h2>How to read it</h2>
+<ul><li>More units but a negative mix means customers bought cheaper lines. Check promos and range.</li><li>A channel dropping to zero for a day or more is almost always an outage (tablet, app, account), not lost demand.</li></ul>
+</section>
+<section><h2>Limits &amp; safeguards</h2>
+<ul><li>The bridge is a standard decomposition; small rounding differences are normal.</li></ul>
+</section>
+<section><h2>Ask Shelly</h2><div class="asks">
+<span>How did we trade this week?</span><span>Is Uber Eats OK?</span><span>Forecast for next week</span>
+</div><p class="small">Type or say these in the chat on the <a href="../index.html#chat">main page</a>.</p></section>
+<section><h2>Related</h2><div class="toc">
+<a class="item" href="models.html"><span class="t" style="font-size:17px">Forecasts: how good are they?</span></a><a class="item" href="kpis.html"><span class="t" style="font-size:17px">This week: KPI tiles</span></a>
+</div></section>
+<footer><span><a href="../index.html">← Back to Shelly</a></span><span><a href="index.html">All guides</a></span>
+<span><a href="https://github.com/Pavi44M/Agent-Shelly-0.3">Source on GitHub</a></span><span>Built by <a href="https://pavi44m.github.io/pavibamunu/">Pavithra Bamunu</a></span></footer></div></body></html>

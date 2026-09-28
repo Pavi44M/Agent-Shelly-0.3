@@ -10,6 +10,7 @@
     python -m shelly decisions import shelly-decisions.json   (exported from the web app)
     python -m shelly learn                             what Shelly has learned so far
     python -m shelly connectors                        connector health check
+    python -m shelly ask "what do I need to order?"    relevance check: which skill, or which agent to connect
 """
 from __future__ import annotations
 
@@ -36,6 +37,7 @@ def main(argv=None):
     d = sub.add_parser("decisions"); d.add_argument("action", nargs="?", default="list", choices=["list", "confirm", "reject", "import", "all"])
     d.add_argument("target", nargs="?"); d.add_argument("--note", default="")
     sub.add_parser("learn"); sub.add_parser("connectors")
+    k = sub.add_parser("ask"); k.add_argument("text")
     a = ap.parse_args(argv)
 
     if a.cmd == "run":
@@ -93,6 +95,11 @@ def main(argv=None):
             print(f"  {m:15s} running WAPE {h['ewma']}  ({len(h['history'])} runs)")
         for c in s["changes"][-10:]:
             print(f"  {c['at']}  {c['knob']}: {c['from']} -> {c['to']}  ({c['reason']})")
+
+    elif a.cmd == "ask":
+        from .core.router import route
+        r = route(a.text)
+        print(f"In scope → skill {r.skill} (match {r.score})" if r.in_scope else f"Out of scope ({r.kind}). {r.advice}")
 
     elif a.cmd == "connectors":
         from .core.connectors import build

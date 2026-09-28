@@ -21,6 +21,7 @@ from __future__ import annotations
 import importlib
 import json
 import os
+import re
 import pkgutil
 import smtplib
 import urllib.request
@@ -30,6 +31,25 @@ from pathlib import Path
 import pandas as pd
 
 KINDS: dict[str, type] = {}
+_IDENT = re.compile(r"^[A-Za-z_][A-Za-z0-9_]{0,63}$")
+MAX_HTTP_BYTES = 10 * 1024 * 1024
+
+
+def safe_ident(name: str) -> str:
+    """Table / file names must be plain identifiers: blocks SQL injection and path traversal."""
+    if not _IDENT.match(str(name)):
+        raise ValueError(f"Unsafe name {name!r}: use letters, digits and underscores only")
+    return name
+
+
+def _select_or_table(q: str, allow_raw: bool) -> str:
+    if q.strip().lower().startswith("select"):
+        if not allow_raw:
+            raise PermissionError("Raw SQL is disabled for this connector (set allow_raw_sql: true to enable)")
+        if ";" in q.strip().rstrip(";"):
+            raise ValueError("Only a single SELECT statement is allowed")
+        return q
+    return f'SELECT * FROM "{safe_ident(q)}"'
 
 
 class Connector:
@@ -58,6 +78,7 @@ class FolderConnector(Connector):
 
     def read(self, table):
         base = Path(self.opts["path"])
+        safe_ident(table)
         for ext in (".csv", ".xlsx", ".xls"):
             p = base / f"{table}{ext}"
             if p.exists():
@@ -65,7 +86,10 @@ class FolderConnector(Connector):
         raise FileNotFoundError(f"{table} not found in {base}")
 
     def write(self, name, payload):
-        p = Path(self.opts["path"]) / name
+        base = Path(self.opts["path"]).resolve()
+        p = (base / name).resolve()
+        if base not in p.parents:
+            raise PermissionError(f"Refusing to write outside {base}")
         p.parent.mkdir(parents=True, exist_ok=True)
         payload.to_csv(p, index=False) if isinstance(payload, pd.DataFrame) else p.write_text(str(payload))
         return str(p)
@@ -83,11 +107,12 @@ class SQLiteConnector(Connector):
         return sqlite3.connect(self.opts["path"])
 
     def read(self, table):
-        q = table if table.strip().lower().startswith("select") else f"SELECT * FROM {table}"
+        q = _select_or_table(table, self.opts.get("allow_raw_sql", False))
         with self._con() as c:
             return pd.read_sql_query(q, c)
 
     def write(self, name, payload):
+        safe_ident(name)
         with self._con() as c:
             payload.to_sql(name, c, if_exists="replace", index=False)
         return f"{self.opts['path']}:{name}"
@@ -104,10 +129,10 @@ class SQLConnector(Connector):
         return create_engine(os.environ.get(self.opts.get("url_env", ""), self.opts.get("url", "")))
 
     def read(self, table):
-        q = table if table.strip().lower().startswith("select") else f"SELECT * FROM {table}"
-        return pd.read_sql_query(q, self._eng())
+        return pd.read_sql_query(_select_or_table(table, self.opts.get("allow_raw_sql", False)), self._eng())
 
     def write(self, name, payload):
+        safe_ident(name)
         payload.to_sql(name, self._eng(), if_exists="replace", index=False)
         return name
 
@@ -124,7 +149,10 @@ class GSheetCSVConnector(Connector):
     kind = "gsheet_csv"
 
     def read(self, table):
-        return pd.read_csv(self.opts["tables"][table])
+        url = self.opts["tables"][table]
+        if not url.startswith("https://docs.google.com/"):
+            raise PermissionError("Google Sheet connectors only accept https://docs.google.com/ published-CSV links")
+        return pd.read_csv(url)
 
     def health(self):
         return bool(self.opts.get("tables")), f"{len(self.opts.get('tables', {}))} sheets mapped"
@@ -135,9 +163,14 @@ class HTTPJSONConnector(Connector):
 
     def read(self, table):
         url = self.opts["endpoints"][table]
+        if not (url.startswith("https://") or url.startswith(("http://localhost", "http://127.0.0.1"))):
+            raise PermissionError("HTTP connectors must use https (or localhost)")
         hdr = {k: os.environ.get(v, "") for k, v in self.opts.get("header_env", {}).items()}
         with urllib.request.urlopen(urllib.request.Request(url, headers=hdr), timeout=30) as r:
-            data = json.loads(r.read())
+            raw = r.read(MAX_HTTP_BYTES + 1)
+            if len(raw) > MAX_HTTP_BYTES:
+                raise ValueError("Response too large")
+            data = json.loads(raw)
         return pd.json_normalize(data if isinstance(data, list) else data.get(self.opts.get("records_key", "data"), data))
 
 

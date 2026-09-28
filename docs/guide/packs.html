@@ -1,0 +1,44 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Industry packs: beyond retail · Shelly guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../app.css">
+<style>
+.guide h1{font-size:clamp(28px,5vw,44px)} .guide h2{margin-top:34px}
+.guide ul,.guide ol{padding-left:20px;max-width:70ch} .guide li{margin:6px 0;line-height:1.55}
+.formula{display:grid;grid-template-columns:minmax(120px,200px) 1fr;gap:1px;background:var(--etch-2);border:1px solid var(--etch-2);border-radius:3px;overflow:hidden}
+.formula div{background:var(--panel);padding:10px 12px;font-size:14px} .formula div:nth-child(odd){color:var(--ink);font-weight:500}
+.formula div:nth-child(even){font-family:var(--mono);font-size:12.5px;color:var(--ink-2)}
+.crumbs{font-family:var(--mono);font-size:11px;letter-spacing:.08em;margin-top:28px} .crumbs a{color:var(--ink-3)}
+.asks span{display:inline-block;border:1px solid var(--etch);border-radius:99px;padding:5px 12px;margin:4px 6px 0 0;font-size:13px}
+.toc{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.toc a{text-decoration:none}
+</style></head><body><div class="wrap guide">
+<div class="crumbs"><a href="../index.html">Shelly</a> / <a href="index.html">Guide</a></div>
+<header style="padding-top:18px"><span class="tag">Shelly guide</span><h1>Industry packs: beyond retail</h1>
+<p class="sub">Each pack is a set of skills with its own demo data, findings and decision proposals. Swap in real data through connectors.</p></header>
+<section><h2>At a glance</h2>
+<ul><li>Electronics: sell-through, weeks of cover, aged-stock ladder with a below-cost markdown check, ASP erosion, accessory attach rate</li><li>Wholesale: customer contribution after cost-to-serve, AR ageing and DSO, fill rate and OTIF</li><li>Warehousing: ABC (velocity) × XYZ (variability) slotting, lines per hour with coaching flags, weeks until 95% full</li><li>Production: OEE = availability × performance × quality, scrap cost, schedule adherence</li></ul>
+</section>
+<section><h2>How it works</h2>
+<ol><li>Run a pack: python -m shelly pack electronics (or wholesale, warehousing, production).</li><li>Findings become actions; major ones become decisions for confirmation.</li><li>Full reports are in docs/example/pack_*.md.</li></ol>
+</section>
+<section><h2>Method &amp; formulas</h2><div class="formula">
+<div>Weeks of cover</div><div>on hand ÷ average weekly units (4 weeks)</div><div>Cost-to-serve</div><div>orders × cost per order ($18 default)</div><div>DSO</div><div>receivables ÷ 90-day sales incl. GST × 90</div><div>OEE</div><div>(run time ÷ planned) × (units ÷ (run time × ideal rate)) × (good ÷ units)</div>
+</div></section>
+<section><h2>How to read it</h2>
+<ul><li>In electronics, stock loses value every week it sits, so aged stock and weeks of cover matter more than turnover.</li><li>In wholesale, the biggest customers aren&#x27;t always the most profitable once cost-to-serve is included.</li><li>In production, fix the biggest OEE loss first (availability, speed or quality).</li></ul>
+</section>
+<section><h2>Limits &amp; safeguards</h2>
+<ul><li>Pack demo data is synthetic. Cost assumptions (cost per order, unit cost) are placeholders to replace.</li></ul>
+</section>
+<section><h2>Ask Shelly</h2><div class="asks">
+<span>Tell me about warehousing</span><span>Any electronics markdowns?</span><span>What is our OEE?</span>
+</div><p class="small">Type or say these in the chat on the <a href="../index.html#chat">main page</a>.</p></section>
+<section><h2>Related</h2><div class="toc">
+<a class="item" href="decisions.html"><span class="t" style="font-size:17px">Decisions: you stay in charge</span></a><a class="item" href="agents.html"><span class="t" style="font-size:17px">Relevance check &amp; connected agents</span></a>
+</div></section>
+<footer><span><a href="../index.html">← Back to Shelly</a></span><span><a href="index.html">All guides</a></span>
+<span><a href="https://github.com/Pavi44M/Agent-Shelly-0.3">Source on GitHub</a></span><span>Built by <a href="https://pavi44m.github.io/pavibamunu/">Pavithra Bamunu</a></span></footer></div></body></html>

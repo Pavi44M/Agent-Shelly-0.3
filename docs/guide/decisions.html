@@ -1,0 +1,44 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Decisions: you stay in charge · Shelly guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../app.css">
+<style>
+.guide h1{font-size:clamp(28px,5vw,44px)} .guide h2{margin-top:34px}
+.guide ul,.guide ol{padding-left:20px;max-width:70ch} .guide li{margin:6px 0;line-height:1.55}
+.formula{display:grid;grid-template-columns:minmax(120px,200px) 1fr;gap:1px;background:var(--etch-2);border:1px solid var(--etch-2);border-radius:3px;overflow:hidden}
+.formula div{background:var(--panel);padding:10px 12px;font-size:14px} .formula div:nth-child(odd){color:var(--ink);font-weight:500}
+.formula div:nth-child(even){font-family:var(--mono);font-size:12.5px;color:var(--ink-2)}
+.crumbs{font-family:var(--mono);font-size:11px;letter-spacing:.08em;margin-top:28px} .crumbs a{color:var(--ink-3)}
+.asks span{display:inline-block;border:1px solid var(--etch);border-radius:99px;padding:5px 12px;margin:4px 6px 0 0;font-size:13px}
+.toc{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.toc a{text-decoration:none}
+</style></head><body><div class="wrap guide">
+<div class="crumbs"><a href="../index.html">Shelly</a> / <a href="index.html">Guide</a></div>
+<header style="padding-top:18px"><span class="tag">Shelly guide</span><h1>Decisions: you stay in charge</h1>
+<p class="sub">Shelly is designed as a decision-support system, not an autopilot. Anything that moves money or affects compliance waits for a human.</p></header>
+<section><h2>At a glance</h2>
+<ul><li>Governance policy in config.yaml: confirm anything over $250/week, plus always-confirm areas (recall, budget, range, replenishment, markdown, credit, customer terms, slotting, production, quality)</li><li>Every proposal has an id (D-1a2b3c4d), evidence, impact, confidence and a 7-day expiry</li><li>Answer in the web app (Confirm/Reject → Download → import), by CLI, or by typing &#x27;confirm D-…&#x27; in the chat</li><li>The log is append-only: nothing is overwritten, so the full history can be audited</li></ul>
+</section>
+<section><h2>How it works</h2>
+<ol><li>After each run, actions pass through the governance policy. Major ones are stored as &#x27;pending&#x27;; minor ones are &#x27;auto-approved&#x27; but still logged.</li><li>Your answers are imported with python -m shelly decisions import shelly-decisions.json. The file is validated (schema, id format, size) before anything is applied.</li><li>On the next run, the learning loop reads confirmed and rejected decisions and updates each rule&#x27;s precision.</li></ol>
+</section>
+<section><h2>Method &amp; formulas</h2><div class="formula">
+<div>Precision estimate</div><div>Beta(1 + confirmed, 1 + rejected) → precision = α ÷ (α + β)</div><div>Tuning rule</div><div>≥5 answers and precision &lt; 40% → stricter threshold; &gt; 85% → slightly earlier alerts, always within safe bounds</div>
+</div></section>
+<section><h2>How to read it</h2>
+<ul><li>Rejecting a decision is useful feedback, not a failure. It teaches Shelly what counts as a false alarm in your store.</li><li>Add a short note when you reject (e.g. &#x27;promo week&#x27;). Notes are kept in the audit trail.</li></ul>
+</section>
+<section><h2>Limits &amp; safeguards</h2>
+<ul><li>The static website can&#x27;t write back to GitHub, which is why answers are exported and imported. A future version can do this by email or through the Claude task.</li></ul>
+</section>
+<section><h2>Ask Shelly</h2><div class="asks">
+<span>What needs my confirmation?</span><span>confirm D-1a2b3c4d</span><span>What have you learned?</span>
+</div><p class="small">Type or say these in the chat on the <a href="../index.html#chat">main page</a>.</p></section>
+<section><h2>Related</h2><div class="toc">
+<a class="item" href="actions.html"><span class="t" style="font-size:17px">Today&#x27;s plan</span></a><a class="item" href="security.html"><span class="t" style="font-size:17px">Security &amp; privacy</span></a><a class="item" href="method.html"><span class="t" style="font-size:17px">Method &amp; data quality</span></a>
+</div></section>
+<footer><span><a href="../index.html">← Back to Shelly</a></span><span><a href="index.html">All guides</a></span>
+<span><a href="https://github.com/Pavi44M/Agent-Shelly-0.3">Source on GitHub</a></span><span>Built by <a href="https://pavi44m.github.io/pavibamunu/">Pavithra Bamunu</a></span></footer></div></body></html>

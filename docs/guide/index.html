@@ -1,0 +1,41 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>All guides · Shelly guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../app.css">
+<style>
+.guide h1{font-size:clamp(28px,5vw,44px)} .guide h2{margin-top:34px}
+.guide ul,.guide ol{padding-left:20px;max-width:70ch} .guide li{margin:6px 0;line-height:1.55}
+.formula{display:grid;grid-template-columns:minmax(120px,200px) 1fr;gap:1px;background:var(--etch-2);border:1px solid var(--etch-2);border-radius:3px;overflow:hidden}
+.formula div{background:var(--panel);padding:10px 12px;font-size:14px} .formula div:nth-child(odd){color:var(--ink);font-weight:500}
+.formula div:nth-child(even){font-family:var(--mono);font-size:12.5px;color:var(--ink-2)}
+.crumbs{font-family:var(--mono);font-size:11px;letter-spacing:.08em;margin-top:28px} .crumbs a{color:var(--ink-3)}
+.asks span{display:inline-block;border:1px solid var(--etch);border-radius:99px;padding:5px 12px;margin:4px 6px 0 0;font-size:13px}
+.toc{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.toc a{text-decoration:none}
+</style></head><body><div class="wrap guide">
+<div class="crumbs"><a href="../index.html">Shelly</a> / Guide</div>
+<header style="padding-top:18px"><span class="tag">Shelly guide</span><h1>How Shelly <b>works</b></h1>
+<p class="sub">In-depth notes for every part of the dashboard: what it shows, how it's calculated, how to read it, and its limits.</p></header>
+<section><div class="toc">
+<a class="item" href="kpis.html"><span class="k">kpis</span><span class="t" style="font-size:18px">This week: KPI tiles</span><span class="d">Six headline numbers for the last 7 days: sales, budget gap, gross margin, waste, delivery share and next week&#x27;s forecast. Each is compared with last week, last year or a target.</span></a>
+<a class="item" href="actions.html"><span class="k">actions</span><span class="t" style="font-size:18px">Today&#x27;s plan</span><span class="d">A ranked to-do list built from everything Shelly found. P1 = today, P2 = this week, P3 = next review. Each item gives the reason, the $ impact per week and an owner. Tick items off as you go.</span></a>
+<a class="item" href="decisions.html"><span class="k">decisions</span><span class="t" style="font-size:18px">Decisions: you stay in charge</span><span class="d">Major judgements (big $, compliance, price, range, credit, markdowns) are proposals, not actions. Confirm or reject each one. Shelly records who decided what and when, and learns from your answers.</span></a>
+<a class="item" href="performance.html"><span class="k">performance</span><span class="t" style="font-size:18px">Performance: daily sales, bridge and channels</span><span class="d">The daily sales line with next week&#x27;s forecast (dashed), a bridge that splits the week-on-week change into volume, mix and price, and the delivery channels for 14 days so outages stand out.</span></a>
+<a class="item" href="categories.html"><span class="k">categories</span><span class="t" style="font-size:18px">Categories: P&amp;L and budget</span><span class="d">A profit and loss for each category (sales, margin, waste, contribution) plus the gap to budget. Tap a bar or row to ask Shelly about that category.</span></a>
+<a class="item" href="exceptions.html"><span class="k">exceptions</span><span class="t" style="font-size:18px">Exceptions: what Shelly flagged</span><span class="d">Unusual events found by statistics, not guesswork: stock-outs, spikes, delivery outages, sustained declines (checked against last year for seasonality), waste blow-outs and SAP vs shelf count differences.</span></a>
+<a class="item" href="operations.html"><span class="k">operations</span><span class="t" style="font-size:18px">Operations: reorder list and roster</span><span class="d">Just-in-time reorder points with safety stock, capped at shelf life so fresh lines don&#x27;t turn into waste. Recalled items are blocked. Roster hours come from forecast sales ÷ a productivity target.</span></a>
+<a class="item" href="whatif.html"><span class="k">whatif</span><span class="t" style="font-size:18px">What-if: price, waste and outage levers</span><span class="d">Move the sliders to see the weekly and yearly gross-margin effect of a price change (with elasticity), a waste reduction or fewer delivery outage days.</span></a>
+<a class="item" href="packs.html"><span class="k">packs</span><span class="t" style="font-size:18px">Industry packs: beyond retail</span><span class="d">The same engine applied to consumer electronics (stock cover, aged stock, markdowns, price erosion, attach), wholesale (cost-to-serve, debtors, OTIF), warehousing (ABC-XYZ slotting, pick rates, capacity) and production (OEE, scrap, schedule adherence).</span></a>
+<a class="item" href="segments.html"><span class="k">segments</span><span class="t" style="font-size:18px">Product segments (K-means)</span><span class="d">Products grouped by how they behave (speed, margin, volatility, waste, delivery share, promo response) using K-means, shown on 2 PCA axes. Stability scores show which groups are real and which are noise.</span></a>
+<a class="item" href="models.html"><span class="k">models</span><span class="t" style="font-size:18px">Forecasts: how good are they?</span><span class="d">Five models compete on each category: Naive, Seasonal Naive, Drift, SARIMA-X and XGBoost. Each is scored on the last 4 weeks (rolling origin) and the winner is used. A simple model is allowed to win.</span></a>
+<a class="item" href="method.html"><span class="k">method</span><span class="t" style="font-size:18px">Method &amp; data quality</span><span class="d">How Shelly works end to end (CRISP-DM) and how it checks the data first: duplicates, refunds keyed as sales, missing values, calendar gaps and unknown SKUs, summarised in a quality score.</span></a>
+<a class="item" href="chat-voice.html"><span class="k">chat voice</span><span class="t" style="font-size:18px">Chat &amp; voice</span><span class="d">Ask by typing, tapping a suggestion or speaking. Shelly checks whether the question fits its skills, answers from computed results, and can read answers aloud in your chosen region&#x27;s voice.</span></a>
+<a class="item" href="agents.html"><span class="k">agents</span><span class="t" style="font-size:18px">Relevance check &amp; connected agents</span><span class="d">Shelly tells you when a question is outside its skills (travel, email, writing, coding, investment advice, medical or legal questions, weather) and which kind of agent to connect in Settings. Nothing is sent to another agent unless you tap Send.</span></a>
+<a class="item" href="td-report.html"><span class="k">td report</span><span class="t" style="font-size:18px">TD Report: daily Technology &amp; Data newsletter</span><span class="d">Every morning at about 6:15am NZ time, Shelly researches, verifies and emails a 5-minute briefing, then saves a copy to Google Drive.</span></a>
+<a class="item" href="security.html"><span class="k">security</span><span class="t" style="font-size:18px">Security &amp; privacy</span><span class="d">Built as if it handled real store data: least privilege, human confirmation, audit trails and a locked-down web page.</span></a>
+</div></section>
+<footer><span><a href="../index.html">← Back to Shelly</a></span><span><a href="index.html">All guides</a></span>
+<span><a href="https://github.com/Pavi44M/Agent-Shelly-0.3">Source on GitHub</a></span><span>Built by <a href="https://pavi44m.github.io/pavibamunu/">Pavithra Bamunu</a></span></footer></div></body></html>

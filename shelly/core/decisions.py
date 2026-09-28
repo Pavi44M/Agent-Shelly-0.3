@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -20,6 +21,9 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[2]
 import os
 DEFAULT_PATH = Path(os.environ.get("SHELLY_STATE_DIR", ROOT / "state")) / "decisions.jsonl"
+
+
+ID_RE = re.compile(r"^D-[0-9a-f]{8}$")
 
 
 def _now() -> str:
@@ -76,6 +80,9 @@ class DecisionLog:
         return ev
 
     def decide(self, did: str, status: str, note: str = "", by: str = "Pavi") -> dict:
+        if not ID_RE.match(str(did)):
+            raise ValueError("Decision ids look like D-1a2b3c4d")
+        note = str(note)[:500]
         if status not in {"confirmed", "rejected"}:
             raise ValueError("status must be confirmed or rejected")
         st = self.state()
@@ -105,16 +112,25 @@ class DecisionLog:
         return st[st["status"] == "pending"].sort_values("impact_nzd", key=lambda s: s.abs(), ascending=False)
 
     def import_web_file(self, path: str | Path) -> int:
-        """Apply confirmations exported from the web app (Download decisions)."""
-        data = json.loads(Path(path).read_text())
+        """Apply confirmations exported from the web app (Download decisions).
+        The file is untrusted input: size-capped, schema-checked, and only ids already in the log are accepted."""
+        p = Path(path)
+        if p.stat().st_size > 1_000_000:
+            raise ValueError("Decisions file too large (max 1 MB)")
+        data = json.loads(p.read_text(encoding="utf-8"))
+        if not isinstance(data, dict) or not isinstance(data.get("decisions"), list):
+            raise ValueError("Not a Shelly decisions file")
+        known = set(self.state()["id"])
         n = 0
-        for d in data.get("decisions", []):
-            if d.get("status") in {"confirmed", "rejected"}:
-                try:
-                    self.decide(d["id"], d["status"], d.get("note", ""), by="Pavi (web)")
-                    n += 1
-                except KeyError:
-                    pass
+        for d in data["decisions"][:500]:
+            if not isinstance(d, dict):
+                continue
+            did, status = str(d.get("id", "")), d.get("status")
+            if not ID_RE.match(did) or status not in {"confirmed", "rejected"} or did not in known:
+                continue
+            note = str(d.get("note", ""))[:500]
+            self.decide(did, status, note, by="Pavi (web)")
+            n += 1
         return n
 
 

@@ -1,5 +1,5 @@
 """
-Shelly v0.1 - retail sales digest agent. Orchestrates the CRISP-DM cycle end to end.
+Shelly - retail analytics agent. Orchestrates the CRISP-DM cycle end to end.
 
     python -m shelly.agent --data data/sample
     python -m shelly.agent --data data/real --asof 2026-09-28 --llm ollama
@@ -20,8 +20,10 @@ from pathlib import Path
 
 import yaml
 
-from . import __version__, exports, insights, report, strategist
+from . import __version__, exports, insights, report, strategist, webexport
 from .data import load_raw, prepare, profile_quality
+from .core import audit, learning
+from .core.decisions import DecisionLog, propose_from_actions
 from .forecasting import run_forecasting
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -37,6 +39,8 @@ def run(data_dir: str, out_dir: str = "outputs", asof: str | None = None, config
     cfg = yaml.safe_load(open(ROOT / config if not Path(config).is_absolute() else config))
     if llm:
         cfg["llm"]["provider"] = llm
+    brain = learning.load()
+    cfg = learning.apply_to_config(cfg, brain)             # thresholds learned from past feedback
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
 
@@ -73,6 +77,22 @@ def run(data_dir: str, out_dir: str = "outputs", asof: str | None = None, config
     summary, engine = strategist.llm_summary(R, acts, cfg)
     log(f"Reasoning: {len(acts)} actions ({sum(x['priority'] == 'P1' for x in acts)} for today), summary by {engine}")
 
+    # ---- governance: major judgements wait for Pavi's confirmation
+    dlog = DecisionLog()
+    dlog.expire_old()
+    gov = cfg.get("governance", {})
+    decisions = propose_from_actions(dlog, acts, P.asof.strftime("%Y-%m-%d"), gov, pack="retail")
+    # ---- learning: from confirmed/rejected decisions and from forecast accuracy
+    brain, ch1 = learning.learn_from_decisions(dlog.state(), brain)
+    brain, ch2 = learning.learn_from_accuracy(R["forecast"]["model_leaderboard"], P.asof.strftime("%Y-%m-%d"), brain)
+    learning.save(brain)
+    pending = dlog.pending()
+    by_stmt = {d["statement"]: d for d in decisions}
+    for a in acts:
+        d = by_stmt.get(a["action"], {})
+        a["decision_id"], a["decision_status"] = d.get("id"), d.get("status")
+    log(f"Governance: {len(pending)} decisions waiting for confirmation; learning changes: {len(ch1) + len(ch2)}")
+
     stamp = P.asof.strftime("%Y-%m-%d")
     files = {
         "html": out / f"digest_{stamp}.html",
@@ -90,17 +110,27 @@ def run(data_dir: str, out_dir: str = "outputs", asof: str | None = None, config
     files["excel"] = exports.export_excel(P, R, sql_res, out / f"Weekly_Sales_Digest_{stamp}.xlsx")
     files["powerbi"] = exports.export_powerbi(P, R, out)
     files["tableau"] = exports.export_tableau(P, R, out)
+    # facts bundle for the Shelly web app (docs/)
+    web = webexport.build(P, R, cfg, acts, summary, engine, quality)
+    web["decisions"] = [{k: (None if (isinstance(v, float) and v != v) else v) for k, v in r.items()}
+                        for r in pending[["id", "pack", "area", "statement", "impact_nzd", "confidence", "asof"]].to_dict("records")]
+    web["learning"] = {"knobs": brain["knobs"], "rules": brain["rules"], "changes": (ch1 + ch2)}
+    files["web"] = webexport.write(web, out / "web")
     # model artefacts for independent validation in R
     R["segments"]["sku_segments"].to_csv(out / "segment_features.csv", index=False)
     R["forecast"]["backtest_detail"].to_csv(out / "backtest_detail.csv", index=False)
     P.daily_cat.to_csv(out / "daily_category_sales.csv", index=False)
+    files["run_report"] = audit.write_run_report(P=P, R=R, quality=quality, cfg=cfg, data_dir=data_dir, files=files,
+                                                 decisions=decisions, pending=pending, learning_changes=ch1 + ch2,
+                                                 version=__version__)
     log(f"Phase 6  Deployment: digest + Excel + SQLite + Power BI + Tableau written to {out}/ "
-        f"({time.time() - t0:.0f}s)")
-    return {"files": files, "actions": acts, "summary": summary, "results": R, "prepared": P}
+        f"({time.time() - t0:.0f}s); validation report {files['run_report']}")
+    return {"files": files, "actions": acts, "summary": summary, "results": R, "prepared": P,
+            "decisions": decisions, "pending": pending}
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="Shelly v0.1 - retail sales digest agent")
+    ap = argparse.ArgumentParser(description="Shelly - retail analytics agent")
     ap.add_argument("--data", default="data/sample", help="folder with sales/products/inventory/waste/recalls")
     ap.add_argument("--out", default="outputs")
     ap.add_argument("--asof", default=None, help="last day to report on (YYYY-MM-DD); default = latest in data")

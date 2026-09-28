@@ -1,0 +1,35 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Security &amp; privacy · Shelly guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../app.css">
+<style>
+.guide h1{font-size:clamp(28px,5vw,44px)} .guide h2{margin-top:34px}
+.guide ul,.guide ol{padding-left:20px;max-width:70ch} .guide li{margin:6px 0;line-height:1.55}
+.formula{display:grid;grid-template-columns:minmax(120px,200px) 1fr;gap:1px;background:var(--etch-2);border:1px solid var(--etch-2);border-radius:3px;overflow:hidden}
+.formula div{background:var(--panel);padding:10px 12px;font-size:14px} .formula div:nth-child(odd){color:var(--ink);font-weight:500}
+.formula div:nth-child(even){font-family:var(--mono);font-size:12.5px;color:var(--ink-2)}
+.crumbs{font-family:var(--mono);font-size:11px;letter-spacing:.08em;margin-top:28px} .crumbs a{color:var(--ink-3)}
+.asks span{display:inline-block;border:1px solid var(--etch);border-radius:99px;padding:5px 12px;margin:4px 6px 0 0;font-size:13px}
+.toc{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.toc a{text-decoration:none}
+</style></head><body><div class="wrap guide">
+<div class="crumbs"><a href="../index.html">Shelly</a> / <a href="index.html">Guide</a></div>
+<header style="padding-top:18px"><span class="tag">Shelly guide</span><h1>Security &amp; privacy</h1>
+<p class="sub">Built as if it handled real store data: least privilege, human confirmation, audit trails and a locked-down web page.</p></header>
+<section><h2>At a glance</h2>
+<ul><li>Content Security Policy: own scripts only; network calls only to localhost and the Claude API</li><li>API keys are session-only unless you choose &#x27;Remember&#x27;; one-click &#x27;Clear all Shelly data&#x27;</li><li>Inputs capped and cleaned; LLM calls rate-limited; all output HTML-escaped</li><li>Python: SQL identifiers validated, raw SQL off by default, no path traversal, HTTPS-only connectors, decision imports schema-checked</li><li>Append-only decision log and SHA-256 hashed validation reports</li></ul>
+</section>
+<section><h2>How it works</h2>
+<ol><li>See SECURITY.md in the repository for the full design and known limits.</li><li>Tests in tests/test_security_router.py prove each control.</li></ol>
+</section>
+<section><h2>Limits &amp; safeguards</h2>
+<ul><li>GitHub Pages can&#x27;t send HTTP security headers, so the CSP is set by a meta tag (no frame-ancestors protection).</li></ul>
+</section>
+<section><h2>Related</h2><div class="toc">
+<a class="item" href="decisions.html"><span class="t" style="font-size:17px">Decisions: you stay in charge</span></a><a class="item" href="agents.html"><span class="t" style="font-size:17px">Relevance check &amp; connected agents</span></a>
+</div></section>
+<footer><span><a href="../index.html">← Back to Shelly</a></span><span><a href="index.html">All guides</a></span>
+<span><a href="https://github.com/Pavi44M/Agent-Shelly-0.3">Source on GitHub</a></span><span>Built by <a href="https://pavi44m.github.io/pavibamunu/">Pavithra Bamunu</a></span></footer></div></body></html>
