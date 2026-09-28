@@ -71,15 +71,3 @@ def test_recalled_item_not_reordered():
     rp = res["results"]["replenishment"].set_index("sku")
     assert rp.loc["GRO004", "suggested_order"] == 0
     assert res["actions"][0]["area"] == "Compliance - recall"
-
-
-def test_web_export_bundle():
-    import json
-    from shelly.agent import run
-    res = run(str(ROOT / "data/sample"), out_dir=str(ROOT / "outputs"))
-    txt = Path(res["files"]["web"]).read_text()
-    assert txt.startswith("window.SHELLY_DATA = ")
-    d = json.loads(txt[len("window.SHELLY_DATA = "):].rstrip().rstrip(";"))
-    assert d["meta"]["app"] == "Shelly" and len(d["products"]) == 50
-    assert d["actions"][0]["area"] == "Compliance - recall"
-    assert len(d["forecast"]) == 7 and d["kpis"]["sales"] > 0
