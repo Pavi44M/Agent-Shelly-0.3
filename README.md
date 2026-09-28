@@ -1,11 +1,18 @@
 # Shelly: a personal analytics agent for retail and the businesses around it
 
-![tests](https://github.com/Pavi44M/Agent-Shelly-0.1/actions/workflows/tests.yml/badge.svg)
+![tests](https://github.com/Pavi44M/Agent-Shelly-0.3/actions/workflows/tests.yml/badge.svg)
 ![Python](https://img.shields.io/badge/python-3.11-blue) ![License: MIT](https://img.shields.io/badge/license-MIT-green)
 
-**[▶ Talk to Shelly (live demo)](https://pavi44m.github.io/Agent-Shelly-0.1/)** · [Example Excel output](docs/example/) · [Portfolio](https://pavi44m.github.io/pavibamunu)
+**[▶ Talk to Shelly (live demo)](https://pavi44m.github.io/Agent-Shelly-0.3/)** · [Example Excel output](docs/example/) · [Portfolio](https://pavi44m.github.io/pavibamunu)
 
 ![Shelly v0.2](docs/screenshot.png)
+
+## What's new in v0.3.1
+- **Security hardening.** Content Security Policy on every page, API keys kept for the session only by default, one-click "Clear my data", input limits and LLM rate limits, SQL-identifier validation (raw SQL off by default), no path traversal, HTTPS-only connectors, schema-checked decision imports, Dependabot and [SECURITY.md](SECURITY.md). Every control has a test in `tests/test_security_router.py`.
+- **Voices across regions.** 27 regions and languages for speech input and voice: English (NZ, AU, UK, US, IE, CA, IN, ZA, SG, PH), Te reo Māori, Sinhala, Tamil, Hindi, Chinese, Japanese, Korean, Indonesian, Vietnamese, Thai, Filipino, Spanish, French, German, Portuguese and Arabic. Shelly picks the closest installed voice and says so if your device lacks one. Speed, pitch and a test button are included. Answers come in the chosen language when using Claude or Ollama.
+- **Relevance check and connected agents.** Every typed or spoken question is checked against Shelly's skills. In scope, the answer shows which skill produced it. Out of scope (travel, email/calendar, writing, coding, investment/medical/legal advice, weather), Shelly explains and tells you which agent to connect in ⚙ Settings → Connected agents (Claude API, Ollama, or OpenJarvis / any OpenAI-compatible local server). It only sends the question after you tap **Send**. Same check on the CLI: `python -m shelly ask "…"`.
+- **Depth on demand.** Every dashboard section has a "What is this?" note, plus [16 in-depth guide pages](https://pavi44m.github.io/Agent-Shelly-0.3/guide/) covering what each part shows, how it works, the formulas, how to read it, limits and example questions.
+- **TD Report runs unattended.** The scheduled task now carries standing pre-approval for its narrow set of actions: research, the Shelly Drive folder, reading your replies, and emailing only you.
 
 ## What's new in v0.3: Shelly Core
 - **Every capability is a skill** (21 skills across 5 packs). `python -m shelly skills export` writes an agentskills.io `SKILL.md` for each one, so OpenJarvis or any LLM planner can call them.
@@ -43,6 +50,7 @@ python -m shelly pack electronics            # or wholesale | warehousing | prod
 python -m shelly learn                       # what Shelly has learned
 python -m shelly skills [export]             # list skills / write SKILL.md files
 python -m shelly connectors                  # connector health
+python -m shelly ask "book me a flight"      # relevance check: skill, or which agent to connect
 ```
 
 ## What's new in v0.2
@@ -175,6 +183,7 @@ skills/           OpenJarvis skill   tests/         pytest suite
 MAppBus (Business Analytics, First Class Honours) · [LinkedIn](https://linkedin.com/in/pavithra-maduranga-19624675) · [Portfolio](https://pavi44m.github.io/pavibamunu)
 
 ## Versions
+- **v0.3.1**: security hardening, 27 voice regions/languages, relevance router with connected agents, section notes and 16 guide pages, unattended TD Report
 - **v0.3**: skills registry, industry packs (electronics, wholesale, warehousing, production), decision log with confirmations, learning loop, validation reports, extensible connectors, daily TD Report
 - **v0.2**: conversational web app, voice in/out, interactive dashboard, optional LLM, weekly auto-update
 - **v0.1**: CRISP-DM pipeline, forecasting, exceptions, digest, Excel/SQL/Power BI/Tableau outputs
