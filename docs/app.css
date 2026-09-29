@@ -189,3 +189,16 @@ details.about[open] summary::after{transform:rotate(180deg)}
 details.about p{font-size:14px;line-height:1.6;margin:8px 0 6px;color:var(--ink-2)}
 details.about a{font-size:13px}
 details.about.in-chat{margin:0 14px 12px}
+
+/* v0.3.2 persona: tap-to-hear + closing screen */
+.tap-brief{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:40;
+  background:var(--accent);color:var(--void);border:0;border-radius:99px;padding:12px 20px;font-family:inherit;font-size:14px;font-weight:500;line-height:1.2;
+  box-shadow:0 8px 30px rgba(0,0,0,.45);cursor:pointer;animation:tapPulse 2s infinite ease-in-out;max-width:calc(100vw - 32px)}
+@keyframes tapPulse{0%,100%{box-shadow:0 0 0 0 rgba(99,182,216,.45)}50%{box-shadow:0 0 0 12px rgba(99,182,216,0)}}
+#closing{position:fixed;inset:0;z-index:60;background:rgba(7,11,18,.985);backdrop-filter:blur(6px);display:grid;place-items:center;padding:24px;animation:fadeIn .8s ease}
+.closing-in{width:min(560px,100%)}
+.closing-in h1{font-size:clamp(30px,6vw,52px);margin:14px 0 10px}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion: reduce){.tap-brief,#closing{animation:none}}
+.chat-top .pill-btn{white-space:nowrap}
+@media (max-width:480px){.chat-top{flex-wrap:wrap;gap:10px}.chat-top .tools{width:100%;flex-wrap:nowrap;gap:5px}.chat-top .tools .pill-btn{padding-left:9px;padding-right:9px}}

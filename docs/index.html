@@ -18,7 +18,7 @@
 <!-- ============ BOOT / LOADING ============ -->
 <div id="boot" aria-live="polite">
   <div class="boot-in">
-    <span class="tag">Shelly · retail analytics agent · <span id="bootVer">v0.2</span></span>
+    <span class="tag">Shelly · retail analytics agent · <span id="bootVer">v0.3.2</span></span>
     <div class="orb" aria-hidden="true"><i></i><i></i><i></i></div>
     <pre id="bootLog"></pre>
     <button id="skipBoot" class="ghost">Skip</button>
@@ -40,7 +40,8 @@
     <div class="me"><span class="dot" id="statusDot"></span><span id="statusTxt">Shelly · ready</span></div>
     <div class="tools">
       <a class="pill-btn" href="guide/index.html" title="How Shelly works">📖 Guide</a>
-      <button id="briefBtn" class="pill-btn" title="Hear this week's briefing">▶ Briefing</button>
+      <button id="briefBtn" class="pill-btn" title="Hear today's briefing">▶ Briefing</button>
+      <button id="doneBtn" class="pill-btn" title="Sign off for the day">🌙 Done</button>
       <button id="voiceBtn" class="icon-btn" aria-pressed="true" title="Voice replies on/off">🔊</button>
       <button id="setBtn" class="icon-btn" title="Settings">⚙</button>
     </div>
@@ -69,6 +70,16 @@
     <div class="fld" data-for="claude"><span>API key</span><input id="apiKey" type="password" placeholder="sk-ant-…" maxlength="200" autocomplete="off" spellcheck="false"></div>
     <label class="small" data-for="claude"><input type="checkbox" id="keyRemember"> Remember the key on this device. If unticked, it's forgotten when you close the tab.</label>
     <div class="fld" data-for="claude"><span>Model</span><input id="clModel" value="claude-sonnet-4-5" maxlength="60" autocomplete="off"></div>
+
+    <h3>You &amp; your day</h3>
+    <div class="fld"><span>Shelly calls you</span><select id="callMe">
+      <option value="Pavi">Pavi</option><option value="Sir">Sir</option><option value="Ma'am">Ma'am</option><option value="custom">Another name…</option>
+    </select></div>
+    <div class="fld" id="callMeWrap"><input id="callMeCustom" placeholder="Name (letters only)" maxlength="20" autocomplete="off" hidden></div>
+    <div class="fld"><span>Spoken briefing when Shelly opens</span><select id="autoBrief">
+      <option value="every">Every time I open Shelly</option><option value="first">First open of the day only</option><option value="off">Off (just a text greeting)</option>
+    </select></div>
+    <p class="small">Shelly greets you by time of day (good morning, afternoon or evening) and reads today's briefing. Phones and browsers only allow sound after a first tap, so you may see a "Tap to hear" button. Say "done for the day", "good night" or tap 🌙 Done to sign off.</p>
 
     <h3>Voice &amp; language</h3>
     <div class="fld"><span>Region / language (speech input and voice)</span><select id="regionSel"></select></div>

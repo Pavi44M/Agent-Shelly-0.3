@@ -1,4 +1,4 @@
-/* Shelly v0.2 - conversational retail analytics front-end.
+/* Shelly v0.3.2 - conversational retail analytics front-end.
  * Reads window.SHELLY_DATA (written by `python -m shelly.agent`), renders the
  * interactive dashboard, and answers questions by text or voice.
  * No build step, no external JS: plain ES2020 so it runs on GitHub Pages or from disk.
@@ -150,6 +150,113 @@ const Voice = {
   stop() { this.synth && this.synth.cancel(); setStatus("ready"); },
 };
 
+/* =====================================================================
+ * 2b. PERSONA (v0.3.2): how Shelly addresses you, time-aware greeting,
+ *     spoken daily briefing on open, and a sign-off when you're done.
+ * ===================================================================*/
+const Persona = {
+  /* "Pavi" (default), "Sir", "Ma'am", or a custom name (letters/spaces, max 20) */
+  get name() { const n = String(store.get("callMe", "Pavi")).trim(); return /^[\p{L} .'-]{1,20}$/u.test(n) ? n : "Pavi"; },
+  get auto() { return store.get("autoBrief", "every"); },          // every | first | off
+  part(h = new Date().getHours()) { return h >= 5 && h < 12 ? "morning" : h >= 12 && h < 17 ? "afternoon" : h >= 17 && h < 22 ? "evening" : "night"; },
+  hello() {
+    const p = this.part(), n = this.name;
+    return p === "night" ? `Hello ${n}, you're up late` : `Good ${p}, ${n}`;
+  },
+  clock() {
+    const d = new Date();
+    return d.toLocaleDateString("en-NZ", { weekday: "long", day: "numeric", month: "long" }) + ", " +
+      d.toLocaleTimeString("en-NZ", { hour: "numeric", minute: "2-digit" }).replace(/\s?([ap])\.?m\.?/i, " $1m");
+  },
+  /* the spoken + written opening briefing */
+  briefing() {
+    const p1 = P1(), dec = decState(), open = (D.decisions || []).filter(d => !dec[d.id]);
+    const top = p1.slice(0, 3).map((a, i) => `\n- ${a.action.split(";")[0].split(". Top lines")[0].replace(/\.$/, "")}.`).join("");
+    const recall = (D.recalls || []).length ? ` Heads up: there ${D.recalls.length === 1 ? "is a product recall" : `are ${D.recalls.length} product recalls`} to action first.` : "";
+    return `${this.hello()}. It's ${this.clock()}. Here's today's briefing.\n` +
+      `Sales were **${money(K.sales)}** for the week ending ${M.asof_label}, ${pct(K.wow_pct)} on last week and ${pct(K.vs_budget_pct)} against budget.${recall}\n` +
+      `**${p1.length} things to do today**, starting with:${top}\n` +
+      (open.length ? `${open.length} decision${open.length === 1 ? " is" : "s are"} waiting for your confirmation.\n` : "") +
+      `What would you like to look at first?`;
+  },
+  farewell() {
+    const done = store.get("done." + M.asof, {}), n = this.name;
+    const ticked = D.actions.filter(a => done[a.id]).length, dec = decState();
+    const open = (D.decisions || []).filter(d => !dec[d.id]).length;
+    const wrap = `You've ticked off ${ticked} of ${D.actions.length} actions` + (open ? `, and ${open} decision${open === 1 ? " is" : "s are"} still waiting for you.` : ".");
+    const bye = { morning: `Have a lovely day, ${n}.`, afternoon: `Have a lovely rest of your day, ${n}.`,
+                  evening: `Have a lovely evening, ${n}, and good night.`, night: `Good night, ${n}. Rest well, and I'll see you tomorrow.` }[this.part()];
+    return `That's us done for today. ${wrap}\n${bye}`;
+  },
+  isFarewell: q => /^(ok(ay)?[, ]+)?(thanks?( you)?[, ]*)?(bye|good ?bye|good ?night|nite|see (you|ya)|done for (the )?(day|today)|i'?m done|that'?s (all|it)( for (today|now))?|sign(ing)? off|log(ging)? off|finish(ed)? for (the )?day|close (the )?chat|end (the )?(chat|day)|we'?re done)\b/i.test(q.trim()),
+};
+
+/* Browsers only let a page talk after you've touched it. Try straight away;
+ * if the browser blocks it, play on the first tap and show a "tap to hear" button. */
+let pendingBrief = null;
+function autoBriefing() {
+  const mode = Persona.auto, today = new Date().toISOString().slice(0, 10);
+  if (mode === "off") return bot(A.greet() + "\n\nAsk me anything, or tap a suggestion.", { speak: false, source: "Shelly v" + M.version });
+  if (mode === "first" && store.get("lastBrief", "") === today)
+    return bot(`Welcome back, ${Persona.name}. Ask me anything, or tap ▶ Briefing to hear today's summary again.`, { speak: false, source: "Shelly v" + M.version });
+  store.set("lastBrief", today);
+  const text = Persona.briefing();
+  const shown = bot(text, { speak: false, source: "daily briefing · " + Persona.part() });
+  if (!Voice.synth || !Voice.on) return shown;
+  const play = () => {
+    pendingBrief = null; $("#tapBrief")?.remove();
+    const btn = $("#briefBtn"); btn.classList.add("speaking"); btn.textContent = "■ Stop";
+    Voice.speak(text, () => { btn.classList.remove("speaking"); btn.textContent = "▶ Briefing"; });
+  };
+  const activated = navigator.userActivation ? navigator.userActivation.hasBeenActive : false;
+  if (activated) { play(); return shown; }
+  // try anyway (some desktop browsers allow it), and fall back to first-tap
+  let started = false;
+  pendingBrief = play;
+  const probe = new SpeechSynthesisUtterance(" ");
+  probe.volume = 0; probe.onstart = () => { started = true; };
+  try { Voice.synth.speak(probe); } catch (e) { /* ignore */ }
+  setTimeout(() => {
+    if (!pendingBrief) return;
+    if (started) { play(); return; }
+    Voice.synth.cancel();
+    const b = document.createElement("button");
+    b.id = "tapBrief"; b.className = "tap-brief"; b.type = "button";
+    b.innerHTML = `🔊 Tap to hear today's briefing, ${esc(Persona.name)}`;
+    b.onclick = e => { e.stopPropagation(); pendingBrief && pendingBrief(); };
+    document.body.appendChild(b);
+  }, 900);
+  const first = e => {
+    if (!pendingBrief) return;
+    if (e.target.closest && e.target.closest("#q, #micBtn, #setBtn, #settings, #voiceBtn, #briefBtn, #doneBtn, a")) return;
+    pendingBrief();
+  };
+  addEventListener("pointerdown", first, { once: true, capture: true });
+  addEventListener("keydown", first, { once: true, capture: true });
+  return shown;
+}
+
+/* "Done for the day": spoken sign-off, then a calm closing screen. */
+async function endDay() {
+  if ($("#closing")) return;
+  pendingBrief = null; $("#tapBrief")?.remove();
+  const text = Persona.farewell();
+  addMsg("you", "🌙 Done for the day");
+  await bot(text, { speak: false, source: "sign-off" });
+  const show = () => {
+    const c = document.createElement("div"); c.id = "closing"; c.setAttribute("role", "dialog"); c.setAttribute("aria-label", "Shelly signed off");
+    const p = Persona.part();
+    c.innerHTML = `<div class="closing-in"><span class="tag">Shelly · signed off</span>
+      <h1>${p === "evening" || p === "night" ? "Good night" : "Have a lovely day"}, <b>${esc(Persona.name)}</b>.</h1>
+      <p class="sub">${esc(text.split("\n")[0])}</p>
+      <button class="pill-btn" id="reopen">Open Shelly again</button></div>`;
+    document.body.appendChild(c);
+    $("#reopen").onclick = () => { Voice.stop(); c.remove(); };
+  };
+  Voice.speak(text);          // respects the 🔊/🔇 switch
+  setTimeout(show, 600);
+}
+
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 let rec = null, listening = false;
 function setupMic() {
@@ -216,9 +323,7 @@ const nice = s => ({ uber_eats: "Uber Eats", on_demand: "On-Demand", in_store: "
 
 const A = {
   greet() {
-    const h = new Date().getHours();
-    const g = h < 12 ? "Morning" : h < 17 ? "Afternoon" : "Evening";
-    return `${g}! Sales were **${money(K.sales)}** for the week ending ${M.asof_label}, ${pct(K.wow_pct)} on last week. There are **${P1().length} things to do today**. Want the list?`;
+    return `${Persona.hello()}! Sales were **${money(K.sales)}** for the week ending ${M.asof_label}, ${pct(K.wow_pct)} on last week. There are **${P1().length} things to do today**. Want the list?`;
   },
   help() {
     return `I can answer questions about this week's trade. Try:\n- "What should I do today?"\n- "How is milk doing?" or "How's Dairy?"\n- "What do I need to order?"\n- "Any shrinkage?", "How's waste?", "Is Uber Eats OK?"\n- "Forecast for next week" or "How many hours should I roster?"\n- "What if we put prices up 3%?"\nTap 🎙 to ask by voice, and 🔊 to switch spoken replies on or off.`;
@@ -521,6 +626,7 @@ async function bot(text, { speak = true, source = "" } = {}) {
 }
 async function ask(q, { spoken = false } = {}) {
   q = clean(q); if (!q || busy) return;
+  if (Persona.isFarewell(q)) { $("#q").value = ""; return endDay(); }
   busy = true; $("#q").value = "";
   addMsg("you", esc(q) + (spoken ? ' <span class="src">🎙 voice</span>' : ""));
   setStatus("thinking");
@@ -573,10 +679,10 @@ function goTo(id) {
 function briefing() {
   const btn = $("#briefBtn");
   if (btn.classList.contains("speaking")) { Voice.stop(); btn.classList.remove("speaking"); btn.textContent = "▶ Briefing"; return; }
-  const p1 = P1().slice(0, 3).map((a, i) => `${i + 1}. ${a.action.split(";")[0].split(". Top lines")[0]}.`).join(" ");
-  const text = `Here's your briefing for the week ending ${M.asof_label}. ${M.summary} Top priorities: ${p1}`;
+  pendingBrief = null; $("#tapBrief")?.remove();
+  const text = Persona.briefing();
   btn.classList.add("speaking"); btn.textContent = "■ Stop";
-  addMsg("you", "▶ Play this week's briefing");
+  addMsg("you", "▶ Play today's briefing");
   const was = Voice.on; Voice.on = true;
   bot(text, { speak: false, source: "briefing" });
   Voice.speak(text, () => { btn.classList.remove("speaking"); btn.textContent = "▶ Briefing"; });
@@ -955,7 +1061,15 @@ function setupSettings() {
   $("#pitch").value = Voice.pitch; $("#pitchV").textContent = (+Voice.pitch).toFixed(2);
   $("#pitch").oninput = e => { Voice.pitch = +e.target.value; $("#pitchV").textContent = Voice.pitch.toFixed(2); store.set("pitch", Voice.pitch); };
   $("#voiceSel").onchange = e => { Voice.voiceName = e.target.value; store.set("voice", Voice.voiceName); };
-  $("#voiceTest").onclick = () => { const was = Voice.on; Voice.on = true; Voice.speak(`Kia ora, I'm Shelly. Sales were ${money(K.sales)} this week.`); Voice.on = was; };
+  $("#voiceTest").onclick = () => { const was = Voice.on; Voice.on = true; Voice.speak(`${Persona.hello()}. I'm Shelly. Sales were ${money(K.sales)} this week.`); Voice.on = was; };
+  // how Shelly addresses you + daily briefing
+  const cm = $("#callMe"), cmc = $("#callMeCustom"), preset = ["Pavi", "Sir", "Ma'am"];
+  const cur = Persona.name;
+  cm.value = preset.includes(cur) ? cur : "custom"; cmc.value = preset.includes(cur) ? "" : cur; cmc.hidden = cm.value !== "custom";
+  cm.onchange = () => { cmc.hidden = cm.value !== "custom"; if (cm.value !== "custom") store.set("callMe", cm.value); else cmc.focus(); };
+  cmc.onchange = () => { const v = cmc.value.trim(); if (/^[\p{L} .'-]{1,20}$/u.test(v)) store.set("callMe", v); else { cmc.value = ""; } };
+  $("#autoBrief").value = Persona.auto;
+  $("#autoBrief").onchange = e => store.set("autoBrief", e.target.value);
   // privacy
   $("#clearData").onclick = () => {
     try { Object.keys(localStorage).filter(k => k.startsWith("shelly.")).forEach(k => localStorage.removeItem(k));
@@ -984,7 +1098,8 @@ function init() {
   if (Voice.synth) { Voice.loadVoices(); Voice.synth.onvoiceschanged = () => Voice.loadVoices(); }
   $("#ask").onsubmit = e => { e.preventDefault(); ask($("#q").value); };
   $("#briefBtn").onclick = briefing;
-  boot().then(() => bot(A.greet() + "\n\nAsk me anything, or tap a suggestion.", { speak: false, source: "Shelly v" + M.version }));
+  $("#doneBtn").onclick = endDay;
+  boot().then(autoBriefing);
 }
 // test hook
 window.Shelly = { answer, ask, scenario, route };

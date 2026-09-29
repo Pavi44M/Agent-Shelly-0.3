@@ -7,6 +7,12 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v0.3.2
+
+- **Self-launching daily briefing**: when the page opens, Shelly greets you by time of day ("Good morning, Pavi") and reads today's briefing aloud: date and time, week sales vs last week and budget, any recall, today's P1 actions and decisions waiting for you. Browsers only allow sound after a first touch, so Shelly tries straight away and otherwise plays on the first tap (with a "Tap to hear" button).
+- **Your name, your way**: Settings → You & your day: Pavi, Sir, Ma'am or your own name; briefing every open, first open of the day, or off.
+- **Sign-off**: say "done for the day", "good night", "bye" or tap 🌙 Done. Shelly sums up the actions you ticked and decisions still open, then says goodbye to suit the time ("Have a lovely day, Pavi" / "Have a lovely evening, Pavi, and good night").
+
 ## What's new in v0.3.1
 - **Security hardening.** Content Security Policy on every page, API keys kept for the session only by default, one-click "Clear my data", input limits and LLM rate limits, SQL-identifier validation (raw SQL off by default), no path traversal, HTTPS-only connectors, schema-checked decision imports, Dependabot and [SECURITY.md](SECURITY.md). Every control has a test in `tests/test_security_router.py`.
 - **Voices across regions.** 27 regions and languages for speech input and voice: English (NZ, AU, UK, US, IE, CA, IN, ZA, SG, PH), Te reo Māori, Sinhala, Tamil, Hindi, Chinese, Japanese, Korean, Indonesian, Vietnamese, Thai, Filipino, Spanish, French, German, Portuguese and Arabic. Shelly picks the closest installed voice and says so if your device lacks one. Speed, pitch and a test button are included. Answers come in the chosen language when using Claude or Ollama.
@@ -183,6 +189,7 @@ skills/           OpenJarvis skill   tests/         pytest suite
 MAppBus (Business Analytics, First Class Honours) · [LinkedIn](https://linkedin.com/in/pavithra-maduranga-19624675) · [Portfolio](https://pavi44m.github.io/pavibamunu)
 
 ## Versions
+- **v0.3.2**: spoken daily briefing on open, time-aware greeting by name, sign-off
 - **v0.3.1**: security hardening, 27 voice regions/languages, relevance router with connected agents, section notes and 16 guide pages, unattended TD Report
 - **v0.3**: skills registry, industry packs (electronics, wholesale, warehousing, production), decision log with confirmations, learning loop, validation reports, extensible connectors, daily TD Report
 - **v0.2**: conversational web app, voice in/out, interactive dashboard, optional LLM, weekly auto-update
