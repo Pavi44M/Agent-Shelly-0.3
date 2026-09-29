@@ -80,8 +80,12 @@ function chart(b) {
   const all = b.series.flatMap(s => s.values).filter(v => v !== null && v !== undefined);
   let mn = Math.min(0, ...all), mx = Math.max(...all, 0);
   if (b.kind === "stacked") mx = Math.max(...b.x.map((_, i) => ser.reduce((a, s) => a + Math.max(0, s.values[i] || 0), 0)));
-  if (b.kind === "line" || b.kind === "band") { const lo = Math.min(...all); mn = lo > 0 ? Math.max(0, lo - (mx - lo) * 0.6) : lo; }
-  mx = niceMax(mx); if (mn < 0) mn = -niceMax(-mn);
+  if (b.kind === "line" || b.kind === "band") {
+    const lo = Math.min(...all), hi = mx;
+    const step = niceMax((hi - Math.max(0, lo - (hi - lo) * 0.3)) / 4 || 1);
+    mn = lo > 0 ? Math.max(0, Math.floor((lo - (hi - lo) * 0.3) / step) * step) : Math.floor(lo / step) * step;
+    mx = Math.ceil(hi / step) * step; if (mx === hi) mx += step;
+  } else { mx = niceMax(mx); if (mn < 0) mn = -niceMax(-mn); }
   const y = v => B - (v - mn) / (mx - mn) * (B - T);
   const n = b.x.length, step = (Rr - L) / n, xc = i => L + step * (i + .5);
   for (let k = 0; k <= 4; k++) { const v = mn + (mx - mn) * k / 4; svg += `<line class="grid" x1="${L}" x2="${Rr}" y1="${y(v)}" y2="${y(v)}"/><text x="${L - 6}" y="${y(v) + 3}" text-anchor="end">${esc(short(v, f))}</text>`; }
@@ -186,6 +190,10 @@ function toolbar(sp) {
 }
 function setTheme(t) {
   document.documentElement.dataset.theme = t; store.set("theme", t);
+  // page setup for printing / Save as PDF: white paper keeps margins; dark looks print edge to edge
+  let ps = document.getElementById("pageSetup");
+  if (!ps) { ps = document.createElement("style"); ps.id = "pageSetup"; document.head.appendChild(ps); }
+  ps.textContent = t === "present" ? "@page{size:A4 landscape;margin:0}" : t === "dark" ? "@page{size:A4;margin:0}" : "@page{size:A4;margin:14mm 12mm 16mm}";
   document.querySelectorAll("[data-t]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.t === t)));
 }
 

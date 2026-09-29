@@ -47,10 +47,8 @@ def export(out_dir, spec_ids: list[str], themes=("light",), log=print) -> list[s
                 for th in themes:
                     page.goto(f"http://127.0.0.1:{port}/report.html?id={sid}&theme={th}")
                     page.wait_for_function("window.__shellyReady === true", timeout=15000)
-                    page.emulate_media(media="print")
                     name = pdf_dir / f"{sid}{'' if th == 'light' else '-' + th}.pdf"
-                    page.pdf(path=str(name), format="A4", print_background=True, landscape=(th == "present"),
-                             prefer_css_page_size=th != "present")
+                    page.pdf(path=str(name), print_background=True, prefer_css_page_size=True)
                     written.append(str(name))
             b.close()
     finally:

@@ -88,7 +88,7 @@ td.neg{color:var(--bad)} td.pos{color:var(--good)}
 /* charts */
 .chart{border:1px solid var(--line);border-radius:4px;padding:12px 12px 6px;margin:14px 0;background:var(--panel)}
 .chart .ct{font-size:13.5px;color:var(--ink);font-weight:500}
-.chart svg{display:block;width:100%;height:auto;margin-top:6px}
+.chart svg{display:block;width:100%;height:auto;max-height:440px;margin-top:6px}
 .chart svg text{font-family:var(--mono);font-size:10px;fill:var(--ink-3)}
 .chart .grid{stroke:var(--line);stroke-width:1}
 .chart .axis{stroke:var(--line);stroke-width:1}
@@ -124,7 +124,6 @@ html[data-theme="present"] .pager{display:flex}
 
 /* print / Save as PDF */
 @page{size:A4;margin:14mm 12mm 16mm}
-@page dark{size:A4;margin:0}
 @media print{
   .bar,.pager,.noprint{display:none!important}
   body{font-size:11.5px}
@@ -136,11 +135,12 @@ html[data-theme="present"] .pager{display:flex}
   .sec{break-inside:auto;padding-top:16px;margin-top:16px}
   .sec h2,.sec .lead{break-after:avoid}
   .sec h2+.lead+.chart,.sec h2+.chart,.sec h2+.tbl-wrap{break-before:avoid}
-  html[data-theme="dark"] body,html[data-theme="present"] body{page:dark}
-  html[data-theme="dark"] .wrap,html[data-theme="present"] .wrap{padding:12mm 12mm 14mm}
+  html[data-theme="dark"] .wrap,html[data-theme="present"] .wrap{padding:12mm 12mm 14mm;-webkit-box-decoration-break:clone;box-decoration-break:clone}
   .chart,.callout,.card,.kpis,tr{break-inside:avoid}
   html[data-theme="present"] .sec{break-before:page;min-height:0}
   html[data-theme="present"] .cover{min-height:0}
   .tbl-wrap{overflow:visible}
+  .chart svg{max-height:78mm}
+  html[data-theme="present"] .chart svg{max-height:95mm}
   table{font-size:10.5px} td.r,th.r{font-size:10px}
 }
