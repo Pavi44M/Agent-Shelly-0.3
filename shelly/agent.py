@@ -45,7 +45,7 @@ def run(data_dir: str, out_dir: str = "outputs", asof: str | None = None, config
     out.mkdir(parents=True, exist_ok=True)
 
     log(f"Shelly v{__version__} starting"); log("Phase 1  Business understanding: " + "; ".join(cfg["business_objectives"]))
-    raw = load_raw(data_dir, cfg["column_map"])
+    raw = load_raw(data_dir, cfg["column_map"], cfg.get("source"))
     quality = profile_quality(raw)
     log(f"Phase 2  Data understanding: quality score {quality.score:.0f}/100, {len(quality.issues)} findings")
     P = prepare(raw, asof)

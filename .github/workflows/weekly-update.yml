@@ -16,6 +16,8 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install -r requirements.txt
+      - name: LibreOffice (gives Excel formulas cached values so phone previews show numbers)
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq libreoffice-calc-nogui > /dev/null
       - name: Regenerate demo data up to yesterday (NZ time)
         run: python scripts/generate_sample_data.py --end "$(TZ=Pacific/Auckland date -d yesterday +%F)"
       - name: Run Shelly and rebuild the site

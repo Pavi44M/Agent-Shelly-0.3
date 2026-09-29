@@ -7,3 +7,7 @@ openpyxl>=3.1
 PyYAML>=6.0
 pytest>=7.0
 tabulate>=0.9
+# optional: SQL database sources (plus your driver, e.g. psycopg2-binary / pymysql / pyodbc)
+# sqlalchemy>=2.0
+# optional: direct PDF export (then: python -m playwright install chromium)
+# playwright>=1.40

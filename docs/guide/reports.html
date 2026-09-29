@@ -1,0 +1,44 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Reports: Excel, PDF and presentation · Shelly guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../app.css">
+<style>
+.guide h1{font-size:clamp(28px,5vw,44px)} .guide h2{margin-top:34px}
+.guide ul,.guide ol{padding-left:20px;max-width:70ch} .guide li{margin:6px 0;line-height:1.55}
+.formula{display:grid;grid-template-columns:minmax(120px,200px) 1fr;gap:1px;background:var(--etch-2);border:1px solid var(--etch-2);border-radius:3px;overflow:hidden}
+.formula div{background:var(--panel);padding:10px 12px;font-size:14px} .formula div:nth-child(odd){color:var(--ink);font-weight:500}
+.formula div:nth-child(even){font-family:var(--mono);font-size:12.5px;color:var(--ink-2)}
+.crumbs{font-family:var(--mono);font-size:11px;letter-spacing:.08em;margin-top:28px} .crumbs a{color:var(--ink-3)}
+.asks span{display:inline-block;border:1px solid var(--etch);border-radius:99px;padding:5px 12px;margin:4px 6px 0 0;font-size:13px}
+.toc{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.toc a{text-decoration:none}
+</style></head><body><div class="wrap guide">
+<div class="crumbs"><a href="../index.html">Shelly</a> / <a href="index.html">Guide</a></div>
+<header style="padding-top:18px"><span class="tag">Shelly guide</span><h1>Reports: Excel, PDF and presentation</h1>
+<p class="sub">Ask in plain words (&quot;make a budget for the next 3 months&quot;, &quot;stock report for dairy in Excel&quot;) or open one from the Reports section.</p></header>
+<section><h2>At a glance</h2>
+<ul><li>Budget &amp; forecast plan: 1, 3, 6 or 12 months; budget = last year + growth target, checked against Shelly&#x27;s forecast</li><li>13-week forecast: 4, 8 or 13 weeks with an 80% range from backtests</li><li>Weekly trading, category review, roster &amp; labour, stock &amp; reorder, waste &amp; shrink</li><li>Industry packs: consumer electronics, wholesale, warehousing, production</li><li>Every report: whole store or any category; approvals section with sign-off lines</li></ul>
+</section>
+<section><h2>How it works</h2>
+<ol><li>Python computes every number (pandas, backtested forecasts); nothing is written by an AI.</li><li>The report page renders the same spec three ways: Print (white paper), Dark (Shelly look) and Present (one section per screen, arrow keys).</li><li>⬇ PDF opens the print dialog: choose Save as PDF. On a computer, `python -m shelly report all --pdf` writes PDFs directly.</li><li>Excel sheets: Dashboard (Category dropdown, KPI tiles, charts), Model (all formulas: SUMIFS, INDEX-MATCH, EDATE), Pivot (real PivotTables), Raw (Excel Table), Lookup, Assumptions (blue inputs), Notes (method, data dictionary, sign-off).</li><li>Change the Category cell or any blue assumption and the whole workbook recalculates.</li></ol>
+</section>
+<section><h2>Method &amp; formulas</h2><div class="formula">
+<div>Budget</div><div>Last year&#x27;s same month × (1 + growth target)</div><div>Planning forecast</div><div>Last year&#x27;s same period × recent 12-week trend (capped ±15%); weeks 1–3 blend in the daily models</div><div>Range</div><div>80th percentile of backtest errors (months: stand 3–6 months back; weeks: 13 weekly backtests)</div><div>Reorder</div><div>Safety stock = z × σ × √(lead + review); order up to capped by shelf life</div><div>Labour</div><div>Hours = forecast ÷ sales-per-hour target, never below the daily minimum</div>
+</div></section>
+<section><h2>How to read it</h2>
+<ul><li>Green/red KPI values show good/bad against target.</li><li>Low/High = where the forecast has landed 8 times out of 10.</li><li>Approvals list what needs a person&#x27;s decision before it counts.</li></ul>
+</section>
+<section><h2>Limits &amp; safeguards</h2>
+<ul><li>Budgets need 12+ months of history for last-year comparisons.</li><li>Horizons snap to the nearest ready-made plan (e.g. 5 months → 6); the Excel lets you set any number of months.</li><li>Phone previews show numbers because formulas carry cached values; open in Excel to use PivotTables.</li></ul>
+</section>
+<section><h2>Ask Shelly</h2><div class="asks">
+<span>Make a budget for the next 3 months</span><span>13-week forecast for Dairy</span><span>Weekly report in Excel</span><span>Stock report for Beverages</span><span>Roster plan PDF</span>
+</div><p class="small">Type or say these in the chat on the <a href="../index.html#chat">main page</a>.</p></section>
+<section><h2>Related</h2><div class="toc">
+<a class="item" href="real-data.html"><span class="t" style="font-size:17px">Using real business data</span></a><a class="item" href="performance.html"><span class="t" style="font-size:17px">Performance: daily sales, bridge and channels</span></a><a class="item" href="operations.html"><span class="t" style="font-size:17px">Operations: reorder list and roster</span></a>
+</div></section>
+<footer><span><a href="../index.html">← Back to Shelly</a></span><span><a href="index.html">All guides</a></span>
+<span><a href="https://github.com/Pavi44M/Agent-Shelly-0.3">Source on GitHub</a></span><span>Built by <a href="https://pavi44m.github.io/pavibamunu/">Pavithra Bamunu</a></span></footer></div></body></html>

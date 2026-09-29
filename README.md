@@ -7,6 +7,16 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v1.1 (big jump: reports that do the work)
+
+- **Ask for any report in plain words.** "Make a budget for the next 3 months", "13-week forecast for Dairy", "stock report for Beverages in Excel", "roster plan PDF". Shelly works out the report, the time frame and the category, says so when it rounds (5 months → 6-month plan), and is honest when it can't build something.
+- **11 report types**: budget & forecast plan (1/3/6/12 months), 13-week forecast (4/8/13 weeks), weekly trading, category review, roster & labour, stock & reorder, waste & shrink, and four industry packs (consumer electronics, wholesale, warehousing, production). Whole store or any category: 137 ready-made report views.
+- **Excel workbooks built like an analyst would**: Dashboard (Category dropdown, KPI tiles, charts) · Model (live SUMIFS / INDEX-MATCH / EDATE formulas, nothing typed in) · Pivot (real Excel PivotTables) · Raw (Excel Table) · Lookup · Assumptions (blue inputs: change one and everything recalculates) · Notes (method, data dictionary, sign-off). Formulas carry cached values, so phone previews show numbers too. Zero formula errors, checked on every build.
+- **PDF in the Shelly look**: the report page prints in white for paper, in the dark Shelly theme, or as a presentation (one section per screen, arrow keys). `python -m shelly report all --pdf` writes PDFs directly.
+- **Planning forecasts with honest ranges**: last year's same period × recent trend, backtested (months and weeks); the 80% range comes from real backtest errors. Budgets flag calendar shifts and months whose "last year" isn't finished.
+- **Ready for real data**: CSV/Excel exports (POS, SAP, ERP, accounting; one file or many), SQL databases (read-only SELECTs, credentials from environment variables), automatic column matching with confidence scores, and a data check report (`python -m shelly check --data folder`).
+- **Claude/Ollama connection test** in Settings, and a clear reason when the AI engine can't be reached.
+
 ## What's new in v0.3.2
 
 - **Self-launching daily briefing**: when the page opens, Shelly greets you by time of day ("Good morning, Pavi") and reads today's briefing aloud: date and time, week sales vs last week and budget, any recall, today's P1 actions and decisions waiting for you. Browsers only allow sound after a first touch, so Shelly tries straight away and otherwise plays on the first tap (with a "Tap to hear" button).
@@ -57,6 +67,9 @@ python -m shelly learn                       # what Shelly has learned
 python -m shelly skills [export]             # list skills / write SKILL.md files
 python -m shelly connectors                  # connector health
 python -m shelly ask "book me a flight"      # relevance check: skill, or which agent to connect
+python -m shelly check --data path/to/exports              # real data: what was found, how columns were matched
+python -m shelly report all --data path/to/exports --pdf   # every report: Excel + report page + PDFs in outputs/reports
+python -m shelly report budget --months 6 --category Dairy --pdf --theme light,present
 ```
 
 ## What's new in v0.2
@@ -189,6 +202,7 @@ skills/           OpenJarvis skill   tests/         pytest suite
 MAppBus (Business Analytics, First Class Honours) · [LinkedIn](https://linkedin.com/in/pavithra-maduranga-19624675) · [Portfolio](https://pavi44m.github.io/pavibamunu)
 
 ## Versions
+- **v1.1**: report engine (Excel with dashboard, formulas, pivots, lookups, raw; PDF and presentation), planning forecasts, real-data intake
 - **v0.3.2**: spoken daily briefing on open, time-aware greeting by name, sign-off
 - **v0.3.1**: security hardening, 27 voice regions/languages, relevance router with connected agents, section notes and 16 guide pages, unattended TD Report
 - **v0.3**: skills registry, industry packs (electronics, wholesale, warehousing, production), decision log with confirmations, learning loop, validation reports, extensible connectors, daily TD Report

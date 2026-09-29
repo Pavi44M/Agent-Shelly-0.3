@@ -11,6 +11,9 @@
     python -m shelly learn                             what Shelly has learned so far
     python -m shelly connectors                        connector health check
     python -m shelly ask "what do I need to order?"    relevance check: which skill, or which agent to connect
+    python -m shelly check --data path/to/exports      data check: what Shelly found, how columns were matched
+    python -m shelly report all [--data ...] [--pdf]   every report: Excel (dashboard, model, pivots, raw, lookups) + web page (+ PDF)
+    python -m shelly report budget --months 6 --category Dairy --pdf --theme light,present
 """
 from __future__ import annotations
 
@@ -38,6 +41,12 @@ def main(argv=None):
     d.add_argument("target", nargs="?"); d.add_argument("--note", default="")
     sub.add_parser("learn"); sub.add_parser("connectors")
     k = sub.add_parser("ask"); k.add_argument("text")
+    c = sub.add_parser("check"); c.add_argument("--data", default="data/sample")
+    rp = sub.add_parser("report"); rp.add_argument("which", nargs="?", default="all")
+    rp.add_argument("--data", default="data/sample"); rp.add_argument("--asof"); rp.add_argument("--out", default="outputs/reports")
+    rp.add_argument("--category", default="All"); rp.add_argument("--months", type=int); rp.add_argument("--weeks", type=int)
+    rp.add_argument("--pdf", action="store_true"); rp.add_argument("--theme", default="light", help="light,dark,present (comma list)")
+    rp.add_argument("--no-values", action="store_true", help="skip LibreOffice cached values (Excel recalculates on open)")
     a = ap.parse_args(argv)
 
     if a.cmd == "run":
@@ -100,6 +109,51 @@ def main(argv=None):
         from .core.router import route
         r = route(a.text)
         print(f"In scope → skill {r.skill} (match {r.score})" if r.in_scope else f"Out of scope ({r.kind}). {r.advice}")
+
+    elif a.cmd == "check":
+        from . import ingest
+        cfg = _cfg()
+        src = Path(a.data)
+        tables, maps = ingest.load_folder(src, cfg.get("column_map", {}) if not (src / "sales.csv").exists() else {}, cfg.get("source", {}))
+        rep = ingest.check_report(tables, maps)
+        out = ROOT / "reports" / "data_check.md"
+        out.parent.mkdir(exist_ok=True)
+        out.write_text(rep)
+        print(rep)
+        print(f"Saved: {out}")
+
+    elif a.cmd == "report":
+        import contextlib
+        import io
+        from . import __version__
+        from .agent import run
+        from .reports import build as B
+        from .reports.context import Ctx
+        from .reports.pdf import export, stage_viewer
+        print(f"Running the pipeline on {a.data} ...")
+        with contextlib.redirect_stdout(io.StringIO()):
+            res = run(a.data, str(ROOT / "outputs"), a.asof)
+        cfg = _cfg()
+        ctx = Ctx(res["prepared"], res["results"], cfg, res["actions"], res["summary"], __version__,
+                  cfg["store"]["name"], synthetic=Path(a.data).resolve() == (ROOT / "data/sample").resolve())
+        types = None if a.which == "all" else [a.which if not a.which in ("electronics", "wholesale", "warehousing", "production") else "pack-" + a.which]
+        out = Path(a.out) if Path(a.out).is_absolute() else ROOT / a.out
+        (out / "data").mkdir(parents=True, exist_ok=True)
+        r = B.build_all(ctx, out / "reports", xlsx=True, with_cache=not a.no_values, only=types)
+        B.write_web_bundle(r, out / "data" / "shelly-reports.js")
+        stage_viewer(out)
+        print(f"Excel: {out / 'reports'}")
+        print(f"Report page: {out / 'report.html'}  (open it in a browser; Print / Dark / Present, Save as PDF)")
+        if a.pdf:
+            t = a.which if a.which != "all" else None
+            ids = [sid for sid, sp in r["specs"].items() if (t is None and sp["category"] == "All" and (sp.get("horizon") in (None, 3, 13)))
+                   or (t and (sp["type"] == t or sid == "pack-" + t) and sp["category"] == a.category
+                       and (sp.get("horizon") is None or sp["horizon"] == (a.months or a.weeks or sp["horizon"])))]
+            if a.which == "budget" and a.months:
+                ids = [i for i in ids if f"-{a.months}m-" in i] or ids
+            pdfs = export(out, ids, themes=tuple(a.theme.split(",")))
+            for f in pdfs:
+                print("PDF:", f)
 
     elif a.cmd == "connectors":
         from .core.connectors import build

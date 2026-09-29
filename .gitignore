@@ -5,6 +5,6 @@ __pycache__/
 *.pyc
 .pytest_cache/
 state/
-reports/
+/reports/
 .env
 *.env

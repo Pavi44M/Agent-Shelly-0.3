@@ -24,8 +24,24 @@ def _read(path_stem: Path) -> pd.DataFrame | None:
     return None
 
 
-def load_raw(data_dir: str | Path, column_map: dict) -> dict[str, pd.DataFrame]:
+LAST_MAPPING: list = []    # column-matching record from the last load (for the data check report)
+
+
+def load_raw(data_dir: str | Path, column_map: dict, source: dict | None = None) -> dict[str, pd.DataFrame]:
+    """Standard-named files load directly; anything else (real exports, one flat file, a database)
+    goes through shelly.ingest, which auto-matches columns and records every choice."""
+    global LAST_MAPPING
+    source = source or {}
     data_dir = Path(data_dir)
+    standard = (data_dir / "sales.csv").exists() or (data_dir / "sales.xlsx").exists()
+    if source.get("kind") == "database" or not standard:
+        from . import ingest
+        if source.get("kind") == "database":
+            tables, LAST_MAPPING = ingest.load_database(source["url"], source["queries"], column_map, source)
+        else:
+            tables, LAST_MAPPING = ingest.load_folder(data_dir, column_map, source)
+        return tables
+    LAST_MAPPING = []
     out: dict[str, pd.DataFrame] = {}
     for t in TABLES:
         df = _read(data_dir / t)

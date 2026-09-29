@@ -202,3 +202,12 @@ details.about.in-chat{margin:0 14px 12px}
 @media (prefers-reduced-motion: reduce){.tap-brief,#closing{animation:none}}
 .chat-top .pill-btn{white-space:nowrap}
 @media (max-width:480px){.chat-top{flex-wrap:wrap;gap:10px}.chat-top .tools{width:100%;flex-wrap:nowrap;gap:5px}.chat-top .tools .pill-btn{padding-left:9px;padding-right:9px}}
+/* v1.1 report cards */
+.rep-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.rep-btns .pill-btn{text-decoration:none}
+.pill-btn.primary{background:var(--accent);color:#07131c;border-color:var(--accent)}
+.item.rep{display:flex;flex-direction:column;gap:6px}
+.item.rep .k{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3)}
+.item.rep .t{color:var(--ink);font-size:17px;font-weight:500}
+.item.rep .d{font-size:13.5px;color:var(--ink-2);line-height:1.45}
+.item.rep .d.hl{color:var(--ink-3);font-size:12.5px}

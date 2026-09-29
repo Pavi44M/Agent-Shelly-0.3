@@ -1,6 +1,6 @@
-# Shelly run report 20260929-033603
+# Shelly run report 20260929-221637
 
-- Version **0.3.2** · week ending **2026-09-25** · config `98cb77fa102db364`
+- Version **1.1.0** · week ending **2026-09-25** · config `98cb77fa102db364`
 
 ## Validation checks
 

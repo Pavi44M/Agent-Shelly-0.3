@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shelly report</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="report.css">
+</head>
+<body>
+<div class="bar noprint" role="toolbar" aria-label="Report options">
+  <div class="bar-in">
+    <a class="back" href="index.html">← Shelly</a>
+    <select id="rType" aria-label="Report"></select>
+    <select id="rCat" aria-label="Category" hidden></select>
+    <select id="rH" aria-label="Horizon" hidden></select>
+    <span class="grow"></span>
+    <span class="seg" aria-label="Look">
+      <button type="button" data-t="light" title="White paper: best for reading and printing">Print</button>
+      <button type="button" data-t="dark" title="Shelly dark theme">Dark</button>
+      <button type="button" data-t="present" title="One section per screen, arrow keys to move">Present</button>
+    </span>
+    <a class="btn" id="xlsx" href="#" hidden>⬇ Excel</a>
+    <button type="button" class="primary" id="pdf" title="Opens the print dialog: choose Save as PDF">⬇ PDF</button>
+  </div>
+</div>
+<main class="wrap" id="doc"><p class="empty">Loading report…</p></main>
+<div class="pager noprint"><button type="button" id="prev" aria-label="Previous section">↑</button><button type="button" id="next" aria-label="Next section">↓</button></div>
+<script src="data/shelly-reports.js"></script>
+<script src="report.js"></script>
+</body>
+</html>

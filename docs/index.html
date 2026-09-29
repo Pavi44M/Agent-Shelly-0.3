@@ -18,7 +18,7 @@
 <!-- ============ BOOT / LOADING ============ -->
 <div id="boot" aria-live="polite">
   <div class="boot-in">
-    <span class="tag">Shelly · retail analytics agent · <span id="bootVer">v0.3.2</span></span>
+    <span class="tag">Shelly · retail analytics agent · <span id="bootVer">v1.1.0</span></span>
     <div class="orb" aria-hidden="true"><i></i><i></i><i></i></div>
     <pre id="bootLog"></pre>
     <button id="skipBoot" class="ghost">Skip</button>
@@ -70,6 +70,7 @@
     <div class="fld" data-for="claude"><span>API key</span><input id="apiKey" type="password" placeholder="sk-ant-…" maxlength="200" autocomplete="off" spellcheck="false"></div>
     <label class="small" data-for="claude"><input type="checkbox" id="keyRemember"> Remember the key on this device. If unticked, it's forgotten when you close the tab.</label>
     <div class="fld" data-for="claude"><span>Model</span><input id="clModel" value="claude-sonnet-4-5" maxlength="60" autocomplete="off"></div>
+    <button type="button" class="pill-btn" id="llmTest">Test connection</button> <span class="small" id="llmStatus" role="status"></span>
 
     <h3>You &amp; your day</h3>
     <div class="fld"><span>Shelly calls you</span><select id="callMe">
@@ -112,6 +113,14 @@
 <!--about:kpis--><details class="about"><summary>What is this?</summary><p>Six headline numbers for the last 7 days: sales, budget gap, gross margin, waste, delivery share and next week&#x27;s forecast. Each is compared with last week, last year or a target.</p><a href="guide/kpis.html">In-depth guide →</a></details><!--/about-->
   <div class="facts" id="kpis"></div>
   <p class="note small">Tap any number to ask Shelly about it.</p>
+</section>
+
+<!-- ============ REPORTS (v1.1) ============ -->
+<section id="s-reports">
+  <h2>Reports</h2>
+<!--about:reports--><details class="about"><summary>What is this?</summary><p>Eleven report types (budget, 13-week forecast, weekly trading, category review, roster, stock, waste and four industry packs), each as an on-screen report, a PDF and an Excel workbook with dashboard, live formulas, PivotTables, lookups and raw data.</p><a href="guide/reports.html">In-depth guide →</a></details><!--/about-->
+  <p class="note">Every report opens on screen, saves as a PDF (white for printing, or the dark Shelly look for presenting) and downloads as an Excel workbook with a dashboard, live formulas, PivotTables, lookups and the raw data. Or just ask: <b>"make a budget for the next 3 months"</b>.</p>
+  <div class="grid2" id="repList"><p class="small">Loading reports…</p></div>
 </section>
 
 <!-- ============ ACTIONS ============ -->

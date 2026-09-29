@@ -54,3 +54,15 @@ for old in glob.glob(str(ROOT / "docs/example/Weekly_Sales_Digest_*.xlsx")):
     if Path(old).name != Path(res["files"]["excel"]).name:
         Path(old).unlink()
 print("Site refreshed: docs/index.html now shows week ending", res["prepared"].asof.date())
+
+# 3) v1.1 report engine: every report as a web page spec + an Excel workbook (dashboard, model, pivots, raw, lookups)
+from shelly import __version__  # noqa: E402
+from shelly.reports.build import build_all, write_web_bundle  # noqa: E402
+from shelly.reports.context import Ctx  # noqa: E402
+
+cfg = yaml.safe_load(open(ROOT / "config.yaml"))
+ctx = Ctx(res["prepared"], res["results"], cfg, res["actions"], res["summary"], __version__, cfg["store"]["name"],
+          synthetic=Path(a.data).resolve() == (ROOT / "data/sample").resolve())
+rep = build_all(ctx, ROOT / "docs/reports", xlsx=True, with_cache=True)
+write_web_bundle(rep, ROOT / "docs/data/shelly-reports.js")
+print(f"Reports: {len(rep['specs'])} report views, {len(rep['files'])} Excel workbooks in docs/reports/")
