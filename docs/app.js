@@ -88,11 +88,12 @@ const REGIONS = [
   ["fil-PH", "Filipino"], ["es-ES", "Spanish"], ["fr-FR", "French"], ["de-DE", "German"], ["pt-BR", "Portuguese · Brazil"],
   ["ar-SA", "Arabic"],
 ];
+const PREFERRED_VOICES = ["Google UK English Male", "Microsoft Ryan Online", "Microsoft Ryan", "Microsoft George", "Microsoft Thomas Online", "Daniel"];
 const regionName = code => (REGIONS.find(r => r[0] === code) || [code, code])[1];
 const isEnglish = code => /^en/i.test(code);
 const Voice = {
   on: store.get("voiceOn", true),
-  rate: store.get("rate", 1),
+  rate: store.get("rate", 1.1),
   pitch: store.get("pitch", 1),
   region: store.get("region", "en-NZ"),
   voiceName: store.get("voice", ""),
@@ -120,7 +121,13 @@ const Voice = {
       `<optgroup label="${esc(lab)}">${vs.map(v => `<option value="${esc(v.name)}">${esc(v.name)} (${esc(v.lang)})</option>`).join("")}</optgroup>`).join("")
       || "<option value=''>Device default</option>";
     const pool = [...exact, ...same, ...eng];
-    if (!pool.find(v => v.name === this.voiceName)) this.voiceName = (exact[0] || same[0] || eng[0] || {}).name || "";
+    if (!pool.find(v => v.name === this.voiceName)) {
+      // default: a UK English male voice (Chrome: Google UK English Male; Edge/Windows: Ryan/George; iPhone/Mac: Daniel)
+      const pref = !store.get("voice", "") && isEnglish(loc) &&
+        (PREFERRED_VOICES.map(n => this.all.find(v => v.name.startsWith(n))).find(Boolean) ||
+         this.all.find(v => /^en-GB/i.test(v.lang.replace("_", "-")) && /male/i.test(v.name) && !/female/i.test(v.name)));
+      this.voiceName = (pref || exact[0] || same[0] || eng[0] || {}).name || "";
+    }
     $("#voiceSel").value = this.voiceName;
     const nonEn = !isEnglish(this.region), rules = store.get("engine", "rules") === "rules";
     $("#voiceNote").textContent =
