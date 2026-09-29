@@ -121,13 +121,14 @@ const Voice = {
       `<optgroup label="${esc(lab)}">${vs.map(v => `<option value="${esc(v.name)}">${esc(v.name)} (${esc(v.lang)})</option>`).join("")}</optgroup>`).join("")
       || "<option value=''>Device default</option>";
     const pool = [...exact, ...same, ...eng];
-    if (!pool.find(v => v.name === this.voiceName)) {
-      // default: a UK English male voice (Chrome: Google UK English Male; Edge/Windows: Ryan/George; iPhone/Mac: Daniel)
-      const pref = !store.get("voice", "") && isEnglish(loc) &&
-        (PREFERRED_VOICES.map(n => this.all.find(v => v.name.startsWith(n))).find(Boolean) ||
-         this.all.find(v => /^en-GB/i.test(v.lang.replace("_", "-")) && /male/i.test(v.name) && !/female/i.test(v.name)));
-      this.voiceName = (pref || exact[0] || same[0] || eng[0] || {}).name || "";
-    }
+    // Voices load in stages (Chrome adds its Google voices a moment later), so never lock in a
+    // fallback: re-pick on every load. Saved choice first, then a UK English male voice, then closest.
+    const saved = store.get("voice", "");
+    const pick = (saved && pool.find(v => v.name === saved)) ||
+      (isEnglish(loc) && (PREFERRED_VOICES.map(n => this.all.find(v => v.name.startsWith(n))).find(Boolean) ||
+        this.all.find(v => /^en-GB/i.test(v.lang.replace("_", "-")) && /male/i.test(v.name) && !/female/i.test(v.name)))) ||
+      exact[0] || same[0] || eng[0];
+    this.voiceName = pick ? pick.name : "";
     $("#voiceSel").value = this.voiceName;
     const nonEn = !isEnglish(this.region), rules = store.get("engine", "rules") === "rules";
     $("#voiceNote").textContent =
@@ -145,6 +146,7 @@ const Voice = {
   },
   speak(text, onend) {
     if (!this.synth || !this.on) { onend && onend(); return; }
+    if (this.synth.getVoices().length !== this.all.length) this.loadVoices();   // pick up late-loading voices
     this.synth.cancel();
     const u = new SpeechSynthesisUtterance(this.clean(text).slice(0, 1500));
     const v = this.all.find(v => v.name === this.voiceName);
@@ -1062,7 +1064,7 @@ function setupSettings() {
   $("#regionSel").innerHTML = `<optgroup label="English">${REGIONS.filter(r => isEnglish(r[0])).map(([c, n]) => `<option value="${c}">${esc(n)}</option>`).join("")}</optgroup>` +
     `<optgroup label="Other languages">${REGIONS.filter(r => !isEnglish(r[0])).map(([c, n]) => `<option value="${c}">${esc(n)}</option>`).join("")}</optgroup>`;
   $("#regionSel").value = Voice.region;
-  $("#regionSel").onchange = e => { Voice.region = e.target.value; store.set("region", Voice.region); Voice.voiceName = ""; Voice.loadVoices(); if (rec) rec.lang = Voice.region; };
+  $("#regionSel").onchange = e => { Voice.region = e.target.value; store.set("region", Voice.region); store.set("voice", ""); Voice.loadVoices(); if (rec) rec.lang = Voice.region; };
   $("#rate").value = Voice.rate; $("#rateV").textContent = (+Voice.rate).toFixed(2);
   $("#rate").oninput = e => { Voice.rate = +e.target.value; $("#rateV").textContent = Voice.rate.toFixed(2); store.set("rate", Voice.rate); };
   $("#pitch").value = Voice.pitch; $("#pitchV").textContent = (+Voice.pitch).toFixed(2);
