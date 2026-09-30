@@ -117,6 +117,19 @@ def main():
     sys.path.insert(0, str(ROOT / "scripts"))
     from business_switch import switch_html
     SWITCH = switch_html("../", "launchpad")
+    boot_lines = [f"› starting Shelly v{m.get('version', '')} · {len(skills)} skills across {len(packs)} packs",
+                  f"› Neighbourhood store · {money(k['sales'])} this week · {vs:+.1f}% vs budget",
+                  (f"› Tōtara Medical · sales {sc['vision']['total']['ach'] * 100:.1f}% of plan · {sck['at_risk_skus']}/{sck['skus']} SKUs need action"
+                   if sc else "› Tōtara Medical · module not built yet"),
+                  "› reports · 11 types · Excel, PDF and presentation",
+                  f"› governance · {pending} decisions waiting for you",
+                  "› TD Report scheduled for 6:15am NZ"]
+    BOOT = ('<div id="boot" aria-live="polite"><div class="boot-in"><span class="tag">Shelly · launchpad</span>'
+            '<div class="boot-orbs" aria-hidden="true"><i class="a"></i><i class="b"></i><i class="c"></i></div>'
+            '<h2 class="boot-h">Opening <b>every workspace</b></h2>'
+            f'<pre id="bootLog" data-lines="{html.escape(json.dumps(boot_lines, ensure_ascii=False))}"></pre>'
+            '<button id="skipBoot" type="button">Skip</button></div></div>')
+    (OUT / "launchpad.js").write_text(BOOT_JS)
     (OUT / "index.html").write_text(f"""<!doctype html>
 <html lang="en">
 <head>
@@ -134,6 +147,7 @@ def main():
 <link rel="stylesheet" href="../switch.css">
 </head>
 <body>
+{BOOT}
 {SWITCH}
 <div class="wrap">
 <header>
@@ -153,6 +167,7 @@ def main():
   <span><a href="../digest.html">Classic digest (v0.1)</a></span>
 </footer>
 </div>
+<script src="launchpad.js"></script>
 </body>
 </html>
 """)
@@ -206,7 +221,42 @@ a.card:hover .go{color:var(--accent);transform:translateX(3px)}
 .ring .ok{fill:var(--ok)}.ring .warn{fill:var(--warn)}.ring .bad{fill:var(--bad)}
 @keyframes blink{0%,100%{opacity:.35}12%{opacity:1}}
 @media (prefers-reduced-motion:reduce){.ring .d{animation:none}a.card,.go{transition:none}}
+#boot{position:fixed;inset:0;z-index:50;background:var(--void);display:grid;place-items:center;padding:24px;transition:opacity .6s ease,visibility .6s}
+#boot.done{opacity:0;visibility:hidden}
+.boot-in{width:min(560px,100%)}
+.boot-h{margin:14px 0 0;font-size:clamp(22px,4.6vw,32px);font-weight:300;color:var(--ink);letter-spacing:-.02em}.boot-h b{font-weight:600}
+.boot-orbs{display:flex;gap:10px;margin-top:20px}
+.boot-orbs i{width:12px;height:12px;border-radius:50%;opacity:.25;animation:orb 1.2s ease-in-out infinite}
+.boot-orbs .a{background:var(--accent)}.boot-orbs .b{background:var(--new);animation-delay:.2s}.boot-orbs .c{background:var(--ok);animation-delay:.4s}
+@keyframes orb{0%,100%{opacity:.25;transform:scale(.85)}50%{opacity:1;transform:scale(1.15)}}
+#bootLog{font-family:var(--mono);font-size:12.5px;line-height:1.9;color:var(--ink-2);white-space:pre-wrap;min-height:170px;margin:14px 0 0}
+#bootLog .ok{color:var(--accent)}
+#skipBoot{font-family:var(--mono);font-size:11px;background:none;border:1px solid var(--etch);color:var(--ink-3);border-radius:3px;padding:6px 12px;cursor:pointer}
+#skipBoot:hover{color:var(--ink);border-color:var(--accent)}
+@media (prefers-reduced-motion:reduce){.boot-orbs i{animation:none;opacity:1}}
 footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--etch-2);display:flex;flex-wrap:wrap;gap:8px 22px;font-size:12.5px;color:var(--ink-3)}
+"""
+
+BOOT_JS = """/* Launchpad boot sequence: quick on repeat visits in the same tab; Skip jumps straight in */
+(async function () {
+  const box = document.getElementById("boot"), log = document.getElementById("bootLog");
+  if (!box || !log) return;
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  let skip = false, quick = false, lines = [];
+  try { lines = JSON.parse(log.dataset.lines || "[]"); } catch (e) {}
+  try { quick = sessionStorage.getItem("launchpad.booted") === "1"; sessionStorage.setItem("launchpad.booted", "1"); } catch (e) {}
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) quick = true;
+  document.getElementById("skipBoot").onclick = () => { skip = true; };
+  for (const t of lines) {
+    if (skip) break;
+    log.insertAdjacentText("beforeend", t + "\\n");
+    await sleep(quick ? 50 : 360);
+  }
+  const ok = document.createElement("span"); ok.className = "ok"; ok.textContent = "✓ Launchpad ready."; log.appendChild(ok);
+  await sleep(skip || quick ? 80 : 450);
+  box.classList.add("done");
+  setTimeout(() => box.remove(), 700);
+})();
 """
 
 if __name__ == "__main__":

@@ -45,4 +45,17 @@ a.card:hover .go{color:var(--accent);transform:translateX(3px)}
 .ring .ok{fill:var(--ok)}.ring .warn{fill:var(--warn)}.ring .bad{fill:var(--bad)}
 @keyframes blink{0%,100%{opacity:.35}12%{opacity:1}}
 @media (prefers-reduced-motion:reduce){.ring .d{animation:none}a.card,.go{transition:none}}
+#boot{position:fixed;inset:0;z-index:50;background:var(--void);display:grid;place-items:center;padding:24px;transition:opacity .6s ease,visibility .6s}
+#boot.done{opacity:0;visibility:hidden}
+.boot-in{width:min(560px,100%)}
+.boot-h{margin:14px 0 0;font-size:clamp(22px,4.6vw,32px);font-weight:300;color:var(--ink);letter-spacing:-.02em}.boot-h b{font-weight:600}
+.boot-orbs{display:flex;gap:10px;margin-top:20px}
+.boot-orbs i{width:12px;height:12px;border-radius:50%;opacity:.25;animation:orb 1.2s ease-in-out infinite}
+.boot-orbs .a{background:var(--accent)}.boot-orbs .b{background:var(--new);animation-delay:.2s}.boot-orbs .c{background:var(--ok);animation-delay:.4s}
+@keyframes orb{0%,100%{opacity:.25;transform:scale(.85)}50%{opacity:1;transform:scale(1.15)}}
+#bootLog{font-family:var(--mono);font-size:12.5px;line-height:1.9;color:var(--ink-2);white-space:pre-wrap;min-height:170px;margin:14px 0 0}
+#bootLog .ok{color:var(--accent)}
+#skipBoot{font-family:var(--mono);font-size:11px;background:none;border:1px solid var(--etch);color:var(--ink-3);border-radius:3px;padding:6px 12px;cursor:pointer}
+#skipBoot:hover{color:var(--ink);border-color:var(--accent)}
+@media (prefers-reduced-motion:reduce){.boot-orbs i{animation:none;opacity:1}}
 footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--etch-2);display:flex;flex-wrap:wrap;gap:8px 22px;font-size:12.5px;color:var(--ink-3)}

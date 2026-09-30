@@ -39,12 +39,13 @@
     </div>
   </header>
 
-  <div class="pipe" aria-label="Shelly pipeline">
-    <div class="st"><b>Ingest</b><span id="p1"></span></div><span class="ar">›</span>
-    <div class="st"><b>Model</b><span id="p2"></span></div><span class="ar">›</span>
-    <div class="st"><b>Judge</b><span id="p3"></span></div><span class="ar">›</span>
-    <div class="st on"><b>Brief → Pavi confirms</b><span id="p4"></span></div>
+  <div class="pipe" aria-label="Shelly pipeline: tap a step to see it">
+    <div class="st" role="button" tabindex="0" data-step="ingest" aria-controls="pipeDetail"><span class="go">open ›</span><b>Ingest</b><span id="p1"></span></div><span class="ar">›</span>
+    <div class="st" role="button" tabindex="0" data-step="model" aria-controls="pipeDetail"><span class="go">open ›</span><b>Model</b><span id="p2"></span></div><span class="ar">›</span>
+    <div class="st" role="button" tabindex="0" data-step="judge" aria-controls="pipeDetail"><span class="go">open ›</span><b>Judge</b><span id="p3"></span></div><span class="ar">›</span>
+    <div class="st on" role="button" tabindex="0" data-step="brief" aria-controls="pipeDetail"><span class="go">open ›</span><b>Brief → Pavi confirms</b><span id="p4"></span></div>
   </div>
+  <div class="pipe-detail" id="pipeDetail" hidden aria-live="polite"></div>
 
   <section class="kpis" id="kpis"></section>
 

@@ -101,6 +101,26 @@ footer{font-size:11.5px;color:var(--muted);display:flex;justify-content:space-be
 @keyframes pulseMark{0%,100%{box-shadow:0 0 0 0 rgba(182,156,242,.45)}50%{box-shadow:0 0 0 12px rgba(182,156,242,0)}}
 @media (prefers-reduced-motion:reduce){.boot-net circle,.boot-mark .ic{animation:none}}
 @media print{#boot{display:none}}
+/* ---------- interactive pipeline + KPI tiles ---------- */
+.pipe .st,.kpi{cursor:pointer;transition:border-color .2s,background .2s,transform .2s,outline-color .2s;position:relative}
+.pipe .st:hover,.pipe .st:focus-visible{outline:1px solid #b69cf2;background:rgba(182,156,242,.08)}
+.pipe .st.sel{outline:1px solid #b69cf2;background:rgba(182,156,242,.12)}
+.kpi:hover,.kpi:focus-visible{border-color:#b69cf2;transform:translateY(-2px);outline:none}
+.kpi .go,.pipe .st .go{position:absolute;right:10px;top:8px;font-family:var(--mono);font-size:11px;color:var(--muted);opacity:.0;transition:opacity .2s}
+.kpi:hover .go,.kpi:focus-visible .go,.pipe .st:hover .go,.pipe .st:focus-visible .go{opacity:1;color:#b69cf2}
+.pipe-detail{border:1px solid var(--line);background:var(--panel);border-radius:3px;padding:12px 14px;display:grid;gap:8px}
+.pipe-detail[hidden]{display:none}
+.pipe-detail h3{margin:0;font-size:13px;color:var(--fg)}
+.pipe-detail .facts{display:flex;flex-wrap:wrap;gap:8px}
+.pipe-detail .facts span{font-family:var(--mono);font-size:11.5px;border:1px solid var(--line);border-radius:3px;padding:5px 8px;background:var(--panel2)}
+.pipe-detail .facts b{font-weight:600}
+.pipe-detail p{margin:0;font-size:12.5px;color:var(--muted)}
+.pipe-detail .acts{display:flex;flex-wrap:wrap;gap:8px}
+.pipe-detail .acts button{font-family:var(--mono);font-size:11px;background:var(--panel2);color:var(--fg);border:1px solid var(--line);border-radius:3px;padding:6px 10px;cursor:pointer}
+.pipe-detail .acts button:hover{border-color:#b69cf2}
+.flash{animation:flash 1.6s ease}
+@keyframes flash{0%{box-shadow:0 0 0 0 rgba(182,156,242,.0)}20%{box-shadow:0 0 0 3px rgba(182,156,242,.55)}100%{box-shadow:0 0 0 0 rgba(182,156,242,0)}}
+@media (prefers-reduced-motion:reduce){.kpi,.pipe .st{transition:none}.kpi:hover{transform:none}.flash{animation:none}}
 /*VISION_CSS*/
 </style>
 
@@ -126,12 +146,13 @@ footer{font-size:11.5px;color:var(--muted);display:flex;justify-content:space-be
     </div>
   </header>
 
-  <div class="pipe" aria-label="Shelly pipeline">
-    <div class="st"><b>Ingest</b><span id="p1"></span></div><span class="ar">›</span>
-    <div class="st"><b>Model</b><span id="p2"></span></div><span class="ar">›</span>
-    <div class="st"><b>Judge</b><span id="p3"></span></div><span class="ar">›</span>
-    <div class="st on"><b>Brief → Pavi confirms</b><span id="p4"></span></div>
+  <div class="pipe" aria-label="Shelly pipeline: tap a step to see it">
+    <div class="st" role="button" tabindex="0" data-step="ingest" aria-controls="pipeDetail"><span class="go">open ›</span><b>Ingest</b><span id="p1"></span></div><span class="ar">›</span>
+    <div class="st" role="button" tabindex="0" data-step="model" aria-controls="pipeDetail"><span class="go">open ›</span><b>Model</b><span id="p2"></span></div><span class="ar">›</span>
+    <div class="st" role="button" tabindex="0" data-step="judge" aria-controls="pipeDetail"><span class="go">open ›</span><b>Judge</b><span id="p3"></span></div><span class="ar">›</span>
+    <div class="st on" role="button" tabindex="0" data-step="brief" aria-controls="pipeDetail"><span class="go">open ›</span><b>Brief → Pavi confirms</b><span id="p4"></span></div>
   </div>
+  <div class="pipe-detail" id="pipeDetail" hidden aria-live="polite"></div>
 
   <section class="kpis" id="kpis"></section>
 
@@ -236,7 +257,47 @@ const kp = [
  ["Stock on hand", nzk(K.stock_value), `median cover ${K.median_cover} days`, ""],
  ["Sales vs plan · 12 wks", pct(DATA.vision.total.ach,1), `${nzk(DATA.vision.total.actual)} vs ${nzk(DATA.vision.total.plan)} plan`, DATA.vision.total.ach>=1?"good":"warn"],
 ];
-$("#kpis").innerHTML = kp.map(([l,v,s,c])=>`<div class="kpi ${c}"><span class="eyebrow">${l}</span><span class="v">${v}</span><span class="s">${s}</span></div>`).join("");
+const kpTarget = ["revenue", "tab:Inventory & reorder", "tab:Inventory & reorder", "tab:Supplier scorecard", "tab:Inbound shipments",
+                  "tab:Expiry (FEFO)", "tab:Inventory & reorder", "vision"];
+$("#kpis").innerHTML = kp.map(([l,v,s,c],i)=>`<div class="kpi ${c}" role="button" tabindex="0" data-go="${kpTarget[i]}" title="Open the detail"><span class="go">open ›</span><span class="eyebrow">${l}</span><span class="v">${v}</span><span class="s">${s}</span></div>`).join("");
+
+// ---------- interactive: tiles and pipeline steps open the detail behind the number
+function flashEl(el){ if(!el) return; el.scrollIntoView({behavior:"smooth",block:"start"}); el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); }
+function goTo(target){
+  if (target.startsWith("tab:")) { const name = target.slice(4); if (typeof openTab === "function") openTab(name); return; }
+  if (target === "vision") { const f = document.querySelector('#vfilters [data-f="behind"]'); flashEl(document.querySelector(".vb")); if (f && DATA.vision.total.ach < 1) f.click(); return; }
+  if (target === "revenue") { flashEl(document.querySelector("section.split .panel")); return; }
+  if (target === "brief") { flashEl(document.querySelector(".panel.brief")); return; }
+  if (target === "esc") { flashEl($("#esc").closest(".panel")); return; }
+}
+function onActivate(sel, fn){ document.querySelectorAll(sel).forEach(el => {
+  el.addEventListener("click", () => fn(el));
+  el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fn(el); } }); }); }
+onActivate("#kpis .kpi", el => goTo(el.dataset.go));
+const STEP = {
+  ingest: () => `<h3>Ingest: what came in</h3><div class="facts"><span><b>${K.suppliers}</b> suppliers</span><span><b>${K.skus}</b> SKUs</span><span><b>${K.customers}</b> customers</span>
+     <span><b>${K.inbound_pos}</b> open POs</span><span><b>${DATA.expiry.length}</b> short-dated batches</span><span>24 months · NZD · data to ${$("#asof").textContent}</span></div>
+     <p>Sales, purchase orders, batches with expiry dates, supplier lead times and client orders are loaded and checked before any number is used. Demo data is synthetic.</p>
+     <div class="acts"><button data-go="tab:Inventory & reorder">Inventory ›</button><button data-go="tab:Customers & segments">Clients ›</button><button data-go="tab:Supplier scorecard">Suppliers ›</button></div>`,
+  model: () => `<h3>Model: forecasts and risk</h3><div class="facts"><span>SARIMA-X WAPE <b>${pct(K.fc_wape)}</b></span><span>naive benchmark <b>${pct(K.fc_wape_naive)}</b></span>
+     <span><b>${K.at_risk_skus}</b> SKUs at stock-out risk</span><span>expiry at risk <b>${nzk(K.expiry_at_risk_value)}</b></span><span>OTIF 90d <b>${pct(K.otif_90)}</b></span></div>
+     <p>Weekly demand per SKU is forecast with seasonality (winter illness, winter sport) and checked on an 8-week holdout; reorder points use a 95% service level.</p>
+     <div class="acts"><button data-go="tab:Demand forecast">Demand forecast ›</button><button data-go="tab:Expiry (FEFO)">Expiry ›</button><button data-go="vision">Vision board ›</button></div>`,
+  judge: () => `<h3>Judge: what needs a person</h3><div class="facts">${Object.entries(DATA.escalate.reduce((a,e)=>(a[e.kind]=(a[e.kind]||0)+1,a),{})).map(([k,n])=>`<span><b>${n}</b> ${k}</span>`).join("")}</div>
+     <p>Stock-out, expiry and clearance-hold calls are proposals. Nothing is ordered, discounted or chased until you approve it.</p>
+     <div class="acts"><button data-go="esc">Review escalations ›</button></div>`,
+  brief: () => `<h3>Brief: you confirm</h3><p>${DATA.brief.length} points in this Monday's brief. Approve, dismiss or note each escalation; your answers are kept on this device.</p>
+     <div class="acts"><button data-go="brief">Read the brief ›</button><button data-go="esc">Decide escalations ›</button></div>`,
+};
+let openStep = null;
+onActivate(".pipe .st", el => {
+  const box = $("#pipeDetail"), st = el.dataset.step;
+  document.querySelectorAll(".pipe .st").forEach(x => x.classList.toggle("sel", x === el && openStep !== st));
+  if (openStep === st) { box.hidden = true; openStep = null; el.setAttribute("aria-expanded","false"); return; }
+  openStep = st; box.innerHTML = STEP[st](); box.hidden = false;
+  document.querySelectorAll(".pipe .st").forEach(x => x.setAttribute("aria-expanded", String(x === el)));
+  box.querySelectorAll("[data-go]").forEach(b => b.onclick = () => goTo(b.dataset.go));
+});
 
 // Brief + escalations (decisions kept per viewer)
 $("#brief").innerHTML = DATA.brief.map(b=>`<li>${b}</li>`).join("");
@@ -385,6 +446,7 @@ const names=Object.keys(views); let active=names[0];
 try{const h=location.hash.slice(1);const i=+h;if(h&&names[i])active=names[i]}catch(e){}
 function renderTabs(){$("#tabs").innerHTML=names.map((n,i)=>`<button class="tab" role="tab" aria-selected="${n===active}" data-t="${i}">${n}</button>`).join("");}
 $("#tabs").addEventListener("click",e=>{const b=e.target.closest(".tab");if(!b)return;active=names[+b.dataset.t];renderTabs();views[active]();});
+function openTab(name){ if(!views[name]) return; active=name; renderTabs(); views[active](); flashEl($("#tabs").closest(".panel")); }
 renderTabs(); views[active]();
 
 // Bottom strips

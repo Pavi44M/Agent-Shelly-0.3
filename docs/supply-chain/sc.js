@@ -56,7 +56,47 @@ const kp = [
  ["Stock on hand", nzk(K.stock_value), `median cover ${K.median_cover} days`, ""],
  ["Sales vs plan · 12 wks", pct(DATA.vision.total.ach,1), `${nzk(DATA.vision.total.actual)} vs ${nzk(DATA.vision.total.plan)} plan`, DATA.vision.total.ach>=1?"good":"warn"],
 ];
-$("#kpis").innerHTML = kp.map(([l,v,s,c])=>`<div class="kpi ${c}"><span class="eyebrow">${l}</span><span class="v">${v}</span><span class="s">${s}</span></div>`).join("");
+const kpTarget = ["revenue", "tab:Inventory & reorder", "tab:Inventory & reorder", "tab:Supplier scorecard", "tab:Inbound shipments",
+                  "tab:Expiry (FEFO)", "tab:Inventory & reorder", "vision"];
+$("#kpis").innerHTML = kp.map(([l,v,s,c],i)=>`<div class="kpi ${c}" role="button" tabindex="0" data-go="${kpTarget[i]}" title="Open the detail"><span class="go">open ›</span><span class="eyebrow">${l}</span><span class="v">${v}</span><span class="s">${s}</span></div>`).join("");
+
+// ---------- interactive: tiles and pipeline steps open the detail behind the number
+function flashEl(el){ if(!el) return; el.scrollIntoView({behavior:"smooth",block:"start"}); el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); }
+function goTo(target){
+  if (target.startsWith("tab:")) { const name = target.slice(4); if (typeof openTab === "function") openTab(name); return; }
+  if (target === "vision") { const f = document.querySelector('#vfilters [data-f="behind"]'); flashEl(document.querySelector(".vb")); if (f && DATA.vision.total.ach < 1) f.click(); return; }
+  if (target === "revenue") { flashEl(document.querySelector("section.split .panel")); return; }
+  if (target === "brief") { flashEl(document.querySelector(".panel.brief")); return; }
+  if (target === "esc") { flashEl($("#esc").closest(".panel")); return; }
+}
+function onActivate(sel, fn){ document.querySelectorAll(sel).forEach(el => {
+  el.addEventListener("click", () => fn(el));
+  el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fn(el); } }); }); }
+onActivate("#kpis .kpi", el => goTo(el.dataset.go));
+const STEP = {
+  ingest: () => `<h3>Ingest: what came in</h3><div class="facts"><span><b>${K.suppliers}</b> suppliers</span><span><b>${K.skus}</b> SKUs</span><span><b>${K.customers}</b> customers</span>
+     <span><b>${K.inbound_pos}</b> open POs</span><span><b>${DATA.expiry.length}</b> short-dated batches</span><span>24 months · NZD · data to ${$("#asof").textContent}</span></div>
+     <p>Sales, purchase orders, batches with expiry dates, supplier lead times and client orders are loaded and checked before any number is used. Demo data is synthetic.</p>
+     <div class="acts"><button data-go="tab:Inventory & reorder">Inventory ›</button><button data-go="tab:Customers & segments">Clients ›</button><button data-go="tab:Supplier scorecard">Suppliers ›</button></div>`,
+  model: () => `<h3>Model: forecasts and risk</h3><div class="facts"><span>SARIMA-X WAPE <b>${pct(K.fc_wape)}</b></span><span>naive benchmark <b>${pct(K.fc_wape_naive)}</b></span>
+     <span><b>${K.at_risk_skus}</b> SKUs at stock-out risk</span><span>expiry at risk <b>${nzk(K.expiry_at_risk_value)}</b></span><span>OTIF 90d <b>${pct(K.otif_90)}</b></span></div>
+     <p>Weekly demand per SKU is forecast with seasonality (winter illness, winter sport) and checked on an 8-week holdout; reorder points use a 95% service level.</p>
+     <div class="acts"><button data-go="tab:Demand forecast">Demand forecast ›</button><button data-go="tab:Expiry (FEFO)">Expiry ›</button><button data-go="vision">Vision board ›</button></div>`,
+  judge: () => `<h3>Judge: what needs a person</h3><div class="facts">${Object.entries(DATA.escalate.reduce((a,e)=>(a[e.kind]=(a[e.kind]||0)+1,a),{})).map(([k,n])=>`<span><b>${n}</b> ${k}</span>`).join("")}</div>
+     <p>Stock-out, expiry and clearance-hold calls are proposals. Nothing is ordered, discounted or chased until you approve it.</p>
+     <div class="acts"><button data-go="esc">Review escalations ›</button></div>`,
+  brief: () => `<h3>Brief: you confirm</h3><p>${DATA.brief.length} points in this Monday's brief. Approve, dismiss or note each escalation; your answers are kept on this device.</p>
+     <div class="acts"><button data-go="brief">Read the brief ›</button><button data-go="esc">Decide escalations ›</button></div>`,
+};
+let openStep = null;
+onActivate(".pipe .st", el => {
+  const box = $("#pipeDetail"), st = el.dataset.step;
+  document.querySelectorAll(".pipe .st").forEach(x => x.classList.toggle("sel", x === el && openStep !== st));
+  if (openStep === st) { box.hidden = true; openStep = null; el.setAttribute("aria-expanded","false"); return; }
+  openStep = st; box.innerHTML = STEP[st](); box.hidden = false;
+  document.querySelectorAll(".pipe .st").forEach(x => x.setAttribute("aria-expanded", String(x === el)));
+  box.querySelectorAll("[data-go]").forEach(b => b.onclick = () => goTo(b.dataset.go));
+});
 
 // Brief + escalations (decisions kept per viewer)
 $("#brief").innerHTML = DATA.brief.map(b=>`<li>${b}</li>`).join("");
@@ -525,6 +565,7 @@ const names=Object.keys(views); let active=names[0];
 try{const h=location.hash.slice(1);const i=+h;if(h&&names[i])active=names[i]}catch(e){}
 function renderTabs(){$("#tabs").innerHTML=names.map((n,i)=>`<button class="tab" role="tab" aria-selected="${n===active}" data-t="${i}">${n}</button>`).join("");}
 $("#tabs").addEventListener("click",e=>{const b=e.target.closest(".tab");if(!b)return;active=names[+b.dataset.t];renderTabs();views[active]();});
+function openTab(name){ if(!views[name]) return; active=name; renderTabs(); views[active](); flashEl($("#tabs").closest(".panel")); }
 renderTabs(); views[active]();
 
 // Bottom strips
