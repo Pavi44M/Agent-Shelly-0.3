@@ -9,6 +9,36 @@ const n0 = v => v==null?"–":Math.round(v).toLocaleString("en-NZ");
 const dt = s => s?new Date(s+"T00:00").toLocaleDateString("en-NZ",{day:"2-digit",month:"short"}):"–";
 const K = DATA.kpi;
 
+// ---------- boot sequence (quick on repeat visits in the same tab; Skip to jump straight in)
+(async function boot(){
+  const box = document.getElementById("boot"), log = document.getElementById("bootLog");
+  if (!box) return;
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  let skip = false, quick = false;
+  try { quick = sessionStorage.getItem("totara.booted") === "1"; sessionStorage.setItem("totara.booted", "1"); } catch (e) {}
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) quick = true;
+  document.getElementById("skipBoot").onclick = () => { skip = true; };
+  const holds = K.holds ? ` · ${K.holds} on Medsafe/WAND hold` : "";
+  const lines = [
+    [`› connecting to Tōtara Medical Imports · ${K.suppliers} suppliers · ${K.skus} SKUs · ${K.customers} customers`, 420],
+    [`› reading 24 months of sales, purchase orders and batches`, 360],
+    [`› forecasting demand · SARIMA-X WAPE ${pct(K.fc_wape)} vs naive ${pct(K.fc_wape_naive)}`, 520],
+    [`› stock-out check · ${K.at_risk_skus} SKUs need action · ${K.stockouts} stocked out`, 360],
+    [`› FEFO expiry scan · ${nzk(K.expiry_at_risk_value)} won't sell before expiry`, 340],
+    [`› inbound · ${K.inbound_pos} open POs worth ${nzk(K.inbound_value)}${holds}`, 340],
+    [`› supplier OTIF 90 days ${pct(K.otif_90)} · ${DATA.escalate.length} judgements waiting for you`, 300],
+  ];
+  for (const [t, ms] of lines) {
+    if (skip) break;
+    log.insertAdjacentText("beforeend", t + "\n");
+    await sleep(quick ? 50 : ms);
+  }
+  log.insertAdjacentHTML("beforeend", '<span class="ok">✓ Supply Chain Command is ready.</span>');
+  await sleep(skip || quick ? 80 : 500);
+  box.classList.add("done");
+  setTimeout(() => box.remove(), 700);
+})();
+
 $("#asof").textContent = new Date(DATA.generated+"T00:00").toLocaleDateString("en-NZ",{weekday:"short",day:"numeric",month:"short",year:"numeric"});
 $("#p1").textContent = `${K.suppliers} suppliers · ${DATA.inventory.length} SKUs · ${K.customers} customers`;
 $("#p2").textContent = `SARIMA-X · WAPE ${pct(K.fc_wape)} vs naive ${pct(K.fc_wape_naive)}`;
