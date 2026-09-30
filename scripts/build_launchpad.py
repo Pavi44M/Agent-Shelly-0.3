@@ -95,7 +95,7 @@ def main():
          "11", "report types · Excel with live formulas and PivotTables", "Excel · PDF")
     if sc:
         tot = V["total"]
-        card("../supply-chain/", "Medical imports · new module", "Supply chain command",
+        card("../supply-chain/", "Medical imports · separate business", "Tōtara Medical Supply Chain Command",
              "Zoomable supplier → product → client vision board with weekly plan vs actual, stock-out and expiry risk, "
              "inbound holds, supplier OTIF and SARIMA-X forecasts.",
              f"{tot['ach'] * 100:.1f}%", f"network sales vs plan · 12 wks · {sck['at_risk_skus']}/{sck['skus']} SKUs need action",
@@ -114,6 +114,9 @@ def main():
          str(len(skills)), f"skills across {len(packs)} packs", "GitHub")
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "launchpad.css").write_text(CSS)
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from business_switch import switch_html
+    SWITCH = switch_html("../", "launchpad")
     (OUT / "index.html").write_text(f"""<!doctype html>
 <html lang="en">
 <head>
@@ -128,8 +131,10 @@ def main():
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap">
 <link rel="stylesheet" href="launchpad.css">
+<link rel="stylesheet" href="../switch.css">
 </head>
 <body>
+{SWITCH}
 <div class="wrap">
 <header>
   <span class="tag">Shelly v{html.escape(m.get('version', ''))} · Launchpad · Auckland, New Zealand</span>

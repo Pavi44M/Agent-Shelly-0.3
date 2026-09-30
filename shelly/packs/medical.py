@@ -1,6 +1,6 @@
 """Medical imports supply chain (module: modules/medical-supply-chain).
 
-A supply-chain command dashboard for a New Zealand importer of medicines,
+Tōtara Medical Supply Chain Command: a supply-chain dashboard for a New Zealand importer of medicines,
 medical consumables and medical equipment: stock-outs and reorder points,
 FEFO expiry risk, inbound shipments and Medsafe/WAND holds, supplier OTIF and
 risk, SARIMA-X demand forecasts, client segments and a zoomable

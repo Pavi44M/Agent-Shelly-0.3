@@ -41,7 +41,14 @@ def main():
         css = re.search(r"<style>(.*?)</style>", page, re.S).group(1)
         body = page[page.index("</style>") + len("</style>"):page.index(f'<script src="{D3_CDN}">')]
         js = re.findall(r"<script>(.*?)</script>", page, re.S)[-1].replace("const DATA = /*DATA*/null;", "")
-        body = body.replace("<!--BACK-->", '<a class="back" href="../launchpad/">← Shelly Launchpad</a>')
+        body = body.replace("<!--BACK-->", "")
+        sw = Path(__file__).resolve().parents[3] / "scripts" / "business_switch.py"
+        if sw.exists():   # inside the Shelly repo: add the big business toggle at the top
+            import importlib.util
+            spec = importlib.util.spec_from_file_location("business_switch", sw)
+            mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+            body = mod.switch_html("../", "medical") + body
+            links += '\n<link rel="stylesheet" href="../switch.css">'
         css += "\n.back{display:inline-block;font-family:var(--mono);font-size:11px;color:var(--accent);text-decoration:none;margin-bottom:6px}.back:hover{text-decoration:underline}"
         (out / "sc.css").write_text(css)
         (out / "sc.js").write_text(js)
@@ -59,7 +66,7 @@ def main():
 <meta name="author" content="Pavithra Bamunu">
 <meta http-equiv="Content-Security-Policy" content="{CSP}">
 <meta name="referrer" content="no-referrer">
-<meta name="description" content="Shelly supply-chain module: a medical-imports command dashboard with a zoomable supplier to product to client vision board. Synthetic demo data.">
+<meta name="description" content="Tōtara Medical Supply Chain Command (Shelly): a medical-imports command dashboard with a zoomable supplier to product to client vision board. Synthetic demo data.">
 {links}
 <link rel="stylesheet" href="sc.css">
 <style>body{{margin:0}}</style>

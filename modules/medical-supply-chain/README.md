@@ -1,6 +1,6 @@
 # Shelly · Medical supply chain module
 
-A supply-chain command dashboard for a **New Zealand importer of medicines, medical consumables and medical equipment**, built as a skill for [Shelly](https://github.com/Pavi44M) — Pavi's personal analytics agent.
+**Tōtara Medical Supply Chain Command**: a supply-chain dashboard for a **New Zealand importer of medicines, medical consumables and medical equipment**, built as a skill for [Shelly](https://github.com/Pavi44M) — Pavi's personal analytics agent.
 
 It answers one question every Monday: **what needs my attention in the supply chain this week?**
 
