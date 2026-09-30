@@ -89,3 +89,13 @@ def test_connectors_folder_and_extension_registry(tmp_path):
     class Dummy(Connector):
         kind = "dummy_test"
     assert "dummy_test" in KINDS
+
+
+def test_medical_supply_chain_skills_and_routing():
+    from shelly.core.router import route
+    from shelly.core.skills import load_all
+    R = load_all()
+    assert R["medical.supply_chain"].confirm and R["medical.supply_chain"].pack == "medical"
+    r = route("which medical products will run out this week?")
+    assert r.in_scope and r.skill and r.skill.startswith("medical.")
+    assert not route("should I see a doctor about my knee").in_scope       # still out of scope

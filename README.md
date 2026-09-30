@@ -3,9 +3,16 @@
 ![tests](https://github.com/Pavi44M/Agent-Shelly-0.3/actions/workflows/tests.yml/badge.svg)
 ![Python](https://img.shields.io/badge/python-3.11-blue) ![License: MIT](https://img.shields.io/badge/license-MIT-green)
 
-**[▶ Talk to Shelly (live demo)](https://pavi44m.github.io/Agent-Shelly-0.3/)** · [Example Excel output](docs/example/) · [Portfolio](https://pavi44m.github.io/pavibamunu)
+**[🚀 Launchpad](https://pavi44m.github.io/Agent-Shelly-0.3/launchpad/)** · **[▶ Talk to Shelly (live demo)](https://pavi44m.github.io/Agent-Shelly-0.3/)** · [Supply chain (medical imports)](https://pavi44m.github.io/Agent-Shelly-0.3/supply-chain/) · [Example Excel output](docs/example/) · [Portfolio](https://pavi44m.github.io/pavibamunu)
 
 ![Shelly v0.2](docs/screenshot.png)
+
+## What's new: Launchpad and the medical supply-chain module
+
+- **[Launchpad](https://pavi44m.github.io/Agent-Shelly-0.3/launchpad/)**: one page that opens every part of Shelly (retail agent, supply chain, reports, industry packs, decisions, TD Report, skills), each card with a live figure. Rebuilt by `scripts/build_site.py` every week.
+- **[Supply chain command](https://pavi44m.github.io/Agent-Shelly-0.3/supply-chain/)** for a New Zealand importer of medicines, medical consumables and equipment ([`modules/medical-supply-chain`](modules/medical-supply-chain/)): a zoomable supplier → product → client **vision board** where every circle's dot ring shows the last 12 weeks of sales vs plan (or last 12 deliveries for suppliers); zoom in and circles become radial widgets, tap any circle or line for a landing widget with weekly plan vs actual, stock, OTIF and connections. Plus stock-out and reorder points, FEFO expiry risk, inbound shipments with Medsafe/WAND holds, supplier scorecard, SARIMA-X forecasts and client segments (hospitals, medical centres, sports and high-injury industries).
+- New **medical** pack skills: `medical.supply_chain` (stock-out, expiry and clearance escalations wait for your confirmation) and `medical.brief`. Shelly's relevance check now accepts supply-chain questions that mention "medical" while still sending medical *advice* questions elsewhere.
+- Synthetic data only; its shape is based on how NZ medical-import distributors work.
 
 ## What's new in v1.1 (big jump: reports that do the work)
 

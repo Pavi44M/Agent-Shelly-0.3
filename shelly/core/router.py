@@ -61,7 +61,7 @@ def route(text: str) -> Route:
     q = " " + re.sub(r"[\x00-\x1f\x7f]", " ", str(text))[:500].lower() + " "
     oos = next(((k, a) for k, rx, a in _OOS if rx.search(q)), None)
     domain = bool(DOMAIN.search(q))
-    if oos and (oos[0] != "general knowledge" or not domain) and not re.search(r"(order|stock|sales|store|shelly|report)", q):
+    if oos and (oos[0] != "general knowledge" or not domain) and not re.search(r"(order|stock|sales|store|shelly|report|supply|supplier|import|shipment|expir|inventory|product|client|customer|medsafe|otif)", q):
         return Route(False, kind=oos[0], advice=f"That's outside Shelly's skills. For {oos[0]}, connect {oos[1]} in Settings → Connected agents.")
     # best skill by overlap with trigger phrases + summary
     qw = _words(q)

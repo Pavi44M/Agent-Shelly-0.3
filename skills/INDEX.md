@@ -6,6 +6,8 @@
 | `electronics.attach_rate` | electronics | Accessory attach rate vs devices sold | no |
 | `electronics.price_erosion` | electronics | Average selling price vs RRP over time (price erosion) | no |
 | `electronics.sell_through` | electronics | Sell-through %, weeks of cover and stock risk per SKU | no |
+| `medical.brief` | medical | This week's medical supply-chain brief and escalations (from the last run) | no |
+| `medical.supply_chain` | medical | Medical-imports supply chain: stock-out risk, expiry, inbound holds, supplier OTIF, forecasts and the vision board | yes |
 | `production.oee` | production | OEE = availability × performance × quality, by line | no |
 | `production.schedule_adherence` | production | Actual vs scheduled output | no |
 | `production.scrap` | production | Scrap rate and scrap cost by line | no |

@@ -1,0 +1,344 @@
+<title>Tōtara Supply Command</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500;600&display=swap">
+<style>
+/* Layout: control-room grid — header question, KPI rail, network + Shelly brief, tabbed work areas, density strip */
+:root{
+  /* Shelly theme (docs/app.css) — dark only, same as the Shelly app and pavi44m.github.io/pavibamunu */
+  --bg:#070b12; --panel:#0f1622; --panel2:#141e2c; --line:#1f2a38; --line2:#172230;
+  --fg:#eaf0f6; --ink2:#b0bac8; --muted:#7d8a9c;
+  --accent:#63b6d8; --accent-soft:rgba(99,182,216,.12);
+  --ok:#3fb87f; --warn:#ffc466; --bad:#e66767; --info:#3987e5; --plum:#9085e9;
+  --display:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; --body:var(--display);
+  --mono:"JetBrains Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink2);font-family:var(--body);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h2,b,strong,td,.kpi .v,.meta b{color:var(--fg)}
+.wrap{max-width:1440px;margin:0 auto;padding-inline:16px;padding-block:18px 40px;display:grid;gap:14px}
+.mono{font-family:var(--mono)} .num{font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+ .eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
+header{padding-block:40px 6px;display:flex;flex-wrap:wrap;gap:14px 28px;align-items:flex-end;justify-content:space-between}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(28px,4.6vw,48px);line-height:1.05;margin:14px 0 0;text-wrap:balance;letter-spacing:-.03em;color:var(--fg)}
+h1 b{font-weight:600}
+.meta{display:flex;gap:22px;flex-wrap:wrap}
+.meta div{display:grid;gap:2px}.meta b{font-family:var(--mono);font-weight:600;font-size:13px}
+.live{color:var(--accent)} .live::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:6px;animation:pulse 2s infinite}
+@keyframes pulse{50%{opacity:.3}} @media (prefers-reduced-motion:reduce){.live::before{animation:none}}
+.pipe{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch;border:1px solid var(--line);background:var(--panel);padding:8px;border-radius:3px}
+.pipe .st{flex:1 1 170px;padding:6px 10px;border-radius:4px;background:var(--panel2);min-width:0}
+.pipe .st b{display:block;font-size:12.5px}.pipe .st span{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.pipe .st.on{outline:1px solid var(--accent);background:var(--accent-soft)}
+.pipe .ar{align-self:center;color:var(--muted);font-family:var(--mono)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px}
+.kpi{background:linear-gradient(165deg,var(--panel2),var(--panel) 62%);border:1px solid var(--line);border-radius:3px;padding:10px 12px;display:grid;gap:3px}
+.kpi .v{font-family:var(--mono);font-size:24px;font-weight:600;font-variant-numeric:tabular-nums}
+.kpi .s{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.kpi.bad .v{color:var(--bad)} .kpi.warn .v{color:var(--warn)} .kpi.good .v{color:var(--ok)}
+.main{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:14px;align-items:start}
+@media (max-width:1050px){.main{grid-template-columns:minmax(0,1fr)}}
+.panel{background:linear-gradient(165deg,var(--panel2),var(--panel) 62%);border:1px solid var(--line);border-radius:3px;padding:12px;min-width:0}
+.ph{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.ph h2{font-family:var(--display);font-size:15px;font-weight:500;margin:0}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+#net{width:100%;height:560px;display:block}
+#net text{font-family:var(--mono);font-size:10px;fill:var(--fg)}
+#net .lk{stroke:var(--muted);stroke-opacity:.22}
+.tip{position:fixed;pointer-events:none;background:var(--panel2);border:1px solid var(--line);padding:8px 10px;border-radius:5px;font-size:12px;max-width:260px;z-index:9;box-shadow:0 6px 24px rgba(0,0,0,.25)}
+.side{display:grid;gap:14px;align-content:start}
+.brief ol{margin:0;padding-left:18px;display:grid;gap:7px}
+.brief li{font-size:13px}
+.esc{display:grid;gap:8px;max-height:330px;overflow:auto}
+.esc .it{border-left:3px solid var(--warn);background:var(--panel2);padding:7px 10px;border-radius:0 4px 4px 0}
+.esc .it[data-k="Stock-out risk"]{border-color:var(--bad)} .esc .it[data-k="Clearance hold"]{border-color:var(--info)}
+.esc .it b{font-size:12.5px;display:block}.esc .it p{margin:3px 0 6px;font-size:12px;color:var(--muted)}
+.esc .row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.btn{font:inherit;font-size:11.5px;border:1px solid var(--line);background:transparent;color:var(--fg);padding:3px 9px;border-radius:4px;cursor:pointer}
+.btn:hover{border-color:var(--accent)} .btn:focus-visible,.tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn.yes{border-color:var(--accent);color:var(--accent)}
+.done{font-family:var(--mono);font-size:11px;color:var(--accent)}
+.pill{display:inline-block;font-family:var(--mono);font-size:10.5px;padding:1px 7px;border-radius:10px;border:1px solid currentColor;white-space:nowrap}
+.p-bad{color:var(--bad)}.p-warn{color:var(--warn)}.p-ok{color:var(--ok)}.p-info{color:var(--info)}.p-plum{color:var(--plum)}.p-mut{color:var(--muted)}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin-bottom:10px}
+.tab{font:inherit;font-family:var(--display);font-weight:500;font-size:13px;background:none;border:0;color:var(--muted);padding:8px 12px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab[aria-selected="true"]{color:var(--fg);border-color:var(--accent)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap;cursor:pointer}
+td{padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td.r,th.r{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono)}
+tr:hover td{background:var(--panel2)}
+.bar{height:6px;background:var(--panel2);border-radius:3px;min-width:70px;position:relative}
+.bar i{position:absolute;left:0;top:0;bottom:0;border-radius:3px}
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+@media (max-width:900px){.split{grid-template-columns:minmax(0,1fr)}}
+svg text{fill:var(--muted);font-family:var(--mono);font-size:10px}
+.axis line,.axis path{stroke:var(--line)}
+select{font:inherit;background:var(--panel2);color:var(--fg);border:1px solid var(--line);border-radius:4px;padding:4px 6px;max-width:100%}
+.note{font-size:11.5px;color:var(--muted);margin-top:8px}
+footer{font-size:11.5px;color:var(--muted);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+/*VISION_CSS*/
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <!--BACK--><div class="eyebrow">Tōtara Medical Imports · Shelly · Supply chain command</div>
+      <h1>What needs my attention in <b>the supply chain this week?</b></h1>
+    </div>
+    <div class="meta">
+      <div><span class="eyebrow">Status</span><b class="live">Synthetic demo</b></div>
+      <div><span class="eyebrow">Data as of</span><b id="asof"></b></div>
+      <div><span class="eyebrow">Window</span><b>24 months · NZD</b></div>
+    </div>
+  </header>
+
+  <div class="pipe" aria-label="Shelly pipeline">
+    <div class="st"><b>Ingest</b><span id="p1"></span></div><span class="ar">›</span>
+    <div class="st"><b>Model</b><span id="p2"></span></div><span class="ar">›</span>
+    <div class="st"><b>Judge</b><span id="p3"></span></div><span class="ar">›</span>
+    <div class="st on"><b>Brief → Pavi confirms</b><span id="p4"></span></div>
+  </div>
+
+  <section class="kpis" id="kpis"></section>
+
+  <section class="vb" aria-label="Supply chain vision board">
+    <div class="vb-top">
+      <div><h2>Vision board · supplier → product → client</h2><div class="lw-sub" id="vtotal"></div></div>
+      <div class="vb-ctl">
+        <input id="vsearch" list="vlist" placeholder="Find a supplier, product or client" aria-label="Find a node">
+        <datalist id="vlist"></datalist>
+        <div class="vb-ctl" id="vfilters" role="group" aria-label="Filter">
+          <button class="chip" data-f="all" aria-pressed="true">All</button>
+          <button class="chip" data-f="behind" aria-pressed="false">Behind plan</button>
+          <button class="chip" data-f="stock" aria-pressed="false">Stock risk</button>
+          <button class="chip" data-f="threat" aria-pressed="false">Threat suppliers</button>
+        </div>
+      </div>
+    </div>
+    <div class="vb-stage" id="stage">
+      <svg id="vis" role="img" aria-label="Zoomable network of suppliers, products and clients"></svg>
+      <div class="zoom"><button class="zb" id="zin" aria-label="Zoom in">+</button><button class="zb" id="zout" aria-label="Zoom out">−</button><button class="zb" id="zfit" aria-label="Fit to screen">⤢</button></div>
+      <span class="kbadge" id="kbadge"></span>
+      <div class="vb-hint"><span><i style="background:var(--ok)"></i>beat plan <i style="background:var(--warn)"></i>within 10% <i style="background:var(--bad)"></i>missed</span><span class="h2">Ring = last 12 weeks (suppliers: last 12 deliveries). Pinch or scroll to zoom in; tap any circle or line.</span></div>
+      <div class="lw" id="lw" hidden></div>
+    </div>
+  </section>
+
+  <section class="below">
+    <div class="panel brief"><div class="ph"><h2>Monday brief</h2><span class="eyebrow">for Pavi</span></div><ol id="brief"></ol></div>
+    <div class="panel"><div class="ph"><h2>Escalated to a human</h2><span class="eyebrow" id="esccount"></span></div><div class="esc" id="esc"></div></div>
+  </section>
+
+  <section class="panel">
+    <div class="tabs" role="tablist" id="tabs"></div>
+    <div id="view"></div>
+  </section>
+
+  <section class="split">
+    <div class="panel"><div class="ph"><h2>Daily revenue · last 90 days</h2><div class="legend"><span><i style="background:var(--accent)"></i>medicine</span><span><i style="background:var(--info)"></i>consumable</span><span><i style="background:var(--plum)"></i>equipment</span></div></div><svg id="rev" height="170" width="100%"></svg></div>
+    <div class="panel"><div class="ph"><h2>Inbound value · received vs due</h2><div class="legend"><span><i style="background:var(--muted)"></i>received</span><span><i style="background:var(--warn)"></i>due</span></div></div><svg id="arr" height="170" width="100%"></svg></div>
+  </section>
+
+  <footer><span>All companies, suppliers, customers and figures are fictional. Structure modelled on a NZ medical-import distributor.</span><span>Shelly supply-chain module v0.1 · SARIMA-X · FEFO · OTIF</span></footer>
+</div>
+<div class="tip" id="tip" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script>
+const DATA = /*DATA*/null;
+const $ = s => document.querySelector(s);
+const nz = v => v==null?"–":"$"+Math.round(v).toLocaleString("en-NZ");
+const nzk = v => v>=1e6?"$"+(v/1e6).toFixed(2)+"M":v>=1e3?"$"+(v/1e3).toFixed(0)+"k":"$"+Math.round(v);
+const pct = (v,d=0) => v==null?"–":(v*100).toFixed(d)+"%";
+const sgn = v => v==null?"–":(v>=0?"+":"")+(v*100).toFixed(0)+"%";
+const n0 = v => v==null?"–":Math.round(v).toLocaleString("en-NZ");
+const dt = s => s?new Date(s+"T00:00").toLocaleDateString("en-NZ",{day:"2-digit",month:"short"}):"–";
+const K = DATA.kpi;
+
+$("#asof").textContent = new Date(DATA.generated+"T00:00").toLocaleDateString("en-NZ",{weekday:"short",day:"numeric",month:"short",year:"numeric"});
+$("#p1").textContent = `${K.suppliers} suppliers · ${DATA.inventory.length} SKUs · ${K.customers} customers`;
+$("#p2").textContent = `SARIMA-X · WAPE ${pct(K.fc_wape)} vs naive ${pct(K.fc_wape_naive)}`;
+$("#p3").textContent = `${DATA.escalate.length} judgements need a person`;
+$("#p4").textContent = `approve · dismiss · note`;
+
+// KPIs
+const kp = [
+ ["Revenue · 30d", nzk(K.revenue_30d), `${sgn(K.revenue_30d_delta)} vs prior 30d`, K.revenue_30d_delta<0?"warn":""],
+ ["SKUs needing action", `${K.at_risk_skus}/${K.skus}`, `${K.stockouts} stocked out`, K.stockouts?"bad":"warn"],
+ ["Sales at risk", nzk(K.revenue_at_risk), "gap before next arrival", "bad"],
+ ["Supplier OTIF · 90d", pct(K.otif_90), `12-month ${pct(K.otif_12m)}`, K.otif_90<.85?"warn":"good"],
+ ["Inbound pipeline", nzk(K.inbound_value), `${K.inbound_pos} open POs · ${K.holds} on hold`, ""],
+ ["Expiry exposure", nzk(K.expiry_at_risk_value), `unsold by expiry · ${nzk(K.expiry_value_180)} ≤180d`, "warn"],
+ ["Stock on hand", nzk(K.stock_value), `median cover ${K.median_cover} days`, ""],
+ ["Sales vs plan · 12 wks", pct(DATA.vision.total.ach,1), `${nzk(DATA.vision.total.actual)} vs ${nzk(DATA.vision.total.plan)} plan`, DATA.vision.total.ach>=1?"good":"warn"],
+];
+$("#kpis").innerHTML = kp.map(([l,v,s,c])=>`<div class="kpi ${c}"><span class="eyebrow">${l}</span><span class="v">${v}</span><span class="s">${s}</span></div>`).join("");
+
+// Brief + escalations (decisions kept per viewer)
+$("#brief").innerHTML = DATA.brief.map(b=>`<li>${b}</li>`).join("");
+let decisions={}; try{decisions=JSON.parse(localStorage.getItem("shelly-sc-dec")||"{}")}catch(e){}
+function renderEsc(){
+  $("#esccount").textContent = `${DATA.escalate.filter((_,i)=>!decisions[i]).length} open`;
+  $("#esc").innerHTML = DATA.escalate.map((e,i)=>`<div class="it" data-k="${e.kind}"><span class="pill ${e.kind==="Stock-out risk"?"p-bad":e.kind==="Expiry"?"p-warn":"p-info"}">${e.kind}</span><b>${e.title}</b><p>${e.text}</p>
+   <div class="row">${decisions[i]?`<span class="done">${decisions[i]==="y"?"✓ Approved":"Dismissed"}</span><button class="btn" data-u="${i}">Undo</button>`:`<button class="btn yes" data-y="${i}">Approve action</button><button class="btn" data-n="${i}">Dismiss</button>`}</div></div>`).join("");
+}
+$("#esc").addEventListener("click",ev=>{const b=ev.target.closest("button");if(!b)return;
+  const d=b.dataset; if(d.y)decisions[d.y]="y"; if(d.n)decisions[d.n]="n"; if(d.u)delete decisions[d.u];
+  try{localStorage.setItem("shelly-sc-dec",JSON.stringify(decisions))}catch(e){} renderEsc();});
+renderEsc();
+
+// Tooltip
+const tip=$("#tip");
+function showTip(ev,html){tip.innerHTML=html;tip.hidden=false;const x=Math.min(ev.clientX+14,innerWidth-270);tip.style.left=x+"px";tip.style.top=(ev.clientY+14)+"px"}
+function hideTip(){tip.hidden=true}
+
+/*VISION_JS*/
+
+// Tabs
+const statusPill = s => ({"Stock-out":"p-bad","Gap before ETA":"p-bad","Reorder now":"p-warn","Overstock":"p-plum","Healthy":"p-ok"}[s]||"p-mut");
+const shipPill = s => ({"Customs / Medsafe hold":"p-bad","Arrived port":"p-ok","In transit":"p-info","Booked":"p-mut","Planned":"p-mut"}[s]||"p-mut");
+function table(cols,rows,id){
+  return `<div class="tw"><table id="${id}"><thead><tr>${cols.map((c,i)=>`<th class="${c.r?"r":""}" data-i="${i}">${c.h}</th>`).join("")}</tr></thead><tbody>${
+    rows.map(r=>`<tr>${cols.map(c=>`<td class="${c.r?"r":""}">${c.f(r)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+}
+function sortable(id,cols,rows,render){
+  const t=document.getElementById(id); if(!t)return; let dir=1;
+  t.querySelectorAll("th").forEach(th=>th.onclick=()=>{const c=cols[+th.dataset.i]; if(!c.k)return; dir=-dir;
+    rows.sort((a,b)=>{const x=a[c.k],y=b[c.k];return (x>y?1:x<y?-1:0)*dir}); render();});
+}
+const bar=(v,max,c)=>`<div class="bar"><i style="width:${Math.max(2,Math.min(100,v/max*100))}%;background:var(${c})"></i></div>`;
+
+const views={
+ "Inventory & reorder":()=>{
+   const rows=DATA.inventory.slice(); const order={"Stock-out":0,"Gap before ETA":1,"Reorder now":2,"Overstock":4,"Healthy":3};
+   rows.sort((a,b)=>order[a.status]-order[b.status]||a.cover_days-b.cover_days);
+   const cols=[
+    {h:"Status",k:"status",f:r=>`<span class="pill ${statusPill(r.status)}">${r.status}</span>`},
+    {h:"SKU",k:"sku",f:r=>`<span class="mono">${r.sku}</span>`},
+    {h:"Product",k:"product_name",f:r=>r.product_name+(r.cold_chain?` <span class="pill p-info">cold chain</span>`:"")},
+    {h:"On hand",k:"on_hand",r:1,f:r=>n0(r.on_hand)},
+    {h:"Days cover",k:"cover_days",r:1,f:r=>r.cover_days>=999?"–":r.cover_days.toFixed(0)},
+    {h:"",f:r=>bar(Math.min(r.cover_days,120),120,r.cover_days<14?"--bad":r.cover_days<30?"--warn":"--ok")},
+    {h:"Reorder pt",k:"reorder_point",r:1,f:r=>n0(r.reorder_point)},
+    {h:"Next arrival",k:"next_eta",f:r=>r.next_eta?`${dt(r.next_eta)} <span class="muted">· ${n0(r.next_qty)}</span>`:`<span class="muted">none open</span>`},
+    {h:"Sales at risk",k:"revenue_at_risk",r:1,f:r=>r.revenue_at_risk>0?`<span class="p-bad">${nz(r.revenue_at_risk)}</span>`:"–"},
+    {h:"12-wk trend",k:"fc_trend",r:1,f:r=>sgn(r.fc_trend)},
+   ];
+   const draw=()=>{$("#view").innerHTML=table(cols,rows,"t-inv")+`<p class="note">Reorder point = average daily demand × lead time + safety stock at 95% service level (demand and lead-time variability). "Gap before ETA" means current stock runs out before the next PO lands.</p>`;sortable("t-inv",cols,rows,draw)};draw();
+ },
+ "Expiry (FEFO)":()=>{
+   const bands=DATA.expiry_bands, mx=Math.max(...Object.values(bands));
+   const rows=DATA.expiry.slice();
+   const cols=[
+    {h:"Days left",k:"days_left",r:1,f:r=>`<span class="${r.days_left<=90?"p-bad":r.days_left<=180?"p-warn":""}">${r.days_left}</span>`},
+    {h:"Expiry",k:"expiry_date",f:r=>dt(r.expiry_date)+" "+r.expiry_date.slice(0,4)},
+    {h:"Lot",k:"batch_id",f:r=>`<span class="mono">${r.batch_id}</span>`},
+    {h:"Product",k:"product_name",f:r=>r.product_name},
+    {h:"Qty",k:"qty_on_hand",r:1,f:r=>n0(r.qty_on_hand)},
+    {h:"Won't sell",k:"at_risk_qty",r:1,f:r=>r.at_risk_qty>0?`<span class="p-bad">${n0(r.at_risk_qty)}</span>`:"0"},
+    {h:"Value at risk",k:"at_risk_value",r:1,f:r=>r.at_risk_value>0?nz(r.at_risk_value):"–"},
+    {h:"Note",f:r=>r.note?`<span class="muted">${r.note}</span>`:""},
+   ];
+   const draw=()=>{$("#view").innerHTML=`<div class="split"><div>${Object.entries(bands).map(([k,v])=>`<div style="display:grid;grid-template-columns:80px 1fr 90px;gap:10px;align-items:center;margin:6px 0"><span class="mono">${k}</span>${bar(v,mx,k.startsWith("≤")||k.startsWith("31")?"--bad":k.startsWith("91")?"--warn":"--accent")}<span class="mono r num" style="text-align:right">${nzk(v)}</span></div>`).join("")}<p class="note">Stock value on hand by time to expiry. Medicines and consumables only; equipment has no expiry.</p></div><div><p class="note" style="margin-top:0">"Won't sell" projects first-expiry-first-out consumption at the last 28 days' run-rate. Anything left at expiry is a write-off unless redistributed, discounted or returned to the supplier.</p></div></div>`+table(cols,rows,"t-exp");sortable("t-exp",cols,rows,draw)};draw();
+ },
+ "Inbound shipments":()=>{
+   const rows=DATA.inbound.slice();
+   const cols=[
+    {h:"Status",k:"status",f:r=>`<span class="pill ${shipPill(r.status)}">${r.status}</span>`},
+    {h:"PO",k:"po_id",f:r=>`<span class="mono">${r.po_id}</span>`},
+    {h:"Product",k:"product_name",f:r=>r.product_name},
+    {h:"Supplier",k:"supplier_name",f:r=>`${r.supplier_name} <span class="muted">· ${r.country}</span>`},
+    {h:"Mode",k:"mode",f:r=>r.mode},
+    {h:"Port",k:"port",f:r=>r.port},
+    {h:"Planned ETA",k:"planned_eta",f:r=>dt(r.planned_eta)},
+    {h:"Forecast ETA",k:"forecast_arrival",f:r=>dt(r.forecast_arrival)},
+    {h:"Slip",k:"delay_days",r:1,f:r=>r.delay_days>2?`<span class="p-bad">+${r.delay_days}d</span>`:r.delay_days>0?`+${r.delay_days}d`:`${r.delay_days}d`},
+    {h:"Value",k:"value",r:1,f:r=>nz(r.value)},
+   ];
+   const draw=()=>{$("#view").innerHTML=table(cols,rows,"t-ib")+`<p class="note">Sea freight lands at Ports of Auckland or Tauranga; air at Auckland Airport. Medicines need Medsafe consent and devices a WAND notification before clearance.</p>`;sortable("t-ib",cols,rows,draw)};draw();
+ },
+ "Supplier scorecard":()=>{
+   const rows=DATA.suppliers.slice();
+   const cols=[
+    {h:"Verdict",k:"verdict",f:r=>`<span class="pill ${r.verdict==="Threat"?"p-bad":r.verdict==="Watch"?"p-warn":"p-ok"}">${r.verdict}</span>`},
+    {h:"Supplier",k:"supplier_name",f:r=>`${r.supplier_name} <span class="muted">· ${r.country}</span>`},
+    {h:"Risk",k:"risk",r:1,f:r=>r.risk},
+    {h:"OTIF",k:"otif",r:1,f:r=>pct(r.otif)},
+    {h:"",f:r=>bar(r.otif,1,r.otif<.75?"--bad":r.otif<.88?"--warn":"--ok")},
+    {h:"On time",k:"on_time",r:1,f:r=>pct(r.on_time)},
+    {h:"In full",k:"in_full",r:1,f:r=>pct(r.in_full)},
+    {h:"Lead (d)",k:"avg_lead",r:1,f:r=>`${r.avg_lead.toFixed(0)} ± ${(r.lead_sd||0).toFixed(0)}`},
+    {h:"Worst slip",k:"max_delay",r:1,f:r=>`${r.max_delay}d`},
+    {h:"Shelf life left",k:"life_left_pct",r:1,f:r=>pct(r.life_left_pct)},
+    {h:"Spend 12m",k:"spend",r:1,f:r=>nz(r.spend)},
+   ];
+   const draw=()=>{$("#view").innerHTML=table(cols,rows,"t-sup")+`<p class="note">OTIF = arrived within 2 days of planned ETA and in full. Risk (0–100) weights OTIF gap 45, lead-time volatility 25, short-dated stock 20, plus single-source dependency.</p>`;sortable("t-sup",cols,rows,draw)};draw();
+ },
+ "Demand forecast":()=>{
+   const inv=DATA.inventory.slice().sort((a,b)=>a.product_name.localeCompare(b.product_name));
+   let cur=(DATA.inventory.find(r=>r.status!=="Healthy")||inv[0]).sku;
+   $("#view").innerHTML=`<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:6px"><label for="fsku" class="eyebrow">SKU</label><select id="fsku">${inv.map(r=>`<option value="${r.sku}">${r.sku} · ${r.product_name}</option>`).join("")}</select><span class="mono muted" id="fmeta"></span></div><svg id="fc" width="100%" height="260"></svg><p class="note">Weekly units. SARIMA(1,0,1) with Fourier terms for NZ seasonality (winter illness, winter sport). Band = 80% interval. Accuracy is an 8-week holdout WAPE.</p>`;
+   const sel=$("#fsku"); sel.value=cur; sel.onchange=()=>drawF(sel.value); drawF(cur);
+   function drawF(sku){
+     const F=DATA.forecast, s=F.series[sku], row=DATA.inventory.find(r=>r.sku===sku);
+     $("#fmeta").textContent=`WAPE ${pct(row.wape)} · next 12 wks ${sgn(row.fc_trend)} vs last 12`;
+     const svg=d3.select("#fc"); svg.selectAll("*").remove();
+     const W=svg.node().clientWidth||800,H=260,m={l:44,r:12,t:10,b:24}; svg.attr("viewBox",`0 0 ${W} ${H}`);
+     const dates=[...F.hist_weeks,...F.fc_weeks].map(d=>new Date(d));
+     const x=d3.scaleTime().domain(d3.extent(dates)).range([m.l,W-m.r]);
+     const y=d3.scaleLinear().domain([0,d3.max([...s.hist,...s.hi])*1.08]).nice().range([H-m.b,m.t]);
+     svg.append("g").attr("class","axis").attr("transform",`translate(0,${H-m.b})`).call(d3.axisBottom(x).ticks(W<500?4:8).tickSizeOuter(0));
+     svg.append("g").attr("class","axis").attr("transform",`translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickSize(-(W-m.l-m.r))).call(g=>g.selectAll(".tick line").attr("stroke-opacity",.4)).call(g=>g.select(".domain").remove());
+     const hx=F.hist_weeks.map(d=>new Date(d)), fx=F.fc_weeks.map(d=>new Date(d));
+     svg.append("path").datum(fx.map((d,i)=>[d,s.lo[i],s.hi[i]])).attr("fill","var(--accent)").attr("fill-opacity",.15).attr("d",d3.area().x(d=>x(d[0])).y0(d=>y(d[1])).y1(d=>y(d[2])));
+     svg.append("path").datum(hx.map((d,i)=>[d,s.hist[i]])).attr("fill","none").attr("stroke","var(--muted)").attr("stroke-width",1.5).attr("d",d3.line().x(d=>x(d[0])).y(d=>y(d[1])));
+     svg.append("path").datum([[hx.at(-1),s.hist.at(-1)],...fx.map((d,i)=>[d,s.mean[i]])]).attr("fill","none").attr("stroke","var(--accent)").attr("stroke-width",2).attr("d",d3.line().x(d=>x(d[0])).y(d=>y(d[1])));
+     svg.append("line").attr("x1",x(hx.at(-1))).attr("x2",x(hx.at(-1))).attr("y1",m.t).attr("y2",H-m.b).attr("stroke","var(--line)").attr("stroke-dasharray","3 3");
+     svg.append("text").attr("x",x(hx.at(-1))+6).attr("y",m.t+10).text("forecast →");
+     svg.append("circle").attr("cx",x(fx.at(-1))).attr("cy",y(s.mean.at(-1))).attr("r",3.5).attr("fill","var(--accent)");
+   }
+ },
+ "Customers & segments":()=>{
+   const seg=DATA.segments, mx=d3.max(seg,d=>d.rev);
+   const rows=DATA.customers.slice();
+   const cols=[
+    {h:"Customer",k:"customer_name",f:r=>r.customer_name},
+    {h:"Segment",k:"segment",f:r=>`<span class="muted">${r.segment}</span>`},
+    {h:"Region",k:"region",f:r=>r.region},
+    {h:"Revenue 12m",k:"rev12",r:1,f:r=>nz(r.rev12)},
+    {h:"YoY",k:"growth",r:1,f:r=>`<span class="${r.growth<0?"p-bad":"p-ok"}">${sgn(r.growth)}</span>`},
+    {h:"Medicine",k:"Medicine",r:1,f:r=>pct(r.Medicine/r.rev12)},
+    {h:"Consumable",k:"Consumable",r:1,f:r=>pct(r.Consumable/r.rev12)},
+    {h:"Equipment",k:"Equipment",r:1,f:r=>pct(r.Equipment/r.rev12)},
+   ];
+   const segHtml=seg.map(s=>{const t=s.Medicine+s.Consumable+s.Equipment;return `<div style="display:grid;grid-template-columns:minmax(0,190px) 1fr 110px;gap:10px;align-items:center;margin:7px 0"><span>${s.segment} <span class="muted mono">· ${s.n}</span></span>
+     <div style="display:flex;height:12px;width:${Math.max(4,s.rev/mx*100)}%;border-radius:3px;overflow:hidden"><i style="flex:${s.Medicine/t};background:var(--accent)"></i><i style="flex:${s.Consumable/t};background:var(--info)"></i><i style="flex:${s.Equipment/t};background:var(--plum)"></i></div>
+     <span class="mono num" style="text-align:right">${nzk(s.rev)} <span class="${s.growth<0?"p-bad":"p-ok"}">${sgn(s.growth)}</span></span></div>`}).join("");
+   const draw=()=>{$("#view").innerHTML=`<div class="legend" style="margin-bottom:4px"><span><i style="background:var(--accent)"></i>medicine</span><span><i style="background:var(--info)"></i>consumable</span><span><i style="background:var(--plum)"></i>equipment</span></div>${segHtml}<div style="height:10px"></div>`+table(cols,rows,"t-cus")+`<p class="note">Sports organisations and high-injury industries (construction, forestry, adventure tourism) lean on wound care, strapping, cold therapy and first-response equipment, so their demand peaks with the winter sport season.</p>`;sortable("t-cus",cols,rows,draw)};draw();
+ },
+};
+const names=Object.keys(views); let active=names[0];
+try{const h=location.hash.slice(1);const i=+h;if(h&&names[i])active=names[i]}catch(e){}
+function renderTabs(){$("#tabs").innerHTML=names.map((n,i)=>`<button class="tab" role="tab" aria-selected="${n===active}" data-t="${i}">${n}</button>`).join("");}
+$("#tabs").addEventListener("click",e=>{const b=e.target.closest(".tab");if(!b)return;active=names[+b.dataset.t];renderTabs();views[active]();});
+renderTabs(); views[active]();
+
+// Bottom strips
+function stack(id,dates,series,colors){
+  const svg=d3.select(id), W=svg.node().clientWidth||600, H=170, m={l:40,r:8,t:8,b:22}; svg.attr("viewBox",`0 0 ${W} ${H}`);
+  const X=d3.scaleBand().domain(dates).range([m.l,W-m.r]).padding(.25);
+  const tot=dates.map((_,i)=>series.reduce((a,s)=>a+s[i],0));
+  const Y=d3.scaleLinear().domain([0,d3.max(tot)]).nice().range([H-m.b,m.t]);
+  svg.append("g").attr("class","axis").attr("transform",`translate(${m.l},0)`).call(d3.axisLeft(Y).ticks(4).tickFormat(v=>nzk(v)).tickSize(-(W-m.l-m.r))).call(g=>g.selectAll(".tick line").attr("stroke-opacity",.35)).call(g=>g.select(".domain").remove());
+  const every=Math.ceil(dates.length/(W<500?4:8));
+  svg.append("g").attr("class","axis").attr("transform",`translate(0,${H-m.b})`).call(d3.axisBottom(X).tickValues(dates.filter((_,i)=>i%every===0)).tickFormat(d=>dt(d)).tickSizeOuter(0));
+  dates.forEach((d,i)=>{let y0=0;series.forEach((s,j)=>{if(!s[i])return;svg.append("rect").attr("x",X(d)).attr("width",X.bandwidth()).attr("y",Y(y0+s[i])).attr("height",Y(y0)-Y(y0+s[i])).attr("fill",`var(${colors[j]})`).attr("fill-opacity",.85)
+     .on("mousemove",e=>showTip(e,`${dt(d)}<br>${nz(tot[i])}`)).on("mouseleave",hideTip);y0+=s[i]})});
+}
+const R=DATA.daily_revenue; stack("#rev",R.dates,[R.Medicine,R.Consumable,R.Equipment],["--accent","--info","--plum"]);
+const A=DATA.arrivals; stack("#arr",A.dates,[A.received,A.due],["--muted","--warn"]);
+</script>

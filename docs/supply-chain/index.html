@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tōtara Supply Command</title>
+<meta name="author" content="Pavithra Bamunu">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Shelly supply-chain module: a medical-imports command dashboard with a zoomable supplier to product to client vision board. Synthetic demo data.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="sc.css">
+<style>body{margin:0}</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header>
+    <div>
+      <a class="back" href="../launchpad/">← Shelly Launchpad</a><div class="eyebrow">Tōtara Medical Imports · Shelly · Supply chain command</div>
+      <h1>What needs my attention in <b>the supply chain this week?</b></h1>
+    </div>
+    <div class="meta">
+      <div><span class="eyebrow">Status</span><b class="live">Synthetic demo</b></div>
+      <div><span class="eyebrow">Data as of</span><b id="asof"></b></div>
+      <div><span class="eyebrow">Window</span><b>24 months · NZD</b></div>
+    </div>
+  </header>
+
+  <div class="pipe" aria-label="Shelly pipeline">
+    <div class="st"><b>Ingest</b><span id="p1"></span></div><span class="ar">›</span>
+    <div class="st"><b>Model</b><span id="p2"></span></div><span class="ar">›</span>
+    <div class="st"><b>Judge</b><span id="p3"></span></div><span class="ar">›</span>
+    <div class="st on"><b>Brief → Pavi confirms</b><span id="p4"></span></div>
+  </div>
+
+  <section class="kpis" id="kpis"></section>
+
+  <section class="vb" aria-label="Supply chain vision board">
+    <div class="vb-top">
+      <div><h2>Vision board · supplier → product → client</h2><div class="lw-sub" id="vtotal"></div></div>
+      <div class="vb-ctl">
+        <input id="vsearch" list="vlist" placeholder="Find a supplier, product or client" aria-label="Find a node">
+        <datalist id="vlist"></datalist>
+        <div class="vb-ctl" id="vfilters" role="group" aria-label="Filter">
+          <button class="chip" data-f="all" aria-pressed="true">All</button>
+          <button class="chip" data-f="behind" aria-pressed="false">Behind plan</button>
+          <button class="chip" data-f="stock" aria-pressed="false">Stock risk</button>
+          <button class="chip" data-f="threat" aria-pressed="false">Threat suppliers</button>
+        </div>
+      </div>
+    </div>
+    <div class="vb-stage" id="stage">
+      <svg id="vis" role="img" aria-label="Zoomable network of suppliers, products and clients"></svg>
+      <div class="zoom"><button class="zb" id="zin" aria-label="Zoom in">+</button><button class="zb" id="zout" aria-label="Zoom out">−</button><button class="zb" id="zfit" aria-label="Fit to screen">⤢</button></div>
+      <span class="kbadge" id="kbadge"></span>
+      <div class="vb-hint"><span><i style="background:var(--ok)"></i>beat plan <i style="background:var(--warn)"></i>within 10% <i style="background:var(--bad)"></i>missed</span><span class="h2">Ring = last 12 weeks (suppliers: last 12 deliveries). Pinch or scroll to zoom in; tap any circle or line.</span></div>
+      <div class="lw" id="lw" hidden></div>
+    </div>
+  </section>
+
+  <section class="below">
+    <div class="panel brief"><div class="ph"><h2>Monday brief</h2><span class="eyebrow">for Pavi</span></div><ol id="brief"></ol></div>
+    <div class="panel"><div class="ph"><h2>Escalated to a human</h2><span class="eyebrow" id="esccount"></span></div><div class="esc" id="esc"></div></div>
+  </section>
+
+  <section class="panel">
+    <div class="tabs" role="tablist" id="tabs"></div>
+    <div id="view"></div>
+  </section>
+
+  <section class="split">
+    <div class="panel"><div class="ph"><h2>Daily revenue · last 90 days</h2><div class="legend"><span><i style="background:var(--accent)"></i>medicine</span><span><i style="background:var(--info)"></i>consumable</span><span><i style="background:var(--plum)"></i>equipment</span></div></div><svg id="rev" height="170" width="100%"></svg></div>
+    <div class="panel"><div class="ph"><h2>Inbound value · received vs due</h2><div class="legend"><span><i style="background:var(--muted)"></i>received</span><span><i style="background:var(--warn)"></i>due</span></div></div><svg id="arr" height="170" width="100%"></svg></div>
+  </section>
+
+  <footer><span>All companies, suppliers, customers and figures are fictional. Structure modelled on a NZ medical-import distributor.</span><span>Shelly supply-chain module v0.1 · SARIMA-X · FEFO · OTIF</span></footer>
+</div>
+<div class="tip" id="tip" hidden></div>
+
+
+<script src="d3.min.js"></script>
+<script src="data.js"></script>
+<script src="sc.js"></script>
+</body>
+</html>

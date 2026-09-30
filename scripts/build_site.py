@@ -66,3 +66,7 @@ ctx = Ctx(res["prepared"], res["results"], cfg, res["actions"], res["summary"], 
 rep = build_all(ctx, ROOT / "docs/reports", xlsx=True, with_cache=True)
 write_web_bundle(rep, ROOT / "docs/data/shelly-reports.js")
 print(f"Reports: {len(rep['specs'])} report views, {len(rep['files'])} Excel workbooks in docs/reports/")
+
+# Launchpad: refresh the figures on docs/launchpad/ (retail numbers change every week)
+import runpy  # noqa: E402
+runpy.run_path(str(ROOT / "scripts" / "build_launchpad.py"), run_name="__main__")
