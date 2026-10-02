@@ -2,10 +2,12 @@
 .sk-mascot{position:fixed;left:max(14px,env(safe-area-inset-left));bottom:max(14px,env(safe-area-inset-bottom));z-index:45;
   display:flex;align-items:flex-end;gap:8px;font-family:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;pointer-events:none}
 .sk-mascot>*{pointer-events:auto}
-.sk-btn{position:relative;width:76px;height:76px;padding:0;border:0;background:none;cursor:pointer;border-radius:50%}
+.sk-btn{position:relative;width:88px;height:88px;padding:0;border:0;background:none;cursor:pointer;border-radius:50%}
 .sk-btn:focus-visible{outline:2px solid #63b6d8;outline-offset:3px}
 .sk-btn svg{width:100%;height:100%;overflow:visible;animation:sk-bob 3.2s ease-in-out infinite;transform-origin:50% 90%}
-.sk-badge{position:absolute;top:2px;right:0;min-width:22px;height:22px;padding:0 6px;border-radius:99px;background:#e66767;color:#fff;
+.sk-canvas{position:absolute;left:-20%;top:-20%;width:140%;height:140%;pointer-events:none}
+.sk-3d .sk-btn>svg{display:none}
+.sk-badge{z-index:1;position:absolute;top:2px;right:0;min-width:22px;height:22px;padding:0 6px;border-radius:99px;background:#e66767;color:#fff;
   font:600 11px/22px "JetBrains Mono",ui-monospace,monospace;text-align:center;box-shadow:0 0 0 2px #070b12}
 .sk-badge[hidden]{display:none}
 .sk-bubble{max-width:min(300px,calc(100vw - 120px));margin-bottom:48px;background:#141e2c;border:1px solid #2a3a50;border-radius:14px 14px 14px 4px;
@@ -35,7 +37,7 @@
 @keyframes sk-glow{0%,100%{opacity:.55}50%{opacity:1}}
 @keyframes sk-pop{from{opacity:0;transform:translateY(6px) scale(.97)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.sk-btn svg,.sk-mascot .eye,.sk-mascot .mouth-o,.sk-mascot .tip,.sk-mascot .scan,.sk-mascot .mouth-o rect{animation:none!important}}
-@media (max-width:560px){.sk-btn{width:60px;height:60px}.sk-bubble{margin-bottom:40px;font-size:13px}}
+@media (max-width:560px){.sk-btn{width:70px;height:70px}.sk-bubble{margin-bottom:40px;font-size:13px}}
 @media print{.sk-mascot,.sk-tray{display:none!important}}
 
 /* approvals tray */

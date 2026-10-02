@@ -162,6 +162,10 @@
     w.innerHTML = `<button class="sk-btn" type="button" aria-label="Shelly: tap for approvals and tips">${SVG}<span class="sk-badge" hidden>0</span></button>
       <div class="sk-bubble" role="status" aria-live="polite" ${hidden ? "hidden" : ""}><button class="sk-x" aria-label="Hide message">×</button><div class="sk-msg"></div><div class="sk-acts"></div></div>`;
     document.body.appendChild(w);
+    try {   // real 3D head when WebGL is available; the SVG stays as fallback
+      const gl = document.createElement("canvas").getContext("webgl2");
+      if (gl) import(new URL(BASE + "kit/shelly-3d.js", location.href).href).then(m => m.mount(w)).catch(() => {});
+    } catch (e) { /* SVG fallback */ }
     const bubble = w.querySelector(".sk-bubble"), msg = w.querySelector(".sk-msg"), acts = w.querySelector(".sk-acts");
     let i = 0, timer = null;
     function say(k) {
