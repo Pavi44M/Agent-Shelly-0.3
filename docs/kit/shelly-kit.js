@@ -162,10 +162,20 @@
     w.innerHTML = `<button class="sk-btn" type="button" aria-label="Shelly: tap for approvals and tips">${SVG}<span class="sk-badge" hidden>0</span></button>
       <div class="sk-bubble" role="status" aria-live="polite" ${hidden ? "hidden" : ""}><button class="sk-x" aria-label="Hide message">×</button><div class="sk-msg"></div><div class="sk-acts"></div></div>`;
     document.body.appendChild(w);
-    try {   // real 3D head when WebGL is available; the SVG stays as fallback
-      const gl = document.createElement("canvas").getContext("webgl2");
-      if (gl) import(new URL(BASE + "kit/shelly-3d.js", location.href).href).then(m => m.mount(w)).catch(() => {});
-    } catch (e) { /* SVG fallback */ }
+    // portrait avatar (chrome android); the SVG head stays as fallback if the image can't load
+    const face = document.createElement("span"); face.className = "sk-face";
+    face.innerHTML = `<img alt="" src="${esc(BASE)}kit/shelly-face.png"><i class="sk-ear"></i><i class="sk-shine"></i>`;
+    const btn0 = w.querySelector(".sk-btn"); btn0.insertBefore(face, btn0.firstChild);
+    face.querySelector("img").addEventListener("load", () => w.classList.add("sk-img"));
+    face.querySelector("img").addEventListener("error", () => face.remove());
+    if (!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) {
+      window.addEventListener("pointermove", e => {   // gentle tilt toward the cursor
+        const r = btn0.getBoundingClientRect();
+        const ry = Math.max(-1, Math.min(1, (e.clientX - r.left - r.width / 2) / (innerWidth / 2))) * 16;
+        const rx = Math.max(-1, Math.min(1, (e.clientY - r.top - r.height / 2) / (innerHeight / 2))) * -10;
+        face.style.setProperty("--ry", ry.toFixed(1) + "deg"); face.style.setProperty("--rx", rx.toFixed(1) + "deg");
+      }, { passive: true });
+    }
     const bubble = w.querySelector(".sk-bubble"), msg = w.querySelector(".sk-msg"), acts = w.querySelector(".sk-acts");
     let i = 0, timer = null;
     function say(k) {

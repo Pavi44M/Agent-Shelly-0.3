@@ -5,8 +5,24 @@
 .sk-btn{position:relative;width:64px;height:64px;padding:0;border:0;background:none;cursor:pointer;border-radius:50%}
 .sk-btn:focus-visible{outline:2px solid #63b6d8;outline-offset:3px}
 .sk-btn svg{width:100%;height:100%;overflow:visible;animation:sk-bob 3.2s ease-in-out infinite;transform-origin:50% 90%}
-.sk-canvas{position:absolute;left:-10%;top:-10%;width:120%;height:120%;pointer-events:none}
-.sk-3d .sk-btn>svg{display:none}
+.sk-img .sk-btn>svg{display:none}
+.sk-face{position:absolute;inset:0;border-radius:50%;overflow:hidden;display:block;
+  background:radial-gradient(circle at 38% 32%,#2a4258 0%,#0d1622 70%);
+  box-shadow:0 0 0 2px rgba(79,227,255,.6),0 0 16px rgba(79,227,255,.35),0 8px 20px rgba(0,0,0,.55);
+  transform:perspective(220px) rotateY(var(--ry,0deg)) rotateX(var(--rx,0deg));transition:transform .35s ease-out,box-shadow .4s}
+.sk-img .sk-btn svg{animation:none}
+.sk-img .sk-btn .sk-face{animation:sk-bob 3.2s ease-in-out infinite}
+.sk-face img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.sk-ear{position:absolute;left:62.9%;top:43.3%;width:22%;height:22%;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;
+  background:radial-gradient(circle,rgba(79,227,255,.0) 30%,rgba(79,227,255,.85) 48%,rgba(79,227,255,0) 72%);mix-blend-mode:screen;animation:sk-ear 2.6s ease-in-out infinite}
+.sk-shine{position:absolute;inset:0;border-radius:50%;pointer-events:none;
+  background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.28) 48%,transparent 60%);background-size:250% 100%;animation:sk-shine 6s ease-in-out infinite}
+.sk-mascot.alert .sk-face{box-shadow:0 0 0 2px rgba(255,196,102,.75),0 0 18px rgba(255,196,102,.45),0 8px 20px rgba(0,0,0,.55)}
+.sk-mascot.alert .sk-ear{background:radial-gradient(circle,rgba(255,196,102,.0) 25%,rgba(255,170,60,1) 46%,rgba(255,196,102,0) 72%);mix-blend-mode:hard-light}
+.sk-mascot.talk .sk-ear{animation-duration:.45s}
+.sk-mascot.talk .sk-face{box-shadow:0 0 0 2px rgba(79,227,255,.9),0 0 24px rgba(79,227,255,.6),0 8px 20px rgba(0,0,0,.55)}
+@keyframes sk-ear{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes sk-shine{0%,70%{background-position:120% 0}100%{background-position:-30% 0}}
 .sk-badge{z-index:1;position:absolute;top:2px;right:0;min-width:22px;height:22px;padding:0 6px;border-radius:99px;background:#e66767;color:#fff;
   font:600 11px/22px "JetBrains Mono",ui-monospace,monospace;text-align:center;box-shadow:0 0 0 2px #070b12}
 .sk-badge[hidden]{display:none}
@@ -36,7 +52,7 @@
 @keyframes sk-wiggle{0%,100%{rotate:0deg}25%{rotate:-8deg}75%{rotate:8deg}}
 @keyframes sk-glow{0%,100%{opacity:.55}50%{opacity:1}}
 @keyframes sk-pop{from{opacity:0;transform:translateY(6px) scale(.97)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){.sk-btn svg,.sk-mascot .eye,.sk-mascot .mouth-o,.sk-mascot .tip,.sk-mascot .scan,.sk-mascot .mouth-o rect{animation:none!important}}
+@media (prefers-reduced-motion:reduce){.sk-btn svg,.sk-mascot .eye,.sk-mascot .mouth-o,.sk-face,.sk-ear,.sk-shine,.sk-mascot .tip,.sk-mascot .scan,.sk-mascot .mouth-o rect{animation:none!important}}
 @media (max-width:560px){.sk-btn{width:54px;height:54px}.sk-bubble{margin-bottom:30px;font-size:13px}}
 @media print{.sk-mascot,.sk-tray{display:none!important}}
 
