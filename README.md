@@ -10,7 +10,7 @@
 ## What's new in v1.2: Shelly Brain, the Shelly mascot and one approvals inbox
 - **Shelly Brain** ([docs/brain](docs/brain/)): an operating map of the AI system, in the style of an "AI brain" consultancy build. 24 agents across 19 departments and 3 businesses (Neighbourhood store, Tōtara Medical, Shelly Group), around 8 core modules (orchestrator, memory, governance, knowledge, learning, reporting, voice, connectors). Each agent card shows its mission, skills, inputs, outputs, triggers, schedule, autonomy level (auto / suggest / approve), guardrails, when it escalates, who it hands off to, its human owner and live KPIs.
 - **Ask the brain**: type a question and the orchestrator shows which department agent takes it, and whether it may act alone or needs your approval. Same logic in Python: `python -m shelly brain ask "what do I need to order?"`.
-- **Shelly the mascot** on every page (store, Launchpad, Tōtara, Brain, reports): greets you by time of day, gives page tips and shows what is waiting. Original artwork, drawn in SVG.
+- **Shelly the mascot** on every page (store, Launchpad, Tōtara, Brain, reports): greets you by time of day, gives page tips and shows what is waiting. Shelly Mk-II: an original helmet head in SVG (teal shell, purple crest, one wide visor); the visor eyes turn amber when approvals are waiting and voice bars show while she speaks.
 - **Approvals badge and tray**: one inbox for every decision Shelly will not take alone (store decision log, Tōtara escalations, industry packs). Approve or reject from any page; the answer syncs to the page that owns it.
 - Brain data is rebuilt with the site (`scripts/build_brain.py` → `docs/data/brain.js`, `docs/data/approvals.js`).
 

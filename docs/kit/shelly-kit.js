@@ -94,21 +94,48 @@
   if (badge) badge.addEventListener("click", () => openTray());
 
   /* ------------------------------------------------ mascot */
+  /* Shelly Mk-II: original helmet head (teal shell, purple crest, one wide visor, spiral emblem) */
   const SVG = `<svg viewBox="0 0 120 120" aria-hidden="true">
-    <defs><radialGradient id="skBody" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#9fdcf0"/><stop offset="1" stop-color="#3a8fb3"/></radialGradient>
-      <radialGradient id="skShell" cx="45%" cy="40%" r="65%"><stop offset="0" stop-color="#d9c9ff"/><stop offset="1" stop-color="#8b6fd6"/></radialGradient></defs>
-    <ellipse cx="60" cy="110" rx="34" ry="5" fill="#000" opacity=".35"/>
-    <circle cx="82" cy="62" r="26" fill="url(#skShell)"/>
-    <path d="M82 62 m0 -3 a3 3 0 1 1 -3 3 a6 6 0 1 1 6 6 a10 10 0 1 1 -10 -10 a15 15 0 1 1 15 15" fill="none" stroke="#5b3fb0" stroke-width="2.6" stroke-linecap="round" opacity=".75"/>
-    <path d="M18 104 C14 80 22 52 44 44 C62 38 70 56 68 74 C66 92 58 104 40 106 Z" fill="url(#skBody)"/>
-    <path d="M30 46 C26 34 22 28 18 24" stroke="#3a8fb3" stroke-width="3" fill="none" stroke-linecap="round"/>
-    <path d="M44 42 C46 30 48 24 52 18" stroke="#3a8fb3" stroke-width="3" fill="none" stroke-linecap="round"/>
-    <circle class="tip" cx="18" cy="23" r="4"/><circle class="tip" cx="52" cy="17" r="4"/>
-    <g class="eye"><ellipse cx="36" cy="62" rx="6" ry="7.5" fill="#fff"/><circle cx="37.5" cy="63.5" r="3.6" fill="#0b1220"/><circle cx="38.8" cy="61.8" r="1.2" fill="#fff"/></g>
-    <g class="eye"><ellipse cx="54" cy="61" rx="6" ry="7.5" fill="#fff"/><circle cx="55.5" cy="62.5" r="3.6" fill="#0b1220"/><circle cx="56.8" cy="60.8" r="1.2" fill="#fff"/></g>
-    <ellipse cx="29" cy="74" rx="4.5" ry="2.6" fill="#ff8fa3" opacity=".55"/><ellipse cx="60" cy="73" rx="4.5" ry="2.6" fill="#ff8fa3" opacity=".55"/>
-    <path class="mouth" d="M39 76 Q45 81 51 76" stroke="#0b1220" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-    <ellipse class="mouth-o" cx="45" cy="78" rx="3.4" ry="2.6" fill="#0b1220" opacity="0"/>
+    <defs>
+      <linearGradient id="skHelm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fd8ee"/><stop offset=".55" stop-color="#3a8fb3"/><stop offset="1" stop-color="#1d5470"/></linearGradient>
+      <linearGradient id="skCrest" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9c9ff"/><stop offset="1" stop-color="#7a5bd0"/></linearGradient>
+      <linearGradient id="skVisor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16243a"/><stop offset="1" stop-color="#05080f"/></linearGradient>
+      <linearGradient id="skPod" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2b6f8f"/><stop offset="1" stop-color="#5fb3d3"/></linearGradient>
+      <clipPath id="skVclip"><path d="M24 58 Q60 46 96 58 L92 76 Q60 86 28 76 Z"/></clipPath>
+    </defs>
+    <ellipse cx="60" cy="112" rx="30" ry="4.5" fill="#000" opacity=".35"/>
+    <!-- antenna masts with status lights -->
+    <path d="M22 50 L14 28" stroke="#5fb3d3" stroke-width="2.6" stroke-linecap="round"/>
+    <path d="M98 50 L106 28" stroke="#5fb3d3" stroke-width="2.6" stroke-linecap="round"/>
+    <circle class="tip" cx="14" cy="26" r="4"/><circle class="tip" cx="106" cy="26" r="4"/>
+    <!-- neck ring -->
+    <path d="M38 96 Q60 104 82 96 L80 106 Q60 112 40 106 Z" fill="#1d5470"/>
+    <path d="M40 100 Q60 107 80 100" stroke="#8fd8ee" stroke-width="1.2" fill="none" opacity=".5"/>
+    <!-- helmet shell -->
+    <path d="M60 12 C88 12 102 34 102 58 C102 80 90 98 60 100 C30 98 18 80 18 58 C18 34 32 12 60 12 Z" fill="url(#skHelm)"/>
+    <path d="M60 15 C84 15 97 33 98 52" stroke="#c8f1ff" stroke-width="2" fill="none" opacity=".45" stroke-linecap="round"/>
+    <!-- side pods -->
+    <rect x="10" y="50" width="14" height="26" rx="7" fill="url(#skPod)"/><rect x="96" y="50" width="14" height="26" rx="7" fill="url(#skPod)" transform="rotate(180 103 63)"/>
+    <circle cx="17" cy="63" r="3" fill="#0b1220"/><circle cx="103" cy="63" r="3" fill="#0b1220"/>
+    <circle class="pod" cx="17" cy="63" r="1.6"/><circle class="pod" cx="103" cy="63" r="1.6"/>
+    <!-- purple crest fin -->
+    <path d="M52 13 Q60 6 68 13 L66 40 Q60 43 54 40 Z" fill="url(#skCrest)"/>
+    <path d="M60 10 L60 40" stroke="#5b3fb0" stroke-width="1.2" opacity=".55"/>
+    <!-- one wide visor -->
+    <path d="M24 58 Q60 46 96 58 L92 76 Q60 86 28 76 Z" fill="url(#skVisor)" stroke="#0b1220" stroke-width="1.6"/>
+    <g clip-path="url(#skVclip)">
+      <rect class="scan" x="20" y="44" width="80" height="5" fill="#63e0ff" opacity=".22"/>
+      <g class="eye"><circle class="eyeglow" cx="45" cy="65" r="5.2"/><circle cx="46.3" cy="63.6" r="1.4" fill="#fff" opacity=".9"/></g>
+      <g class="eye"><circle class="eyeglow" cx="75" cy="65" r="5.2"/><circle cx="76.3" cy="63.6" r="1.4" fill="#fff" opacity=".9"/></g>
+      <path class="mouth" d="M52 75 L68 75" stroke="#63e0ff" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+      <g class="mouth-o" opacity="0" fill="#63e0ff"><rect x="51" y="72" width="2.4" height="6" rx="1"/><rect x="55" y="70" width="2.4" height="10" rx="1"/><rect x="59" y="71" width="2.4" height="8" rx="1"/><rect x="63" y="70" width="2.4" height="10" rx="1"/><rect x="67" y="72" width="2.4" height="6" rx="1"/></g>
+      <path d="M30 56 Q50 50 70 52" stroke="#fff" stroke-width="2" fill="none" opacity=".18" stroke-linecap="round"/>
+    </g>
+    <!-- spiral badge on the brow -->
+    <circle cx="60" cy="47" r="5.5" fill="#1d5470" stroke="#d9c9ff" stroke-width="1"/>
+    <path d="M60 47 m0 -1 a1 1 0 1 1 -1 1 a2 2 0 1 1 2 2 a3.2 3.2 0 1 1 -3.2 -3.2" fill="none" stroke="#d9c9ff" stroke-width="1.1" stroke-linecap="round"/>
+    <!-- chin vents -->
+    <path d="M50 90 L70 90 M52 94 L68 94" stroke="#0b1220" stroke-width="1.6" stroke-linecap="round" opacity=".45"/>
   </svg>`;
   function greeting() {
     const h = new Date().getHours();

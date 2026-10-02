@@ -19,7 +19,13 @@
   border-radius:6px;padding:5px 8px;cursor:pointer;text-decoration:none}
 .sk-bubble .sk-acts button:hover,.sk-bubble .sk-acts a:hover{border-color:#63b6d8}
 .sk-mascot .eye{animation:sk-blink 5s infinite;transform-origin:center;transform-box:fill-box}
-.sk-mascot.talk .mouth-o{animation:sk-talk .28s ease-in-out infinite alternate;transform-origin:center;transform-box:fill-box}
+.sk-mascot.talk .mouth-o{opacity:1!important}.sk-mascot.talk .mouth{opacity:0}
+.sk-mascot.talk .mouth-o rect{animation:sk-talk .28s ease-in-out infinite alternate;transform-origin:center;transform-box:fill-box}
+.sk-mascot.talk .mouth-o rect:nth-child(2n){animation-delay:.14s}
+.sk-mascot .eyeglow{fill:#63e0ff;filter:drop-shadow(0 0 3px #63e0ff)}.sk-mascot .pod{fill:#63e0ff}
+.sk-mascot.alert .eyeglow{fill:#ffc466;filter:drop-shadow(0 0 3px #ffc466)}.sk-mascot.alert .pod{fill:#ffc466}
+.sk-mascot .scan{animation:sk-scan 3.6s ease-in-out infinite}
+@keyframes sk-scan{0%,100%{transform:translateY(0)}50%{transform:translateY(36px)}}
 .sk-mascot.alert svg{animation:sk-bob 3.2s ease-in-out infinite,sk-wiggle .9s ease 1}
 .sk-mascot .tip{fill:#3fb87f}.sk-mascot.alert .tip{fill:#ffc466;animation:sk-glow 1.4s ease-in-out infinite}
 @keyframes sk-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
@@ -28,7 +34,7 @@
 @keyframes sk-wiggle{0%,100%{rotate:0deg}25%{rotate:-8deg}75%{rotate:8deg}}
 @keyframes sk-glow{0%,100%{opacity:.55}50%{opacity:1}}
 @keyframes sk-pop{from{opacity:0;transform:translateY(6px) scale(.97)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){.sk-btn svg,.sk-mascot .eye,.sk-mascot .mouth-o,.sk-mascot .tip{animation:none!important}}
+@media (prefers-reduced-motion:reduce){.sk-btn svg,.sk-mascot .eye,.sk-mascot .mouth-o,.sk-mascot .tip,.sk-mascot .scan,.sk-mascot .mouth-o rect{animation:none!important}}
 @media (max-width:560px){.sk-btn{width:60px;height:60px}.sk-bubble{margin-bottom:40px;font-size:13px}}
 @media print{.sk-mascot,.sk-tray{display:none!important}}
 
