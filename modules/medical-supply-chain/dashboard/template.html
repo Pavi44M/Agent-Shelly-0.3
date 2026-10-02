@@ -311,6 +311,7 @@ $("#esc").addEventListener("click",ev=>{const b=ev.target.closest("button");if(!
   const d=b.dataset; if(d.y)decisions[d.y]="y"; if(d.n)decisions[d.n]="n"; if(d.u)delete decisions[d.u];
   try{localStorage.setItem("shelly-sc-dec",JSON.stringify(decisions))}catch(e){} renderEsc();});
 renderEsc();
+addEventListener("shelly:approvals", () => { try { decisions = JSON.parse(localStorage.getItem("shelly-sc-dec") || "{}"); } catch (e) {} renderEsc(); });
 
 // Tooltip
 const tip=$("#tip");

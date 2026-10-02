@@ -13,20 +13,21 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap">
 <link rel="stylesheet" href="app.css">
 <link rel="stylesheet" href="switch.css">
+<link rel="stylesheet" href="kit/shelly-kit.css">
 </head>
 <body>
 
 <!-- ============ BOOT / LOADING ============ -->
 <div id="boot" aria-live="polite">
   <div class="boot-in">
-    <span class="tag">Shelly · retail analytics agent · <span id="bootVer">v1.1.0</span></span>
+    <span class="tag">Shelly · retail analytics agent · <span id="bootVer">v1.2.0</span></span>
     <div class="orb" aria-hidden="true"><i></i><i></i><i></i></div>
     <pre id="bootLog"></pre>
     <button id="skipBoot" class="ghost">Skip</button>
   </div>
 </div>
 
-<!--BIZ--><nav class="biz" aria-label="Choose a business"><div class="biz-track"><a class="biz-opt " href="./" aria-current="page"><span class="ic" aria-hidden="true">🛒</span><span class="tx"><b>Neighbourhood store</b><small>Retail · Shelly store agent</small></span></a><a class="biz-opt med" href="supply-chain/"><span class="ic" aria-hidden="true">✚</span><span class="tx"><b>Tōtara Medical</b><small>Supply Chain Command</small></span></a></div><a class="biz-lp" href="launchpad/">⌘ Launchpad</a></nav><!--/BIZ-->
+<!--BIZ--><nav class="biz" aria-label="Choose a business"><div class="biz-track"><a class="biz-opt " href="./" aria-current="page"><span class="ic" aria-hidden="true">🛒</span><span class="tx"><b>Neighbourhood store</b><small>Retail · Shelly store agent</small></span></a><a class="biz-opt med" href="supply-chain/"><span class="ic" aria-hidden="true">✚</span><span class="tx"><b>Tōtara Medical</b><small>Supply Chain Command</small></span></a></div><div class="biz-side"><a class="biz-lp" href="brain/">🧠 Brain</a><a class="biz-lp" href="launchpad/">⌘ Launchpad</a><button class="biz-ap" type="button" id="apBadge" hidden aria-haspopup="dialog"><span aria-hidden="true">🔔</span> Approvals <b id="apCount">0</b></button></div></nav><!--/BIZ-->
 <div class="wrap">
 
 <!-- ============ HERO + CHAT ============ -->
@@ -247,5 +248,7 @@
 <div id="tip" role="tooltip"></div>
 <script src="data/shelly-data.js"></script>
 <script src="app.js"></script>
+<script src="data/approvals.js"></script>
+<script src="kit/shelly-kit.js" data-page="store" data-base=""></script>
 </body>
 </html>

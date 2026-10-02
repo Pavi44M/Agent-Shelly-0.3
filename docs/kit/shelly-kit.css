@@ -1,0 +1,65 @@
+/* Shelly kit: the mascot and the approvals tray, shared by every page (dark Shelly look) */
+.sk-mascot{position:fixed;left:max(14px,env(safe-area-inset-left));bottom:max(14px,env(safe-area-inset-bottom));z-index:45;
+  display:flex;align-items:flex-end;gap:8px;font-family:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;pointer-events:none}
+.sk-mascot>*{pointer-events:auto}
+.sk-btn{position:relative;width:76px;height:76px;padding:0;border:0;background:none;cursor:pointer;border-radius:50%}
+.sk-btn:focus-visible{outline:2px solid #63b6d8;outline-offset:3px}
+.sk-btn svg{width:100%;height:100%;overflow:visible;animation:sk-bob 3.2s ease-in-out infinite;transform-origin:50% 90%}
+.sk-badge{position:absolute;top:2px;right:0;min-width:22px;height:22px;padding:0 6px;border-radius:99px;background:#e66767;color:#fff;
+  font:600 11px/22px "JetBrains Mono",ui-monospace,monospace;text-align:center;box-shadow:0 0 0 2px #070b12}
+.sk-badge[hidden]{display:none}
+.sk-bubble{max-width:min(300px,calc(100vw - 120px));margin-bottom:48px;background:#141e2c;border:1px solid #2a3a50;border-radius:14px 14px 14px 4px;
+  padding:10px 30px 10px 12px;color:#eaf0f6;font-size:13.5px;line-height:1.45;box-shadow:0 10px 30px rgba(0,0,0,.45);position:relative;
+  animation:sk-pop .35s ease}
+.sk-bubble[hidden]{display:none}
+.sk-bubble b{color:#fff}
+.sk-bubble .sk-x{position:absolute;top:4px;right:6px;border:0;background:none;color:#7d8a9c;font-size:16px;cursor:pointer;line-height:1;padding:4px}
+.sk-bubble .sk-acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.sk-bubble .sk-acts button,.sk-bubble .sk-acts a{font:500 11px "JetBrains Mono",ui-monospace,monospace;border:1px solid #2a3a50;background:#0f1622;color:#eaf0f6;
+  border-radius:6px;padding:5px 8px;cursor:pointer;text-decoration:none}
+.sk-bubble .sk-acts button:hover,.sk-bubble .sk-acts a:hover{border-color:#63b6d8}
+.sk-mascot .eye{animation:sk-blink 5s infinite;transform-origin:center;transform-box:fill-box}
+.sk-mascot.talk .mouth-o{animation:sk-talk .28s ease-in-out infinite alternate;transform-origin:center;transform-box:fill-box}
+.sk-mascot.alert svg{animation:sk-bob 3.2s ease-in-out infinite,sk-wiggle .9s ease 1}
+.sk-mascot .tip{fill:#3fb87f}.sk-mascot.alert .tip{fill:#ffc466;animation:sk-glow 1.4s ease-in-out infinite}
+@keyframes sk-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes sk-blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes sk-talk{from{transform:scaleY(.35)}to{transform:scaleY(1)}}
+@keyframes sk-wiggle{0%,100%{rotate:0deg}25%{rotate:-8deg}75%{rotate:8deg}}
+@keyframes sk-glow{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes sk-pop{from{opacity:0;transform:translateY(6px) scale(.97)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.sk-btn svg,.sk-mascot .eye,.sk-mascot .mouth-o,.sk-mascot .tip{animation:none!important}}
+@media (max-width:560px){.sk-btn{width:60px;height:60px}.sk-bubble{margin-bottom:40px;font-size:13px}}
+@media print{.sk-mascot,.sk-tray{display:none!important}}
+
+/* approvals tray */
+.sk-tray{position:fixed;inset:0;z-index:60;display:grid;place-items:end center;background:rgba(4,7,12,.6);backdrop-filter:blur(3px);
+  font-family:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.sk-tray[hidden]{display:none}
+.sk-panel{width:min(760px,100%);max-height:min(82vh,760px);display:flex;flex-direction:column;background:#0f1622;border:1px solid #1f2a38;
+  border-radius:16px 16px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.5);animation:sk-up .3s ease}
+@media (min-width:760px){.sk-tray{place-items:center}.sk-panel{border-radius:16px}}
+@keyframes sk-up{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+.sk-head{padding:16px 18px 10px;border-bottom:1px solid #172230;display:grid;gap:10px}
+.sk-head h2{margin:0;font-size:20px;font-weight:600;color:#eaf0f6;letter-spacing:-.01em}
+.sk-head p{margin:0;font-size:13px;color:#7d8a9c}
+.sk-close{position:absolute;right:14px;top:12px;border:1px solid #1f2a38;background:#141e2c;color:#eaf0f6;border-radius:8px;width:34px;height:34px;cursor:pointer;font-size:16px}
+.sk-filters{display:flex;flex-wrap:wrap;gap:6px}
+.sk-filters button{font:500 11.5px "JetBrains Mono",ui-monospace,monospace;border:1px solid #1f2a38;background:#141e2c;color:#b0bac8;border-radius:99px;padding:5px 11px;cursor:pointer}
+.sk-filters button[aria-pressed="true"]{background:#63b6d8;color:#07131c;border-color:#63b6d8}
+.sk-list{overflow:auto;padding:8px 18px 16px;display:grid;gap:8px}
+.sk-item{border:1px solid #1f2a38;border-radius:10px;padding:10px 12px;background:#141e2c;display:grid;gap:6px}
+.sk-item.done{opacity:.55}
+.sk-item .k{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font:500 10.5px "JetBrains Mono",ui-monospace,monospace;color:#7d8a9c;letter-spacing:.04em}
+.sk-pill{border-radius:99px;padding:2px 8px;border:1px solid currentColor}
+.sk-pill.store{color:#63b6d8}.sk-pill.totara{color:#b69cf2}.sk-pill.group{color:#7fd1a8}
+.sk-item .t{color:#eaf0f6;font-size:14px;line-height:1.4}
+.sk-item .x{color:#b0bac8;font-size:12.5px;line-height:1.4}
+.sk-item .r{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.sk-item .r button,.sk-item .r a{font:500 11.5px "JetBrains Mono",ui-monospace,monospace;border:1px solid #2a3a50;background:#0f1622;color:#eaf0f6;border-radius:6px;padding:6px 10px;cursor:pointer;text-decoration:none}
+.sk-item .r .yes{border-color:#3fb87f;color:#7fe0ad}.sk-item .r .no{border-color:#e66767;color:#ff9b95}
+.sk-item .imp{margin-left:auto;font:600 12px "JetBrains Mono",ui-monospace,monospace;color:#eaf0f6}
+.sk-item .st{font:600 11px "JetBrains Mono",ui-monospace,monospace}
+.sk-item .st.y{color:#3fb87f}.sk-item .st.n{color:#e66767}
+.sk-foot{padding:10px 18px 14px;border-top:1px solid #172230;font-size:12px;color:#7d8a9c}
+.sk-empty{padding:30px 0;text-align:center;color:#7d8a9c}

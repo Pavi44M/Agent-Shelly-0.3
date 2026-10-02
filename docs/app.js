@@ -1135,6 +1135,7 @@ function renderDecisions() {
   const L = D.learning || { knobs: {} };
   $("#learnBox").innerHTML = `<div class="ph"><span class="t">What Shelly has learned</span></div><p class="small" style="margin:0">Alert thresholds: sales spike z ${L.knobs.spike_z ?? "–"} · stock-out z ${L.knobs.drop_z ?? "–"} · count tolerance ${L.knobs.count_tol ?? "–"} units · waste ×${L.knobs.waste_mult ?? "–"} · decline ratio ${L.knobs.decline_ratio ?? "–"}. ${(L.changes || []).length ? "Changed this run: " + L.changes.map(c => esc(c.reason)).join("; ") : "No changes this run: it needs at least 5 answers per rule before adjusting."}</p>`;
 }
+addEventListener("shelly:approvals", () => { try { renderDecisions(); } catch (e) { /* page not ready */ } });
 function renderPacks() {
   $("#packs").innerHTML = (D.packs || []).map(p => `<div class="panel">
     <span class="tag" style="color:var(--accent)">${esc(p.pack)}</span>

@@ -42,13 +42,15 @@ def main():
         body = page[page.index("</style>") + len("</style>"):page.index(f'<script src="{D3_CDN}">')]
         js = re.findall(r"<script>(.*?)</script>", page, re.S)[-1].replace("const DATA = /*DATA*/null;", "")
         body = body.replace("<!--BACK-->", "")
+        kit = ""
         sw = Path(__file__).resolve().parents[3] / "scripts" / "business_switch.py"
         if sw.exists():   # inside the Shelly repo: add the big business toggle at the top
             import importlib.util
             spec = importlib.util.spec_from_file_location("business_switch", sw)
             mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
             body = mod.switch_html("../", "medical") + body
-            links += '\n<link rel="stylesheet" href="../switch.css">'
+            links += '\n<link rel="stylesheet" href="../switch.css">\n<link rel="stylesheet" href="../kit/shelly-kit.css">'
+            kit = '<script src="../data/approvals.js"></script>\n<script src="../kit/shelly-kit.js" data-page="medical" data-base="../"></script>'
         css += "\n.back{display:inline-block;font-family:var(--mono);font-size:11px;color:var(--accent);text-decoration:none;margin-bottom:6px}.back:hover{text-decoration:underline}"
         (out / "sc.css").write_text(css)
         (out / "sc.js").write_text(js)
@@ -76,6 +78,7 @@ def main():
 <script src="d3.min.js"></script>
 <script src="data.js"></script>
 <script src="sc.js"></script>
+{kit}
 </body>
 </html>
 """)

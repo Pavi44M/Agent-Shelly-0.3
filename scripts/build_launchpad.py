@@ -90,6 +90,12 @@ def main():
          "Ask about this week's trade by typing or voice. Daily briefing, forecasts, exceptions, actions and decisions.",
          money(k["sales"]), f"week to {m['asof_label'].split(' ', 1)[1]} · {vs:+.1f}% vs budget",
          "Live", "live", spark(daily), "wide")
+    brain_p = ROOT / "docs/data/brain.js"
+    bstats = js_data(brain_p, "SHELLY_BRAIN")["stats"] if brain_p.exists() else None
+    if bstats:
+        card("../brain/", "One brain · every department", "Shelly Brain",
+             "The orchestrator, memory, governance, knowledge and learning behind every business, and an agent for every department job.",
+             str(bstats["agents"]), f"agents in {bstats['departments']} departments · {bstats['approve']} need approval", "Core", "live")
     card("../report.html", "All industries", "Reports",
          "Budget, 13-week forecast, trading, category, roster, stock, waste and industry-pack reports as Excel, PDF or on screen.",
          "11", "report types · Excel with live formulas and PivotTables", "Excel · PDF")
@@ -122,7 +128,7 @@ def main():
                   (f"› Tōtara Medical · sales {sc['vision']['total']['ach'] * 100:.1f}% of plan · {sck['at_risk_skus']}/{sck['skus']} SKUs need action"
                    if sc else "› Tōtara Medical · module not built yet"),
                   "› reports · 11 types · Excel, PDF and presentation",
-                  f"› governance · {pending} decisions waiting for you",
+                  f"› governance · {pending} store and pack decisions + {len(sc['escalate']) if sc else 0} Tōtara judgements waiting for you",
                   "› TD Report scheduled for 6:15am NZ"]
     BOOT = ('<div id="boot" aria-live="polite"><div class="boot-in"><span class="tag">Shelly · launchpad</span>'
             '<div class="boot-orbs" aria-hidden="true"><i class="a"></i><i class="b"></i><i class="c"></i></div>'
@@ -145,6 +151,7 @@ def main():
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap">
 <link rel="stylesheet" href="launchpad.css">
 <link rel="stylesheet" href="../switch.css">
+<link rel="stylesheet" href="../kit/shelly-kit.css">
 </head>
 <body>
 {BOOT}
@@ -168,6 +175,8 @@ def main():
 </footer>
 </div>
 <script src="launchpad.js"></script>
+<script src="../data/approvals.js"></script>
+<script src="../kit/shelly-kit.js" data-page="launchpad" data-base="../"></script>
 </body>
 </html>
 """)

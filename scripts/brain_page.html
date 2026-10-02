@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shelly Brain</title>
+<meta name="author" content="Pavithra Bamunu">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Shelly Brain: one AI brain running department agents for a neighbourhood store, Tōtara Medical and industry packs, with governance, memory and learning.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="brain.css">
+<link rel="stylesheet" href="../switch.css">
+<link rel="stylesheet" href="../kit/shelly-kit.css">
+</head>
+<body>
+<div id="boot" aria-live="polite"><div class="boot-in"><span class="tag">Shelly · brain</span>
+  <svg class="boot-brain" viewBox="0 0 200 60" aria-hidden="true"></svg>
+  <h2 class="boot-h">Waking <b>Shelly Brain</b></h2><pre id="bootLog"></pre><button id="skipBoot" type="button">Skip</button></div></div>
+{{SWITCH}}
+<div class="wrap">
+<header>
+  <span class="tag">Shelly Brain · one brain, every department</span>
+  <h1>How Shelly <b>runs the businesses.</b></h1>
+  <p class="sub">A shared brain (orchestrator, memory, governance, knowledge, learning) with an agent for every department job. Each agent knows its data, its skills, its schedule, how much it may do on its own, and when to hand over to a person.</p>
+  <div class="stats" id="stats"></div>
+</header>
+
+<section class="ask" aria-label="Ask the brain">
+  <form id="askForm" autocomplete="off"><label for="askQ" class="tag">Ask the brain who handles it</label>
+    <div class="ask-row"><input id="askQ" maxlength="200" placeholder="e.g. which medical products will run out? · make a budget · roster"><button type="submit">Route ›</button></div></form>
+  <div id="askOut" class="ask-out" aria-live="polite"></div>
+</section>
+
+<section aria-label="Brain map">
+  <div class="sec-h"><h2>Brain map</h2><span class="legend"><span><i class="lg auto"></i>runs on its own</span><span><i class="lg suggest"></i>suggests</span><span><i class="lg approve"></i>needs approval</span><span><i class="lg wait"></i>waiting for you</span></span></div>
+  <div class="map"><svg id="map" viewBox="-450 -450 900 900" role="img" aria-label="Shelly Brain map: core, businesses, departments and agents"></svg><div class="maptip" id="mapTip" hidden></div></div>
+</section>
+
+<section aria-label="How work flows">
+  <div class="sec-h"><h2>How work flows</h2></div>
+  <ol class="flow" id="flow"></ol>
+</section>
+
+<section aria-label="Brain core">
+  <div class="sec-h"><h2>The core</h2><span class="note">Shared by every business</span></div>
+  <div class="core" id="core"></div>
+</section>
+
+<section aria-label="Departments and agents">
+  <div class="sec-h"><h2>Departments &amp; agents</h2>
+    <div class="filters" role="group" aria-label="Filter agents">
+      <input id="fq" placeholder="Search agents, skills, data…" aria-label="Search agents">
+      <button data-a="all" aria-pressed="true">All</button><button data-a="auto" aria-pressed="false">Runs on its own</button>
+      <button data-a="suggest" aria-pressed="false">Suggests</button><button data-a="approve" aria-pressed="false">Needs approval</button>
+      <button data-a="waiting" aria-pressed="false">Waiting for me</button></div></div>
+  <div id="orgs"></div>
+</section>
+
+<footer>
+  <span>Built by <a href="https://pavi44m.github.io/pavibamunu/">Pavithra Bamunu</a></span>
+  <span><a href="https://github.com/Pavi44M/Agent-Shelly-0.3/tree/main/shelly/brain">Brain source on GitHub</a></span>
+  <span><a href="../guide/security.html">Security</a></span><span id="gen"></span>
+</footer>
+</div>
+
+<aside class="drawer" id="drawer" hidden aria-modal="true" role="dialog" aria-labelledby="dTitle"><div class="d-in"><button class="d-x" id="dClose" aria-label="Close">×</button><div id="dBody"></div></div></aside>
+
+<script src="../data/brain.js"></script>
+<script src="../data/approvals.js"></script>
+<script src="brain.js"></script>
+<script src="../kit/shelly-kit.js" data-page="brain" data-base="../"></script>
+</body>
+</html>

@@ -12,6 +12,8 @@
     python -m shelly connectors                        connector health check
     python -m shelly ask "what do I need to order?"    relevance check: which skill, or which agent to connect
     python -m shelly check --data path/to/exports      data check: what Shelly found, how columns were matched
+    python -m shelly brain                             the Shelly Brain org: businesses, departments, agents, autonomy
+    python -m shelly brain ask "which medical products will run out?"   which department agent takes it
     python -m shelly report all [--data ...] [--pdf]   every report: Excel (dashboard, model, pivots, raw, lookups) + web page (+ PDF)
     python -m shelly report budget --months 6 --category Dairy --pdf --theme light,present
 """
@@ -42,6 +44,7 @@ def main(argv=None):
     sub.add_parser("learn"); sub.add_parser("connectors")
     k = sub.add_parser("ask"); k.add_argument("text")
     c = sub.add_parser("check"); c.add_argument("--data", default="data/sample")
+    br = sub.add_parser("brain"); br.add_argument("action", nargs="?", default="org", choices=["org", "ask"]); br.add_argument("text", nargs="?")
     rp = sub.add_parser("report"); rp.add_argument("which", nargs="?", default="all")
     rp.add_argument("--data", default="data/sample"); rp.add_argument("--asof"); rp.add_argument("--out", default="outputs/reports")
     rp.add_argument("--category", default="All"); rp.add_argument("--months", type=int); rp.add_argument("--weeks", type=int)
@@ -109,6 +112,25 @@ def main(argv=None):
         from .core.router import route
         r = route(a.text)
         print(f"In scope → skill {r.skill} (match {r.score})" if r.in_scope else f"Out of scope ({r.kind}). {r.advice}")
+
+    elif a.cmd == "brain":
+        from .brain import AGENTS, BUSINESSES, DEPARTMENTS, ask
+        if a.action == "ask":
+            r = ask(a.text or "")
+            if not r["in_scope"]:
+                print("Outside Shelly's skills:", r.get("advice"))
+            elif not r.get("agent"):
+                print(r["advice"])
+            else:
+                print(f"→ {r['agent_name']} · {r['department']} · {r['business']} · autonomy: {r['autonomy']} · answers to {r['owner']}"
+                      + (f" · skill {r['skill']}" if r.get("skill") else ""))
+        else:
+            for b in BUSINESSES:
+                print(f"\n{b['icon']} {b['name']} — {b['kind']}")
+                for d in [d for d in DEPARTMENTS if d.business == b["id"]]:
+                    print(f"  {d.name} (head: {d.head})")
+                    for ag in [x for x in AGENTS if x.department == d.id]:
+                        print(f"    · {ag.name:24s} [{ag.autonomy:7s}] {', '.join(ag.skills)}")
 
     elif a.cmd == "check":
         from . import ingest
