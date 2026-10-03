@@ -286,6 +286,15 @@ function start3d() {
     if (f.id === "hotfood") { box(g, .6, .55, .45, -L / 4, 1.27, -D / 4, mat("#b8bec0")); box(g, .8, .45, .5, 0, 1.22, -D / 4, FROST);
       for (let i = 0; i < 10; i++) place("box", g, -.3 + (i % 5) * .15, 1.04, -D / 4 + (i < 5 ? -.1 : .1), .12, .05, .12, "#d8a050"); }
   }
+  function bKiosks(g, f) {                               // self-checkout kiosks: bagging shelf, scanner and screen
+    const n = f.count || 4, w = f.L / n;
+    for (let i = 0; i < n; i++) { const x = -f.L / 2 + (i + .5) * w;
+      box(g, w - .18, .85, f.Dp * .8, x, .425, -.05, mat("#24543f")); box(g, w - .14, .04, f.Dp * .85, x, .87, -.05, mat("#e7e1d4"));
+      box(g, .05, .55, .05, x - w / 2 + .2, 1.15, -.15, mat("#26292b"));
+      const sc = box(g, .34, .26, .03, x - w / 2 + .2, 1.45, -.12, glow("#3f8fb5")); sc.rotation.x = -.3;
+      box(g, .16, .05, .2, x + .12, .91, .05, mat("#26292b")); box(g, .12, .02, .14, x + .12, .94, .05, glow("#ff5a5a"));
+      const lamp = box(g, .06, .06, .06, x - w / 2 + .2, 1.75, -.15, glow(i % 2 ? "#3fb87f" : "#3fb87f")); f.lamps = f.lamps || []; f.lamps.push(lamp); }
+  }
   function bTable(g, f) {
     box(g, f.L, .7, f.Dp, 0, .35, 0, mat("#6b4a2f"));
     for (let layer = 0; layer < 4; layer++) { const nx = 6 - layer, nz = 3 - Math.min(layer, 2), cw = (f.L - .2) / 6, cd = (f.Dp - .2) / 3;
@@ -366,7 +375,7 @@ function start3d() {
   FX.forEach((f, i) => {
     f.fill = hasData(f) ? Math.max(.45, Math.min(1, .45 + (f.kpi.min_cover ?? 7) / 6)) : .92;
     const g = new THREE.Group(); g.position.set(f.cx, 0, f.cz); g.rotation.y = f.rot; g.updateMatrixWorld(true);
-    ({ wall: bWall, gondola: bGondola, island: bIsland, counter: bCounter, table: bTable }[f.type] || ((g, f) => bChiller(g, f, f.type !== "multideck", f.type === "freezer")))(g, f);
+    ({ wall: bWall, gondola: bGondola, island: bIsland, counter: bCounter, table: bTable, kiosks: bKiosks }[f.type] || ((g, f) => bChiller(g, f, f.type !== "multideck", f.type === "freezer")))(g, f);
     const tall = f.type === "table" ? 1.9 : f.H;
     const pk = new THREE.Mesh(BOXG, PICK); pk.scale.set(f.L, tall, f.Dp); pk.position.y = tall / 2; pk.userData.fi = i; g.add(pk); pickables.push(pk);
     // halo plate on the floor in the mode colour

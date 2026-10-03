@@ -24,7 +24,7 @@ def test_planogram_is_valid():
     assert len(ids) == len(set(ids)) and len(ids) >= 25
     for f in pg["fixtures"]:
         assert ("rect" in f) != ("seg" in f)
-        assert f["type"] in {"wall", "gondola", "chiller", "multideck", "freezer", "island", "counter", "table"}
+        assert f["type"] in {"wall", "gondola", "chiller", "multideck", "freezer", "island", "counter", "table", "kiosks"}
     # every exact SKU is listed once
     skus = [s for f in pg["fixtures"] for s in f.get("skus", [])]
     assert len(skus) == len(set(skus))
@@ -40,6 +40,13 @@ def test_operations_config():
     # busier after 5pm
     f = {int(h): v for h, v in ops["footfall"].items()}
     assert max(f, key=f.get) >= 17
+    roles = {m["role"] for m in ops["team"]}
+    assert {"Cook", "Café"} <= roles
+    assert {m.get("station") for m in ops["team"]} >= {"till", "cafe"}
+    assert ops["cafe"]["close"] == "16:00" and ops["self_checkouts"]["count"] == 4
+    assert ops["trolleys"]["total"] > 0 and ops["baskets"]["total"] > 0
+    cook = [m for m in ops["team"] if m["role"] == "Cook"]; cafe = [m for m in ops["team"] if m["role"] == "Café"]
+    assert all(m["shift"] == "am" for m in cook) and sum(m["shift"] == "pm" for m in cafe) == 1
     shifts = {s["id"] for s in ops["shifts"]}
     assert all(m.get("shift") in shifts or m.get("start") for m in ops["team"])
 

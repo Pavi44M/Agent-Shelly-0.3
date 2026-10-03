@@ -130,7 +130,7 @@ def build_floor(web: dict, pg: dict | None = None) -> dict:
         for p in prods:
             for i, v in enumerate((p.get("trend14") or [])[-14:]):
                 trend[i + 14 - len((p.get("trend14") or [])[-14:])] += _num(v)
-        geo = {k: f[k] for k in ("rect", "seg", "face", "height", "type", "kind", "max_depth", "no_endcaps") if k in f}
+        geo = {k: f[k] for k in ("rect", "seg", "face", "height", "type", "kind", "max_depth", "no_endcaps", "count") if k in f}
         fixtures.append({
             "id": f["id"], "name": f["name"], "zone": f.get("zone", ""), "aisle": f.get("aisle"), "colour": f["colour"],
             "items": f.get("items", []), **geo,

@@ -82,6 +82,17 @@ export function buildBackroom(ctx) {
   ["restroom_a", "restroom_b"].forEach(k => { const p = P(k); if (!p) return;
     box(g, .4, .42, .6, p[0], .21, p[1] + 1.05, mat("#f4f6f8")); box(g, .4, .45, .15, p[0], .6, p[1] + 1.3, mat("#f4f6f8"));
     box(g, .45, .15, .35, p[0] - .55, .85, p[1] + .9, mat("#f4f6f8")); });
+  // kitchen: benches along the walls, combi oven, fryer, sink, prep island
+  const kRoom = (BR.rooms || []).find(r => r.id === "kitchen");
+  if (kRoom) { const r = rectW(kRoom.rect), steel = mat("#c3cbd2"), dark = mat("#3a4048");
+    const W = r.w, D = r.d, x0 = r.x - W / 2, z1 = r.z + D / 2;
+    box(g, W - .3, .9, .6, r.x, .45, z1 - .4, steel); solid(r.x, z1 - .4, W - .3, .6);                       // back bench
+    box(g, .7, 1.5, .7, x0 + .55, .75, z1 - .45, dark); box(g, .5, .35, .02, x0 + .55, 1.1, z1 - .79, glow("#ff9f43"));   // oven
+    box(g, .5, .2, .45, r.x + .2, 1.0, z1 - .4, mat("#26292b"));                                              // fryer
+    box(g, .6, .12, .45, r.x + W / 2 - .55, .92, z1 - .4, mat("#8a949c"));                                    // sink
+    box(g, 1.1, .9, .6, r.x - .1, .45, r.z - .05, steel); solid(r.x - .1, r.z - .05, 1.1, .6);                   // prep island
+    for (let i = 0; i < 4; i++) box(g, .22, .06, .3, r.x - .45 + i * .3, .93, r.z - .05, mat(["#e2b26b", "#79b24a", "#d94a3d", "#f7f7f2"][i]));
+  }
   // walk-in chiller: cold shelving
   const coolerRoom = (BR.rooms || []).find(r => r.id === "cooler");
   if (coolerRoom) { const r = rectW(coolerRoom.rect);

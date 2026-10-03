@@ -2,7 +2,7 @@
    a capsule body in a role-coloured shirt, a round head, capsule arms, plus legs
    so they can walk. Staff wear the store polo; the Duty Manager has a gold
    lanyard and a ★ tag; customers wear their own clothes and some carry a basket. */
-export const ROLE_SHIRT = { "Duty Manager": "#f2c14e", "Store Team": "#1f8a5b", "Store Manager": "#2f5f9e", customer: null };
+export const ROLE_SHIRT = { "Duty Manager": "#f2c14e", "Store Team": "#1f8a5b", "Store Manager": "#2f5f9e", "Cook": "#f4f4f1", "Café": "#8a5a3b", customer: null };
 const SKIN = ["#f1c9a5", "#e0ac84", "#c68c5f", "#a26a42", "#7a4b2c", "#f6d7bd"];
 const HAIR = ["#1d1a17", "#3b2a1e", "#6b4a2f", "#b8864b", "#d9c08a", "#8a8f94", "#2a2420"];
 const CLOTHES = ["#d94a3d", "#3d7dd9", "#7a5cc4", "#e08a3a", "#2a9d8f", "#e85d9a", "#556070", "#c9b48a", "#7fb3d5", "#a23b72", "#334155", "#f4f1ea"];
@@ -39,6 +39,11 @@ export function makePerson(THREE, opts) {
     const badge = new THREE.Mesh(new THREE.BoxGeometry(.07, .045, .01), M("#ffffff")); badge.position.set(.08, 1.22, .175); body.add(badge);
     if (opts.role === "Duty Manager") { const ly = new THREE.Mesh(new THREE.TorusGeometry(.12, .012, 6, 20, Math.PI), M("#e66767")); ly.position.set(0, 1.33, .12); ly.rotation.set(Math.PI / 2.3, 0, Math.PI); body.add(ly); }
   }
+  if (opts.role === "Cook") {                     // chef's hat and apron
+    const hat = new THREE.Mesh(new THREE.CylinderGeometry(.11, .09, .16, 14), M("#ffffff")); hat.position.y = 1.72; body.add(hat);
+    const apron = new THREE.Mesh(new THREE.BoxGeometry(.3, .42, .02), M("#d9dde2")); apron.position.set(0, .98, .17); body.add(apron);
+  }
+  if (opts.role === "Café") { const apron = new THREE.Mesh(new THREE.BoxGeometry(.3, .45, .02), M("#2b2420")); apron.position.set(0, .98, .17); body.add(apron); }
   // what they can hold: a stock carton (staff), a basket (customers)
   const carry = new THREE.Mesh(new THREE.BoxGeometry(.38, .26, .3), M(kind === "staff" ? "#b88a52" : "#d23b3b"));
   carry.position.set(0, 1.0, .3); carry.visible = false; body.add(carry);
@@ -94,4 +99,25 @@ export function tagSprite(THREE, name, role, col) {
   x.fillStyle = "#9fb0c4"; x.font = "500 17px 'JetBrains Mono', monospace"; x.fillText(role.toUpperCase(), 52, 48);
   const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
   const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false })); sp.scale.set(.9, .16, 1); sp.renderOrder = 19; return sp;
+}
+
+/* a shopping trolley: wire basket, child seat flap, handle and four wheels (front of the person when pushed) */
+export function makeTrolley(THREE) {
+  const g = new THREE.Group();
+  const wire = new THREE.MeshStandardMaterial({ color: 0xb8c2cc, metalness: .6, roughness: .35, transparent: true, opacity: .75 });
+  const solid = new THREE.MeshStandardMaterial({ color: 0x8d99a6, metalness: .7, roughness: .3 });
+  const red = new THREE.MeshStandardMaterial({ color: 0xc0392b, roughness: .5 });
+  const b = new THREE.Mesh(new THREE.BoxGeometry(.5, .38, .78), wire); b.position.set(0, .72, 0); g.add(b);
+  const bot = new THREE.Mesh(new THREE.BoxGeometry(.46, .03, .7), solid); bot.position.set(0, .2, 0); g.add(bot);
+  const h = new THREE.Mesh(new THREE.CylinderGeometry(.02, .02, .54, 8), red); h.rotation.z = Math.PI / 2; h.position.set(0, .98, -.43); g.add(h);
+  for (const x of [-.22, .22]) { const r = new THREE.Mesh(new THREE.BoxGeometry(.02, .78, .02), solid); r.position.set(x, .5, -.36); r.rotation.x = -.12; g.add(r); }
+  for (const x of [-.2, .2]) for (const z of [-.32, .32]) { const w = new THREE.Mesh(new THREE.CylinderGeometry(.05, .05, .03, 10), new THREE.MeshStandardMaterial({ color: 0x1d2430 })); w.rotation.z = Math.PI / 2; w.position.set(x, .05, z); g.add(w); }
+  return g;
+}
+/* a red hand basket */
+export function makeBasket(THREE) {
+  const g = new THREE.Group();
+  const m = new THREE.MeshStandardMaterial({ color: 0xd23b3b, roughness: .5 });
+  const b = new THREE.Mesh(new THREE.BoxGeometry(.42, .2, .3), m); b.position.y = .1; g.add(b);
+  return g;
 }

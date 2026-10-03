@@ -43,7 +43,7 @@ export function initUI(ctx, S, { fmt, hm, DAYS }) {
     if (a.state === "arriving") return ["walk", "Arriving for shift"];
     if (a.state === "leaving") return ["off", "Heading home"];
     if (a.state === "break" || a.state === "toBreak" || a.state === "rest") return ["brk", `${a.brk ? a.brk.name : "Break"} until ${fmt((a.brk?.started ?? S.t) + (a.brk?.minutes ?? 10))}`];
-    if (a.task) return [a.task.kind === "till" ? "till" : "work", a.task.title];
+    if (a.task) return [a.task.kind === "till" || a.task.kind === "cafe" ? "till" : "work", a.task.title];
     return a.role === "Store Manager" ? ["work", "Admin at the desk"] : ["work", "Looking for the next job"];
   };
   function liveCard() {
@@ -51,6 +51,9 @@ export function initUI(ctx, S, { fmt, hm, DAYS }) {
     const dm = team.find(a => a.role === "Duty Manager");
     live.innerHTML = `<span class="tag">In store now</span><div class="lv"><div><b>${cust}</b><span>customers</span></div><div><b>${S.queue.length}</b><span>in queue</span></div>` +
       `<div><b>${team.length}</b><span>team${onBreak ? ` · ${onBreak} on break` : ""}</span></div><div><b>${S.stats.served}</b><span>served today</span></div></div>` +
+      `<div class="lv2"><span>Self-checkouts <b>${S.agents.filter(a => a.kind === "customer" && ["scanning", "help", "toKiosk"].includes(a.state)).length}/${(S.OPS.self_checkouts || {}).count || 0}</b></span>` +
+      `<span>Café <b class="${S.cafeTill && S.cafeTill.status === "progress" ? "on" : ""}">${S.cafeTill && S.t < (S.OPS.cafe ? hm(S.OPS.cafe.close) : 0) && S.t >= (S.OPS.cafe ? hm(S.OPS.cafe.open) : 0) ? "open" : "closed"}</b></span>` +
+      `<span>Trolleys <b>${S.trolleys ? S.trolleys.bay : 0}</b></span><span>Baskets <b>${S.baskets ? S.baskets.door : 0}</b></span></div>` +
       (dm ? `<p>★ ${esc(dm.name)} is Duty Manager · ${esc(stateOf(dm.m)[1])}</p>` : "");
   }
   function tasksPane() {
@@ -67,16 +70,16 @@ export function initUI(ctx, S, { fmt, hm, DAYS }) {
       rows.map(t => {
         const who = t.who ? (S.agents.find(a => a.id === t.who) || {}).name : t.doneBy;
         const pctv = Math.round((t.status === "done" ? 1 : t.progress) * 100);
-        return `<div class="tk ${t.status}"><span class="st ${t.status}">${t.status === "progress" ? (t.kind === "till" ? "LIVE" : pctv + "%") : t.status === "done" ? "DONE" : t.status === "waiting" ? "WAIT" : fmt(t.due)}</span>` +
+        return `<div class="tk ${t.status}"><span class="st ${t.status}">${t.status === "progress" ? (t.kind === "till" || t.kind === "cafe" ? "LIVE" : pctv + "%") : t.status === "done" ? "DONE" : t.status === "waiting" ? "WAIT" : fmt(t.due)}</span>` +
           `<div><b>${esc(t.title)}</b><small>${esc(t.area || "")}${who ? " · " + esc(who) : ""}${t.status === "done" ? " · done " + fmt(t.doneAt) : t.status === "waiting" ? " · due " + fmt(t.due) : ""}${t.shelly ? " · from Shelly" : ""}</small>` +
-          (t.status === "progress" && t.kind !== "till" ? `<i class="bar"><i style="width:${pctv}%"></i></i>` : "") + `</div></div>`;
+          (t.status === "progress" && t.kind !== "till" && t.kind !== "cafe" ? `<i class="bar"><i style="width:${pctv}%"></i></i>` : "") + `</div></div>`;
       }).join("");
   }
   function teamPane() {
     const rows = S.staff.map(m => { const [k, txt] = stateOf(m); const sel = m.id === personId;
       const brk = m.breaks.map(b => `<span class="${b.done ? "ok" : S.t >= b.at ? "now" : ""}">${esc(b.name)} ${fmt(b.at)}</span>`).join("");
       return `<button type="button" class="tm ${sel ? "sel" : ""}" data-p="${esc(m.id)}"><i class="dot ${k}"></i><div><b>${m.role === "Duty Manager" ? "★ " : ""}${esc(m.name)}</b>` +
-        `<small>${esc(m.role)} · ${esc(m.shiftName)} ${fmt(m.start)}–${fmt(m.end)}</small><span class="now">${esc(txt)}</span>` +
+        `<small>${esc(m.role)}${m.station ? " · " + (m.station === "till" ? "main checkout" : "café till") : ""} · ${esc(m.shiftName)} ${fmt(m.start)}–${fmt(m.end)}</small><span class="now">${esc(txt)}</span>` +
         (sel ? `<span class="brks">${brk}</span>` : "") + `</div></button>`; }).join("");
     const cust = S.agents.filter(a => a.kind === "customer").length;
     $("#pane-team").innerHTML = `<div class="ts-h"><h3>Team on ${["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][S.day]}</h3><span class="tag">${S.staff.length} rostered</span></div>${rows}` +
@@ -98,8 +101,8 @@ export function initUI(ctx, S, { fmt, hm, DAYS }) {
     svg += `<line x1="${X(S.t)}" x2="${X(S.t)}" y1="10" y2="${fy + 64}" class="nowl"/></svg>`;
     const done = S.tasks.filter(t => t.status === "done" && !t.filler).length, all = S.tasks.filter(t => !t.filler).length;
     $("#pane-day").innerHTML = `<div class="ts-h"><h3>${["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"][S.day]}</h3><span class="tag">${S.delivery ? "delivery day" : "no delivery"}</span></div>${svg}` +
-      `<div class="legend"><span><i class="lg sh"></i>shift</span><span><i class="lg dm"></i>duty manager</span><span><i class="lg bk"></i>break</span><span><i class="lg op"></i>open ${fmt(S.OPEN)}–${fmt(S.CLOSE)}</span></div>` +
-      `<p class="note">${done} of ${all} planned jobs done · ${S.stats.served} customers served. Deliveries ${S.OPS.deliveries.days.join(", ")} at ${S.OPS.deliveries.arrive}. About ${S.OPS.customers_per_day} customers a day from average sales of $${S.OPS.avg_daily_sales.toLocaleString("en-NZ")} at a $${S.OPS.avg_basket_nzd} basket.</p>` +
+      `<div class="legend"><span><i class="lg sh"></i>shift</span><span><i class="lg dm"></i>duty manager</span><span><i class="lg bk"></i>break</span><span><i class="lg op"></i>open ${fmt(S.OPEN)}–${fmt(S.CLOSE)}</span>${S.OPS.cafe ? `<span>café ${S.OPS.cafe.open}–${S.OPS.cafe.close}</span>` : ""}</div>` +
+      `<p class="note">${done} of ${all} planned jobs done · ${S.stats.served} customers served (${S.stats.self || 0} at self-checkouts, ${S.stats.cafe || 0} at the café). Deliveries ${S.OPS.deliveries.days.join(", ")} at ${S.OPS.deliveries.arrive}. About ${S.OPS.customers_per_day} customers a day from average sales of $${S.OPS.avg_daily_sales.toLocaleString("en-NZ")} at a $${S.OPS.avg_basket_nzd} basket.</p>` +
       `<div class="logl"><p class="sub-h">What's happening</p>${S.log.slice(0, 14).map(l => `<div><span>${fmt(l.t)}</span>${esc(l.s)}</div>`).join("")}</div>`;
   }
   let holding = false;                                   // don't redraw a panel under a finger or mouse
