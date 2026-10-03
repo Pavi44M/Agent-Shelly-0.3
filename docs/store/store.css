@@ -192,3 +192,18 @@ table.fl td.why-c{color:var(--ink-3);font-size:12.5px;min-width:240px}
 .logl div{display:grid;grid-template-columns:42px minmax(0,1fr);gap:6px;color:var(--ink-2)}
 .logl span{font:10.5px var(--mono);color:var(--ink-3)}
 @media (max-width:620px){.ops{margin:0 -8px 10px}.clock b{font-size:22px}.lv b{font-size:16px}}
+
+/* boot (same as the Brain, Launchpad and Tōtara pages) */
+#boot{position:fixed;inset:0;z-index:70;background:var(--void);display:grid;place-items:center;padding:24px;transition:opacity .6s ease,visibility .6s}
+#boot.done{opacity:0;visibility:hidden}
+.boot-in{width:min(560px,100%)}
+.boot-plan{display:block;width:120px;height:auto;margin-top:16px}
+.boot-plan .bp-floor{fill:#141e2c;stroke:#2a3a50;stroke-width:6}
+.boot-plan rect{opacity:0;animation:shelfIn .5s ease forwards}
+@keyframes shelfIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.boot-h{margin:12px 0 0;font-size:clamp(22px,4.6vw,32px);font-weight:300;color:var(--ink)}.boot-h b{font-weight:600}
+#bootLog{font-family:var(--mono);font-size:12.5px;line-height:1.9;color:var(--ink-2);white-space:pre-wrap;min-height:170px;margin:12px 0 0}
+#bootLog .ok{color:var(--accent)}
+#skipBoot{font:11px var(--mono);background:none;border:1px solid var(--etch);color:var(--ink-3);border-radius:3px;padding:6px 12px;cursor:pointer}
+#skipBoot:hover{color:var(--ink);border-color:var(--accent)}
+@media (prefers-reduced-motion:reduce){.boot-plan rect{animation:none;opacity:1}#boot{transition:none}}

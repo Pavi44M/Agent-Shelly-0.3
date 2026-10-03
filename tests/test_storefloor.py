@@ -92,5 +92,6 @@ def test_page_is_built():
     assert (ROOT / "docs/store/index.html").exists()
     html = (ROOT / "docs/store/index.html").read_text()
     assert "script-src 'self'" in html and "store.js" in html and "store-floor.js" in html
-    for f in ["store.js", "store.css", "v3/sim.js", "v3/nav.js", "v3/people.js", "v3/backroom.js", "v3/ui.js"]:
+    assert 'id="boot"' in html and "boot.js" in html
+    for f in ["store.js", "boot.js", "store.css", "v3/sim.js", "v3/nav.js", "v3/people.js", "v3/backroom.js", "v3/ui.js"]:
         assert (ROOT / "docs/store" / f).exists(), f

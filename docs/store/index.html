@@ -15,6 +15,9 @@
 <link rel="stylesheet" href="../kit/shelly-kit.css">
 </head>
 <body>
+<div id="boot" aria-live="polite"><div class="boot-in"><span class="tag">Shelly · store floor</span>
+  <svg class="boot-plan" viewBox="340 340 1000 1320" aria-hidden="true"></svg>
+  <h2 class="boot-h">Opening <b>the store</b></h2><pre id="bootLog"></pre><button id="skipBoot" type="button">Skip</button></div></div>
 <nav class="biz" aria-label="Choose a business"><div class="biz-track"><a class="biz-opt " href="../"><span class="ic" aria-hidden="true">🛒</span><span class="tx"><b>Neighbourhood store</b><small>Retail · Shelly store agent</small></span></a><a class="biz-opt med" href="../supply-chain/"><span class="ic" aria-hidden="true">✚</span><span class="tx"><b>Tōtara Medical</b><small>Supply Chain Command</small></span></a></div><div class="biz-side"><a class="biz-lp" href="../store/" aria-current="page">▦ Floor</a><a class="biz-lp" href="../brain/">🧠 Brain</a><a class="biz-lp" href="../launchpad/">⌘ Launchpad</a><button class="biz-ap" type="button" id="apBadge" hidden aria-haspopup="dialog"><span aria-hidden="true">🔔</span> Approvals <b id="apCount">0</b></button></div></nav>
 <div class="wrap">
 <header>
@@ -75,6 +78,7 @@
 <p class="foot" id="foot"></p>
 </div>
 <script src="../data/store-floor.js"></script>
+<script src="boot.js"></script>
 <script src="../data/approvals.js"></script>
 <script type="module" src="store.js"></script>
 <script src="../kit/shelly-kit.js" data-page="floor" data-base="../"></script>
