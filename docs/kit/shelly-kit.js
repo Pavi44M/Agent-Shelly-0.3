@@ -1,6 +1,6 @@
 /* Shelly kit: the mascot and one approvals queue across every business.
    Include after data/approvals.js:
-     <script src="kit/shelly-kit.js" data-page="store|medical|launchpad|brain|report" data-base="./"></script>
+     <script src="kit/shelly-kit.js" data-page="store|medical|launchpad|brain|floor|report" data-base="./"></script>
    Approvals share state with the store page (localStorage shelly.decisions.<asof>) and the
    Tōtara page (localStorage shelly-sc-dec), so answering here or there is the same answer. */
 (function () {
@@ -145,6 +145,7 @@
       store: [`${greeting()}! ${ask}`, "Ask me for any report: “make a budget for the next 3 months”."],
       medical: [`${greeting()}! Welcome to Tōtara Medical. ${ask}`, "Tap any tile or pipeline step to open the detail behind the number."],
       brain: [`This is my brain: every department and agent, and what each may do on its own. ${ask}`, "Tap an agent to see its skills, data, schedule, rules and who it reports to."],
+      floor: [`${greeting()}! This is the shop floor. Red shelves need something today. ${ask}`, "Tap any shelf for its numbers, or switch to 🚶 Walk and use the joystick to walk the aisles."],
       report: [ask, "Print for white paper, Dark for the Shelly look, Present for one section per screen."],
     };
     return M[PAGE] || M.launchpad;

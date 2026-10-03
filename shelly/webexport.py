@@ -47,6 +47,15 @@ def build(P, R, cfg, acts, summary, engine, quality) -> dict:
     ab = R["assortment"].set_index("sku")
     rp = R["replenishment"].set_index("sku")
     an_by_sku = R["anomalies"].groupby("sku")["type"].apply(list).to_dict() if len(R["anomalies"]) else {}
+    # store floor (docs/store): waste, last count variance and a 14-day trend per SKU
+    w7 = (P.waste[P.waste["date"] > P.asof - pd.Timedelta(days=7)].groupby("sku")["waste_value"].sum()
+          if P.waste is not None and len(P.waste) else pd.Series(dtype=float))
+    if P.inventory is not None and len(P.inventory):
+        last_cnt = P.inventory.sort_values("count_date").groupby("sku").tail(1).set_index("sku")["variance_units"]
+    else:
+        last_cnt = pd.Series(dtype=float)
+    d14 = P.daily_sku[P.daily_sku["date"] > P.asof - pd.Timedelta(days=14)]
+    trend = d14.sort_values("date").groupby("sku")["net_sales"].apply(lambda v: [_r(x, 0) for x in v]).to_dict()
     products = []
     for p in P.products.itertuples():
         s = p.sku
@@ -61,6 +70,8 @@ def build(P, R, cfg, acts, summary, engine, quality) -> dict:
             "on_hand": _r(rp["est_on_hand"].get(s), 0), "days_cover": _r(rp["days_cover"].get(s)),
             "order_qty": _r(rp["suggested_order"].get(s), 0), "reorder_status": rp["status"].get(s),
             "flags": [t for t in an_by_sku.get(s, []) if t],
+            "waste_7d": _r(w7.get(s, 0.0), 0), "count_var": _r(last_cnt.get(s), 0) if s in last_cnt.index else None,
+            "trend14": trend.get(s, []),
         })
 
     reorder = [{"name": r.product_name, "supplier": r.supplier, "category": r.category,
