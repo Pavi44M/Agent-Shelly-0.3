@@ -1,22 +1,22 @@
 # Shelly · Consumer electronics report
-_Generated 29 Sep 2026 · demo data unless stated_
+_Generated 03 Oct 2026 · demo data unless stated_
 
 ## Actions
 
 | Priority | Area | Action | $/week | Confirm? |
 |---|---|---|---:|---|
-| P2 | Markdown | Don't mark TV model 1 down 30% yet: ask the supplier for price protection or return-to-vendor, or bundle it; cap any markdown at 20% <br><sub>$65,229 at cost, 189 days old; a 30% markdown sells at -11% margin (below cost). Break-even markdown is 22%</sub> | -1,632 | ⏳ D-9c161b0a |
-| P2 | Markdown | Mark down TV model 3 by 20% (154 days old) <br><sub>$44,362 at cost ageing; margin after markdown 3%; $/week = margin given up, spread over an 8-week sell-down</sub> | -1,109 | ⏳ D-3e6e5dc6 |
-| P2 | Markdown | Don't mark TV model 6 down 30% yet: ask the supplier for price protection or return-to-vendor, or bundle it; cap any markdown at 20% <br><sub>$42,021 at cost, 224 days old; a 30% markdown sells at -11% margin (below cost). Break-even markdown is 22%</sub> | -1,049 | ⏳ D-b5e3d699 |
-| P2 | Markdown | Mark down TV model 2 by 20% (168 days old) <br><sub>$37,200 at cost ageing; margin after markdown 3%; $/week = margin given up, spread over an 8-week sell-down</sub> | -930 | ⏳ D-88f6adb3 |
-| P2 | Markdown | Don't mark Tablet model 3 down 30% yet: ask the supplier for price protection or return-to-vendor, or bundle it; cap any markdown at 18% <br><sub>$32,725 at cost, 182 days old; a 30% markdown sells at -14% margin (below cost). Break-even markdown is 20%</sub> | -737 | ⏳ D-81ed0e3d |
-| P2 | Markdown | Mark down Smartphone model 6 by 10% (105 days old) <br><sub>$31,680 at cost ageing; margin after markdown 7%; $/week = margin given up, spread over an 8-week sell-down</sub> | -396 | ⏳ D-a597019d |
-| P2 | Range & stock | Stop reordering TV model 1 and plan a sell-down (15 weeks cover) <br><sub>51 on hand, 14 sold in 4 weeks; ~$29,417 tied up above an 8-week target (holding cost ~0.5%/week)</sub> | -147 | ⏳ D-d58e0948 |
-| P2 | Range & stock | Stop reordering Tablet model 6 and plan a sell-down (40 weeks cover) <br><sub>10 on hand, 1 sold in 4 weeks; ~$6,504 tied up above an 8-week target (holding cost ~0.5%/week)</sub> | -33 | ⏳ D-b9ed6eb5 |
-| P2 | Range & stock | Stop reordering Headphones model 6 and plan a sell-down (12 weeks cover) <br><sub>46 on hand, 15 sold in 4 weeks; ~$2,336 tied up above an 8-week target (holding cost ~0.5%/week)</sub> | -12 | ⏳ D-23968261 |
-| P2 | Range & stock | Stop reordering Soundbar model 6 and plan a sell-down (13 weeks cover) <br><sub>13 on hand, 4 sold in 4 weeks; ~$2,315 tied up above an 8-week target (holding cost ~0.5%/week)</sub> | -12 | ⏳ D-dac55f84 |
-| P2 | Range & stock | Stop reordering Accessory model 6 and plan a sell-down (20 weeks cover) <br><sub>25 on hand, 5 sold in 4 weeks; ~$300 tied up above an 8-week target (holding cost ~0.5%/week)</sub> | -2 | ⏳ D-55e61ea6 |
-| P3 | Attach | Lift accessory attach from 11% towards 25% (bundles, till prompts, staff incentive) <br><sub>39 accessories on 368 devices in 4 weeks</sub> | +390 | ⏳ D-c595ee50 |
+| P2 | Markdown | Don't mark TV model 1 down 30% yet: ask the supplier for price protection or return-to-vendor, or bundle it; cap any markdown at 20% <br><sub>$65,229 at cost, 189 days old; a 30% markdown sells at -11% margin (below cost). Break-even markdown is 22%</sub> | -1,632 | ⏳ D-29f7eb66 |
+| P2 | Markdown | Mark down TV model 3 by 20% (154 days old) <br><sub>$44,362 at cost ageing; margin after markdown 3%; $/week = margin given up, spread over an 8-week sell-down</sub> | -1,109 | ⏳ D-cea7a835 |
+| P2 | Markdown | Don't mark TV model 6 down 30% yet: ask the supplier for price protection or return-to-vendor, or bundle it; cap any markdown at 20% <br><sub>$42,021 at cost, 224 days old; a 30% markdown sells at -11% margin (below cost). Break-even markdown is 22%</sub> | -1,049 | ⏳ D-a76a5320 |
+| P2 | Markdown | Mark down TV model 2 by 20% (168 days old) <br><sub>$37,200 at cost ageing; margin after markdown 3%; $/week = margin given up, spread over an 8-week sell-down</sub> | -930 | ⏳ D-8ab68d6b |
+| P2 | Markdown | Don't mark Tablet model 3 down 30% yet: ask the supplier for price protection or return-to-vendor, or bundle it; cap any markdown at 18% <br><sub>$32,725 at cost, 182 days old; a 30% markdown sells at -14% margin (below cost). Break-even markdown is 20%</sub> | -737 | ⏳ D-4e6aa0e8 |
+| P2 | Markdown | Mark down Smartphone model 6 by 10% (105 days old) <br><sub>$31,680 at cost ageing; margin after markdown 7%; $/week = margin given up, spread over an 8-week sell-down</sub> | -396 | ⏳ D-9761e5c2 |
+| P2 | Range & stock | Stop reordering TV model 1 and plan a sell-down (15 weeks cover) <br><sub>51 on hand, 14 sold in 4 weeks; ~$29,417 tied up above an 8-week target (holding cost ~0.5%/week)</sub> | -147 | ⏳ D-d442e7ac |
+| P2 | Range & stock | Stop reordering Tablet model 6 and plan a sell-down (40 weeks cover) <br><sub>10 on hand, 1 sold in 4 weeks; ~$6,504 tied up above an 8-week target (holding cost ~0.5%/week)</sub> | -33 | ⏳ D-819a67f6 |
+| P2 | Range & stock | Stop reordering Headphones model 6 and plan a sell-down (12 weeks cover) <br><sub>46 on hand, 15 sold in 4 weeks; ~$2,336 tied up above an 8-week target (holding cost ~0.5%/week)</sub> | -12 | ⏳ D-240cd493 |
+| P2 | Range & stock | Stop reordering Soundbar model 6 and plan a sell-down (13 weeks cover) <br><sub>13 on hand, 4 sold in 4 weeks; ~$2,315 tied up above an 8-week target (holding cost ~0.5%/week)</sub> | -12 | ⏳ D-27ba9ce3 |
+| P2 | Range & stock | Stop reordering Accessory model 6 and plan a sell-down (20 weeks cover) <br><sub>25 on hand, 5 sold in 4 weeks; ~$300 tied up above an 8-week target (holding cost ~0.5%/week)</sub> | -2 | ⏳ D-bbf0321b |
+| P3 | Attach | Lift accessory attach from 11% towards 25% (bundles, till prompts, staff incentive) <br><sub>39 accessories on 368 devices in 4 weeks</sub> | +390 | ⏳ D-aa163af1 |
 | P3 | Pricing | Review Accessory pricing and promotion depth (ASP -7.2% in 26 weeks) <br><sub>price erosion beyond 5% squeezes margin unless volume grows faster</sub> | +0 | auto |
 | P3 | Pricing | Review Headphones pricing and promotion depth (ASP -5.6% in 26 weeks) <br><sub>price erosion beyond 5% squeezes margin unless volume grows faster</sub> | +0 | auto |
 | P3 | Pricing | Review Smartphone pricing and promotion depth (ASP -7.0% in 26 weeks) <br><sub>price erosion beyond 5% squeezes margin unless volume grows faster</sub> | +0 | auto |

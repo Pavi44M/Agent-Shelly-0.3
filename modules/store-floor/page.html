@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shelly Store Floor</title>
+<meta name="author" content="Pavithra Bamunu">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Shelly Store Floor: the Neighbourhood store in 3D, built from the store plan. Every shelf shows this week's sales, margin, waste, stock cover and the actions waiting for sign-off.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="store.css">
+<link rel="stylesheet" href="../switch.css">
+<link rel="stylesheet" href="../kit/shelly-kit.css">
+</head>
+<body>
+<div id="boot" aria-live="polite"><div class="boot-in"><span class="tag">Shelly · store floor</span>
+  <svg class="boot-plan" viewBox="340 340 1000 1320" aria-hidden="true"></svg>
+  <h2 class="boot-h">Opening <b>the store</b></h2><pre id="bootLog"></pre><button id="skipBoot" type="button">Skip</button></div></div>
+{{SWITCH}}
+<div class="wrap">
+<header>
+  <span class="tag">Shelly · store floor v3 · the team at work</span>
+  <h1>The store, <b>open for the day.</b></h1>
+  <p class="sub" id="sub">The Neighbourhood store in 3D, laid out from the store plan, with the team at work: two shifts, staggered breaks, deliveries on Tuesday, Thursday and Saturday, a Duty Manager directing jobs, and customers all day, busiest after 5pm. Every shelf carries its own numbers from Shelly's weekly run, and the team's jobs come from them.</p>
+  <div class="stats" id="stats"></div>
+</header>
+
+<section class="floor" aria-label="3D store floor">
+  <div class="fx-top">
+    <div class="seg" role="group" aria-label="View">
+      <button type="button" id="vWalk" aria-pressed="false">🚶 Walk</button>
+      <button type="button" id="vOver" aria-pressed="true">◰ Overview</button>
+    </div>
+    <div class="seg modes" role="group" aria-label="Colour shelves by" id="modes"></div>
+    <span class="legend" id="legend"></span>
+  </div>
+  <div class="ops" id="ops" hidden aria-label="Store day controls"></div>
+  <div class="fx-body">
+    <div class="stage" id="stage">
+      <canvas id="c" tabindex="0" aria-label="3D view of the store. Drag to move the view, tap a shelf for its numbers."></canvas>
+      <div class="joy" id="joy" hidden aria-hidden="true"><div class="knob" id="knob"></div></div>
+      <div class="mini"><span class="tag">Plan · N ↑</span><canvas id="mini" aria-label="Store plan. Tap to jump there."></canvas></div>
+      <p class="hint" id="hint"></p>
+      <div class="live" id="live" hidden aria-live="off"></div>
+      <div class="nogl" id="nogl" hidden>This device can't draw the 3D floor. The list below has every shelf and its numbers.</div>
+    </div>
+    <aside class="side" id="side">
+      <div class="tabs" id="tabs" role="tablist" aria-label="Panel" hidden>
+        <button type="button" role="tab" data-tab="shelf" aria-selected="false">Shelf</button>
+        <button type="button" role="tab" data-tab="tasks" aria-selected="true">Tasks</button>
+        <button type="button" role="tab" data-tab="team" aria-selected="false">Team</button>
+        <button type="button" role="tab" data-tab="day" aria-selected="false">Day</button>
+      </div>
+      <div id="pane-shelf"><div class="detail" id="detail" aria-live="polite"></div></div>
+      <div id="pane-tasks" class="pane" hidden></div>
+      <div id="pane-team" class="pane" hidden></div>
+      <div id="pane-day" class="pane" hidden></div>
+    </aside>
+  </div>
+</section>
+
+<section aria-label="Every shelf, worst first">
+  <div class="sec-h"><h2>Every shelf, worst first</h2><span class="note" id="listNote"></span></div>
+  <div class="tbl-wrap"><table class="fl" id="list"><thead><tr><th>Shelf</th><th>Where</th><th class="n">Sales 7d</th><th class="n">vs last wk</th><th class="n">Margin</th><th class="n">Waste</th><th>Why</th></tr></thead><tbody></tbody></table></div>
+</section>
+
+<section aria-label="How this works">
+  <div class="sec-h"><h2>How the floor is built</h2></div>
+  <div class="how">
+    <p><b>Plan.</b> Fixtures are traced from the printed store plan (1 px = 2 cm) in <code>modules/store-floor/planogram.yaml</code>: position, type (gondola, wall, chiller, freezer, island, counter) and which SKUs sit on each.</p>
+    <p><b>Numbers.</b> <code>shelly/storefloor.py</code> joins the plan with the weekly run: 7-day sales, change on last week, margin, waste, days of cover, count variance and anomaly flags per product, rolled up per fixture.</p>
+    <p><b>Status.</b> Red when a shelf needs action today (recall, likely stock-out, shrinkage, waste blow-out, under a day of cover), amber to watch (on today's order, falling sales, count off), green when on plan. Shelly suggests; decisions still wait for you.</p>
+    <p><b>Your data.</b> Point Shelly at real exports and rebuild: products land on shelves by SKU, then by category. Anything that fits nowhere is listed, never dropped. <code>python -m shelly store</code> prints the same walk-through.</p>
+  </div>
+</section>
+<p class="foot" id="foot"></p>
+</div>
+<script src="../data/store-floor.js"></script>
+<script src="boot.js"></script>
+<script src="../data/approvals.js"></script>
+<script type="module" src="store.js"></script>
+<script src="../kit/shelly-kit.js" data-page="floor" data-base="../"></script>
+</body>
+</html>

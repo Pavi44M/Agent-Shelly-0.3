@@ -179,7 +179,7 @@ def main():
         "office": [("Hours next 7 days", live["store.hours"][1]), ("Shifts to confirm", "2 businesses")],
         "hr": [("New starters", "1"), ("Leave requests", "3")],
         "it": [("Connectors healthy", "7/7"), ("Report types", live["group.reports"][1])],
-        "dev": [("Tests passing", "43"), ("Release", f"v{__version__}")],
+        "dev": [("Tests passing", "58"), ("Release", f"v{__version__}")],
     }
     spent_pct = {"mgmt": 0, "finance": 0.41, "sales": 0.58, "inventory": 0.82, "office": 0.64, "hr": 0.25, "it": 0.47, "dev": 0.33}
     dep_out = []

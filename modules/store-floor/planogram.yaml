@@ -1,0 +1,211 @@
+# Neighbourhood store floor plan (planogram) for Shelly's 3D Store Floor.
+#
+# Geometry is traced from the printed store plan: x/y are pixels on the scanned
+# plan (1 px = 2 cm). rect = [x1, y1, x2, y2]; face = the side shoppers stand on
+# (E/W/N/S), or none for fixtures shopped from both sides.
+# seg = [x1, y1, x2, y2] is a centre line, used for the slanted back-wall run.
+#
+# Which products sit where:
+#   skus:        exact SKUs on this fixture (checked first)
+#   categories:  any other SKU of these Shelly categories lands here (first match wins)
+#   shelf: false marks a service point (checkout, service desk) that holds no stock
+# A SKU that matches nothing is listed as "not placed" in the build output,
+# so a new line in a real export never silently disappears.
+plan:
+  name: "Neighbourhood Store"
+  px_to_m: 0.02
+  centre_px: [692, 900]
+  sales_floor: [[378, 358], [1330, 398], [1330, 1640], [795, 1640], [795, 1480], [355, 1480], [355, 1190], [378, 1190]]
+  walls:
+    - [[378, 358], [1330, 398]]
+    - [[1330, 398], [1330, 1640]]
+    - [[1330, 1640], [895, 1640], glass]
+    - [[895, 1640], [795, 1640], door]
+    - [[795, 1640], [795, 1480]]
+    - [[795, 1480], [355, 1480]]
+    - [[355, 1480], [355, 1190]]
+    - [[355, 1190], [378, 1190]]
+    - [[378, 1190], [378, 1085], staff]
+    - [[378, 1085], [378, 358]]
+  entrance_px: [822, 1600]
+
+fixtures:
+  # back wall run (slanted on the plan)
+  - {id: bakery, name: "Bakery & Bread", zone: Fresh, colour: "#e6cf3d", type: wall, seg: [445, 390, 595, 396.25], height: 1.9, kind: box,
+     skus: [BAK001, BAK002, BAK003], categories: [Bakery], items: [Sandwich loaves, Wraps, Rolls, Croissants]}
+  - {id: juice, name: "Juice, Kombucha & Iced Coffee", zone: Chilled & frozen, colour: "#a9c8e4", type: chiller, seg: [595, 396.25, 740, 402.29], height: 2.1, kind: bottle,
+     skus: [BEV004, BEV005], items: [Orange juice, Smoothies, Kombucha, Iced coffee]}
+  - {id: dairy, name: "Milk, Butter & Cheese", zone: Chilled & frozen, colour: "#2f5f9e", type: multideck, seg: [740, 402.29, 1040, 414.79], height: 2.1, kind: bottle,
+     categories: [Dairy], items: [Milk, Butter, Cheese, Yoghurt]}
+  - {id: drinks, name: "Chilled Drinks", zone: Chilled & frozen, colour: "#a9c8e4", type: chiller, seg: [1040, 414.79, 1285, 425], height: 2.1, kind: bottle,
+     skus: [BEV001, BEV003, BEV006], categories: [Beverages], items: [Energy drinks, Sparkling water, Water]}
+  # left wall: produce and eggs
+  - {id: fruit, name: "Fruit", zone: Fresh, colour: "#e9a23b", type: wall, rect: [378, 395, 440, 615], face: E, height: 1.6, max_depth: 1.0, kind: fruit,
+     skus: [PRD001, PRD002], items: [Bananas, Avocados, Apples, Citrus]}
+  - {id: veg, name: "Vegetables & Salad", zone: Fresh, colour: "#e9a23b", type: multideck, rect: [378, 680, 440, 905], face: E, height: 2.0, kind: fruit,
+     skus: [PRD003], categories: [Produce], items: [Tomatoes, Lettuce, Carrots, Broccoli]}
+  - {id: eggs, name: "Eggs, Herbs & Flowers", zone: Fresh, colour: "#e9a23b", type: wall, rect: [378, 915, 440, 1070], face: E, height: 1.8, kind: box,
+     skus: [GRO007], items: [Free-range eggs, Herbs, Flowers]}
+  # produce islands
+  - {id: seasonal, name: "Seasonal Fruit", zone: Fresh, colour: "#e9a23b", type: island, rect: [558, 520, 617, 610], height: 0.9, kind: fruit, items: [Stone fruit, Berries, Feijoas]}
+  - {id: roots, name: "Potatoes, Kūmara & Onions", zone: Fresh, colour: "#e9a23b", type: island, rect: [670, 515, 730, 605], height: 0.9, kind: fruit, items: [Potatoes, Kūmara, Onions]}
+  - {id: nuts, name: "Nuts & Dried Fruit", zone: Grocery aisles, colour: "#aab1b5", type: gondola, rect: [800, 528, 945, 590], height: 1.35, kind: box, items: [Nuts, Dried fruit, Scroggin]}
+  # grocery aisles
+  - {id: breakfast, name: "Breakfast & Coffee", zone: Grocery aisles, aisle: 1, colour: "#aab1b5", type: gondola, rect: [520, 655, 945, 725], height: 1.6, kind: box,
+     skus: [GRO008], items: [Cereal, Spreads, Coffee, Tea]}
+  - {id: pantry, name: "Pantry Staples", zone: Grocery aisles, aisle: 2, colour: "#aab1b5", type: gondola, rect: [520, 775, 945, 850], height: 1.6, kind: box,
+     categories: [Grocery], items: [Noodles, Pasta, Canned soup, Sauces]}
+  - {id: snacks, name: "Chips, Bars & Snacks", zone: Grocery aisles, aisle: 3, colour: "#aab1b5", type: gondola, rect: [520, 915, 945, 990], height: 1.6, kind: box,
+     skus: [SNK001, SNK003, SNK004], items: [Chips, Corn chips, Muesli bars]}
+  - {id: household, name: "Cleaning & Household", zone: Grocery aisles, aisle: 4, colour: "#aab1b5", type: gondola, rect: [520, 1058, 945, 1130], height: 1.6, kind: box,
+     categories: [Household], items: [Toilet paper, Dishwashing, Cables]}
+  - {id: health, name: "Health & Beauty", zone: Grocery aisles, aisle: 5, colour: "#aab1b5", type: gondola, rect: [520, 1222, 700, 1297], height: 1.6, kind: box,
+     categories: [Health & Beauty], items: [Pain relief, Sunscreen, Toiletries]}
+  - {id: softdrinks, name: "Soft Drinks", zone: Grocery aisles, aisle: 5, colour: "#7fa98c", type: gondola, rect: [700, 1222, 878, 1297], height: 1.6, kind: bottle, no_endcaps: true,
+     skus: [BEV002, BBT001], items: [Large soft drinks, Bubble tea kits]}
+  - {id: pet, name: "Pet Care", zone: Grocery aisles, colour: "#efcfbf", type: wall, rect: [878, 1230, 925, 1290], face: E, height: 1.5, kind: box, items: [Cat food, Dog food]}
+  # beer & wine corner (licensed area)
+  - {id: wine, name: "Wine", zone: Beer & wine, colour: "#c8352f", type: wall, rect: [355, 1190, 415, 1345], face: E, height: 1.9, kind: bottle,
+     skus: [LIQ002, LIQ004], items: [Sauvignon Blanc, Pinot Noir]}
+  - {id: mixers, name: "Ice & Mixers", zone: Beer & wine, colour: "#3a6fc4", type: chiller, rect: [355, 1345, 415, 1415], face: E, height: 2.0, kind: bottle, items: [Bagged ice, Tonic, Soda]}
+  - {id: rtd, name: "Cider & RTDs", zone: Beer & wine, colour: "#e6cf3d", type: wall, rect: [420, 1418, 568, 1480], face: N, height: 1.9, kind: bottle,
+     skus: [LIQ003], items: [RTDs, Cider, Seltzers]}
+  - {id: beer, name: "Chilled Beer", zone: Beer & wine, colour: "#7fa98c", type: chiller, rect: [568, 1418, 793, 1480], face: N, height: 2.1, kind: bottle,
+     skus: [LIQ001], categories: [Beer & Wine], items: [Craft beer, Lager]}
+  # chilled and frozen on the right
+  - {id: frozen, name: "Frozen Foods", zone: Chilled & frozen, colour: "#cfd8e3", type: freezer, rect: [1030, 540, 1060, 950], face: E, height: 2.1, kind: box,
+     skus: [FRZ003, FRZ004], categories: [Frozen], items: [Pizza, Dumplings, Frozen veg]}
+  - {id: icecream, name: "Ice Cream", zone: Chilled & frozen, colour: "#cfd8e3", type: freezer, rect: [1283, 535, 1313, 685], face: W, height: 2.0, kind: box,
+     skus: [FRZ001, FRZ002], items: [Tubs, Ice blocks]}
+  - {id: grabgo, name: "Grab & Go", zone: Chilled & frozen, colour: "#2f5f9e", type: multideck, rect: [1055, 975, 1100, 1150], face: E, height: 1.9, kind: box,
+     skus: [FTG001, FTG002, FTG004, FTG005], categories: [Food To Go], items: [Sandwiches, Sushi, Salads, Rolls]}
+  # front of store
+  - {id: hotfood, name: "Café & Hot Food", zone: Front of store, colour: "#6d5444", type: counter, rect: [1170, 980, 1250, 1210], height: 1.0, kind: box,
+     skus: [FTG003], items: [Hot pies, Barista coffee]}
+  - {id: specials, name: "Specials & Seasonal", zone: Front of store, colour: "#9a6236", type: table, rect: [1050, 1265, 1160, 1340], height: 0.75, kind: box, items: [Weekly specials, Seasonal stock]}
+  - {id: impulse, name: "Confectionery", zone: Front of store, colour: "#e6cf3d", type: wall, rect: [850, 1520, 1065, 1555], face: N, height: 1.3, kind: box,
+     skus: [SNK002, SNK005], categories: [Snacks & Confectionery], items: [Chocolate, Lollies]}
+  - {id: checkout, name: "Checkout", zone: Front of store, colour: "#2b5a45", type: counter, rect: [1065, 1505, 1160, 1555], height: 1.0, kind: box, shelf: false, items: [Payments, Click & collect]}
+  - {id: selfcheck, name: "Self-checkouts", zone: Front of store, colour: "#2b5a45", type: kiosks, rect: [1180, 1500, 1320, 1550], face: N, height: 1.4, kind: box, shelf: false, count: 4,
+     items: [Card and phone payments, Staff help for ID checks]}
+  - {id: service, name: "Service Desk", zone: Front of store, colour: "#2b5a45", type: counter, rect: [1215, 725, 1275, 795], height: 1.0, kind: box, shelf: false, items: [Lotto, Parcels, Top-ups]}
+
+# ---------------------------------------------------------------------------
+# v3: the store team at work. Everything the day simulation does comes from
+# here, so hours, shifts, breaks, deliveries, the team and footfall can change
+# without touching code. Times are 24h "HH:MM"; days are Mon..Sun.
+# ---------------------------------------------------------------------------
+operations:
+  trading_hours: {open: "07:00", close: "21:00"}          # every day
+  shifts:
+    - {id: am, name: Morning, start: "06:00", hours: 8}
+    - {id: pm, name: Evening, start: "13:30", hours: 8}    # 30 min handover, closes up after 9pm
+  breaks:                                                   # hours after the shift starts
+    - {after_h: 2, minutes: 10, name: "Morning tea"}
+    - {after_h: 4, minutes: 30, name: Lunch}
+    - {after_h: 6, minutes: 10, name: "Short break"}
+  break_stagger_minutes: 15                                 # so the till is never left empty
+  deliveries: {days: [Tue, Thu, Sat], arrive: "06:15", pallets: 6, from: "Distribution centre"}
+  cafe: {open: "07:00", close: "16:00", share: 0.14}       # café till has its own person; closed after 4pm
+  self_checkouts: {count: 4, basket_share: 0.55, trolley_share: 0.2, help_rate: 0.12}   # no staff; help for ID checks and errors
+  trolleys: {total: 6, low: 2}                              # a few trolleys; the team brings them in from the car park
+  baskets: {total: 12, low: 3}                              # hand baskets at the door; the team returns them from the checkouts
+  trolley_share: 0.3                                        # customers choose: trolley, basket or hands
+  avg_basket_nzd: 14                                        # customers/day = average daily sales / basket
+  # share of the day's customers arriving in each trading hour (busier after 5pm)
+  footfall: {"7": 6, "8": 7, "9": 5, "10": 4, "11": 5, "12": 9, "13": 7, "14": 5, "15": 6, "16": 7, "17": 11, "18": 12, "19": 10, "20": 6}
+  team:                                                     # synthetic names; shirt colour by role
+    - {id: dm-am, name: Mere,  role: Duty Manager, shift: am}
+    - {id: am-1,  name: Arjun, role: Store Team,   shift: am, station: till}             # main checkout
+    - {id: ck-am, name: Hana,  role: Cook,         shift: am}                            # kitchen, every morning
+    - {id: cf-am, name: Ravi,  role: Café,         shift: am, station: cafe}             # café till
+    - {id: am-2,  name: Sione, role: Store Team,   shift: am}
+    - {id: am-3,  name: Grace, role: Store Team,   shift: am, days: [Tue, Thu, Sat]}   # extra hands on load days
+    - {id: dm-pm, name: Liam,  role: Duty Manager, shift: pm}
+    - {id: pm-1,  name: Priya, role: Store Team,   shift: pm, station: till}
+    - {id: cf-pm, name: Leilani, role: Café,       shift: pm, station: cafe}             # one café/kitchen hand in the afternoon
+    - {id: pm-2,  name: Tom,   role: Store Team,   shift: pm}
+    - {id: pm-3,  name: Ana,   role: Store Team,   shift: pm, days: [Fri, Sat, Sun]}    # busy evenings
+    - {id: sm,    name: Alex,  role: Store Manager, start: "09:00", hours: 8, days: [Mon, Tue, Wed, Thu, Fri]}
+  routines:                                                 # fixed jobs; "at" = when it becomes due
+    - {at: "06:05", task: "Switch on lights and tills", where: checkout, minutes: 10, role: Duty Manager}
+    - {at: "06:20", task: "Fill bakery shelves", where: bakery, minutes: 25}
+    - {at: "06:05", task: "Kitchen: bake bread rolls and pies", where: kitchen, minutes: 45, role: Cook}
+    - {at: "06:40", task: "Hot food: first bake to the café cabinet", steps: [[kitchen, 15, carry], [hotfood, 10]], role: Cook}
+    - {at: "06:40", task: "Rotate dairy (first expiry, first out)", where: dairy, minutes: 20}
+    - {at: "06:50", task: "Café: set up the coffee machine and cabinet", where: hotfood, minutes: 10, role: Café}
+    - {at: "06:55", task: "Unlock doors and open the store", where: entrance, minutes: 5, role: Duty Manager}
+    - {at: "07:30", task: "Kitchen: make sandwiches and salads for Grab & Go", steps: [[kitchen, 40, carry], [grabgo, 10]], role: Cook}
+    - {at: "10:00", task: "Place today's order", where: desk, minutes: 30, role: Store Manager}
+    - {at: "10:45", task: "Hot food: lunch bake to the café cabinet", steps: [[kitchen, 20, carry], [hotfood, 10]], role: Cook}
+    - {at: "12:45", task: "Kitchen: clean down and restock for the afternoon", where: kitchen, minutes: 30, role: Cook}
+    - {at: "15:30", task: "Mark down short-dated Grab & Go", where: grabgo, minutes: 15}
+    - {at: "16:00", task: "Café closing: clean the coffee machine and cabinet", where: hotfood, minutes: 40, role: Café}
+    - {at: "16:40", task: "Kitchen closing: ovens, fryer, dishes and floor", where: kitchen, minutes: 45, role: Café}
+    - {at: "17:30", task: "Top up fruit", steps: [[cooler, 3, carry], [fruit, 20]], role: Café}
+    - {at: "18:00", task: "Top up vegetables and salad", steps: [[cooler, 3, carry], [veg, 20]], role: Café}
+    - {at: "18:40", task: "Face up fruit and veg", where: seasonal, minutes: 15, role: Café}
+    - {at: "19:30", task: "Top up fruit and veg for tomorrow morning", steps: [[cooler, 3, carry], [roots, 20]], role: Café}
+    - {at: "20:20", task: "Face up produce and the front of store", where: fruit, minutes: 25, role: Café}
+    - {at: "20:15", task: "Face up all aisles", where: pantry, minutes: 30}
+    - {at: "20:30", task: "Clean and mop the floor", where: snacks, minutes: 30}
+    - {at: "21:00", task: "Lock doors and close the store", where: entrance, minutes: 5, role: Duty Manager}
+    - {at: "21:05", task: "Cash up and banking", where: desk, minutes: 20, role: Duty Manager}
+
+# Back of house (same pixel grid as the plan). Doors are gaps in the walls.
+backroom:
+  area: [45, 240, 378, 1480]
+  walls:
+    - [[45, 240], [378, 240]]
+    - [[378, 240], [378, 358]]
+    - [[45, 240], [45, 1150]]
+    - [[45, 1260], [45, 1480], dock]                        # roller door 1150-1260
+    - [[45, 1480], [355, 1480]]
+    - [[45, 460], [215, 460]]                               # manager's office
+    - [[265, 460], [378, 460]]
+    - [[265, 240], [265, 460]]
+    - [[265, 670], [378, 670]]                              # staff room (265..378 x 460..670)
+    - [[265, 460], [265, 550]]
+    - [[265, 610], [265, 670]]
+    - [[45, 1300], [140, 1300]]                             # restrooms
+    - [[190, 1300], [220, 1300]]
+    - [[220, 1300], [220, 1480]]
+    - [[132, 1340], [132, 1480]]
+    - [[220, 1300], [275, 1300]]                            # kitchen (220..355 x 1300..1480), door 275-325
+    - [[325, 1300], [355, 1300]]
+  rooms:
+    - {id: cooler,    name: "Walk-in chiller",  rect: [265, 240, 378, 460], floor: "#34505e"}
+    - {id: office,    name: "Manager's office", rect: [45, 240, 265, 460], floor: "#3a4552"}
+    - {id: staffroom, name: "Staff room",       rect: [265, 460, 378, 670], floor: "#3d4a43"}
+    - {id: restroom,  name: "Restrooms",        rect: [45, 1300, 220, 1480], floor: "#4a5560"}
+    - {id: kitchen,   name: "Kitchen",          rect: [220, 1300, 355, 1480], floor: "#4d4a44"}
+    - {id: dock,      name: "Receiving dock",   rect: [45, 1110, 200, 1300], floor: "#2f3740"}
+    - {id: storeroom, name: "Storeroom",        rect: [45, 460, 265, 1110], floor: "#2a333d"}
+  racks:                                                    # storeroom shelving, rect in px
+    - [70, 500, 250, 530]
+    - [70, 600, 250, 630]
+    - [70, 700, 250, 730]
+    - [70, 800, 250, 830]
+    - [70, 900, 250, 930]
+    - [70, 1000, 250, 1030]
+    - [290, 720, 345, 1040]
+  spots:                                                    # where people stand
+    desk: [150, 380]
+    desk_chair: [150, 405]
+    staff_table: [322, 560]
+    restroom_a: [88, 1420]
+    restroom_b: [176, 1420]
+    dock: [110, 1205]
+    cooler: [322, 380]
+    kitchen: [288, 1390]
+    cafe_till: [1290, 1095]
+    self_queue: [1250, 1440]
+    trolley_bay: [905, 1612]
+    basket_stack: [818, 1560]
+    basket_drop: [1045, 1500]
+    car_park: [1040, 1715]
+    staff_door: [365, 1137]
+    till_staff: [1112, 1590]
+    queue: [1112, 1470]
+    entrance: [845, 1600]
+    outside: [845, 1700]

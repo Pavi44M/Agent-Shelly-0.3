@@ -71,6 +71,9 @@ print(f"Reports: {len(rep['specs'])} report views, {len(rep['files'])} Excel wor
 runpy_brain = __import__("runpy")
 runpy_brain.run_path(str(ROOT / "scripts" / "build_brain.py"), run_name="__main__")
 
+# Store Floor: the 3D store plan with this week's numbers on every shelf (docs/store/)
+runpy_brain.run_path(str(ROOT / "scripts" / "build_store.py"), run_name="__main__")
+
 # Launchpad: refresh the figures on docs/launchpad/ (retail numbers change every week)
 import runpy  # noqa: E402
 runpy.run_path(str(ROOT / "scripts" / "build_launchpad.py"), run_name="__main__")

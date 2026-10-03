@@ -90,6 +90,17 @@ def main():
          "Ask about this week's trade by typing or voice. Daily briefing, forecasts, exceptions, actions and decisions.",
          money(k["sales"]), f"week to {m['asof_label'].split(' ', 1)[1]} · {vs:+.1f}% vs budget",
          "Live", "live", spark(daily), "wide")
+    floor_p = ROOT / "docs/data/store-floor.js"
+    if floor_p.exists():
+        fl = js_data(floor_p, "SHELLY_STORE")
+        fc = fl["counts"]
+        cols = {"alert": "bad", "watch": "warn", "ok": "ok"}
+        order = sorted((f for f in fl["fixtures"] if f["status"] in cols), key=lambda f: ["alert", "watch", "ok"].index(f["status"]))
+        bars = "".join(f'<i class="{cols[f["status"]]}" title="{html.escape(f["name"])}"></i>' for f in order)
+        card("../store/", "Retail · 3D store plan", "Store Floor",
+             "Walk the Neighbourhood store in 3D, built from the store plan. Every shelf shows this week's sales, margin, waste and stock cover, and what needs doing today.",
+             str(fc["alert"]), f"shelves need action today · {fc['watch']} to watch · {fc['ok']} on plan",
+             "New", "new", f'<span class="shelves" aria-hidden="true">{bars}</span>')
     brain_p = ROOT / "docs/data/brain.js"
     bstats = js_data(brain_p, "SHELLY_BRAIN")["stats"] if brain_p.exists() else None
     if bstats:
@@ -127,6 +138,7 @@ def main():
                   f"› Neighbourhood store · {money(k['sales'])} this week · {vs:+.1f}% vs budget",
                   (f"› Tōtara Medical · sales {sc['vision']['total']['ach'] * 100:.1f}% of plan · {sck['at_risk_skus']}/{sck['skus']} SKUs need action"
                    if sc else "› Tōtara Medical · module not built yet"),
+                  "› store floor · 3D plan with this week's numbers on every shelf",
                   "› reports · 11 types · Excel, PDF and presentation",
                   f"› governance · {pending} store and pack decisions + {len(sc['escalate']) if sc else 0} Tōtara judgements waiting for you",
                   "› TD Report scheduled for 6:15am NZ"]
@@ -224,6 +236,8 @@ a.card:hover .go{color:var(--accent);transform:translateX(3px)}
 .card.wide .go{display:none}
 .spark{width:150px;height:36px;flex:none}
 .spark .sa{fill:var(--accent);fill-opacity:.12}.spark .sl{fill:none;stroke:var(--accent);stroke-width:1.5}.spark .se{fill:var(--accent)}
+.shelves{display:flex;gap:2px;align-items:flex-end;height:36px;flex:none}
+.shelves i{width:5px;height:100%;border-radius:2px}.shelves .bad{background:var(--bad)}.shelves .warn{background:var(--warn);height:70%}.shelves .ok{background:var(--ok);height:45%}
 .ring{width:56px;height:56px;flex:none}
 .ring .rc{fill:none;stroke:var(--new);stroke-width:1.5;opacity:.7}
 .ring .d{animation:blink 2.4s ease-in-out infinite}
