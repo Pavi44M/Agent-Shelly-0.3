@@ -43,3 +43,9 @@ def test_site_outputs():
     for page in ["index.html", "launchpad/index.html", "supply-chain/index.html", "brain/index.html"]:
         html = (ROOT / "docs" / page).read_text()
         assert "shelly-kit.js" in html and "apBadge" in html, page
+
+
+def test_hq_assets():
+    html = (ROOT / "docs/brain/index.html").read_text()
+    assert 'type="module" src="hq.js"' in html and 'id="hq"' in html and 'id="tabMap"' in html
+    assert (ROOT / "docs/brain/hq.js").exists() and (ROOT / "docs/kit/vendor/three.module.min.js").exists()

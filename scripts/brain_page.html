@@ -33,9 +33,21 @@
   <div id="askOut" class="ask-out" aria-live="polite"></div>
 </section>
 
-<section aria-label="Brain map">
-  <div class="sec-h"><h2>Brain map</h2><span class="legend"><span><i class="lg auto"></i>runs on its own</span><span><i class="lg suggest"></i>suggests</span><span><i class="lg approve"></i>needs approval</span><span><i class="lg wait"></i>waiting for you</span></span></div>
-  <div class="map"><svg id="map" viewBox="-450 -450 900 900" role="img" aria-label="Shelly Brain map: core, businesses, departments and agents"></svg><div class="maptip" id="mapTip" hidden></div></div>
+<section aria-label="Shelly HQ and brain map">
+  <div class="sec-h"><div class="tabs" role="tablist" aria-label="View">
+      <button role="tab" id="tabHq" aria-selected="true" aria-controls="paneHq">🏢 Shelly HQ</button>
+      <button role="tab" id="tabMap" aria-selected="false" aria-controls="paneMap">◎ Brain map</button></div>
+    <span class="legend" id="legHq"><span>⚠ waiting for you</span><span>💡 suggestion ready</span><span><i class="lg auto"></i>working on its own</span><span>✓ up to date</span><span>📄 hand-off</span></span>
+    <span class="legend" id="legMap" hidden><span><i class="lg auto"></i>runs on its own</span><span><i class="lg suggest"></i>suggests</span><span><i class="lg approve"></i>needs approval</span><span><i class="lg wait"></i>waiting for you</span></span></div>
+  <div id="paneHq" role="tabpanel" aria-labelledby="tabHq">
+    <div class="hq" id="hq" aria-label="3D office: every agent at its desk. Tap an agent to open its details.">
+      <div class="hq-ctl"><button data-hq="in" aria-label="Zoom in">＋</button><button data-hq="out" aria-label="Zoom out">－</button><button data-hq="reset" aria-label="Reset view">⟲</button></div>
+      <div class="hq-hint">Drag to turn · tap an agent · ⌃/⌘ + scroll to zoom</div>
+    </div>
+  </div>
+  <div id="paneMap" role="tabpanel" aria-labelledby="tabMap" hidden>
+    <div class="map"><svg id="map" viewBox="-450 -450 900 900" role="img" aria-label="Shelly Brain map: core, businesses, departments and agents"></svg><div class="maptip" id="mapTip" hidden></div></div>
+  </div>
 </section>
 
 <section aria-label="How work flows">
@@ -70,6 +82,7 @@
 <script src="../data/brain.js"></script>
 <script src="../data/approvals.js"></script>
 <script src="brain.js"></script>
+<script type="module" src="hq.js"></script>
 <script src="../kit/shelly-kit.js" data-page="brain" data-base="../"></script>
 </body>
 </html>

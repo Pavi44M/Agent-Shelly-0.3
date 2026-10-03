@@ -209,5 +209,16 @@
   function refresh() { stats(); drawMap(); renderOrgs(); if (current && !drawer.hidden) openAgent(current); }
   addEventListener("shelly:approvals", refresh);
   refresh();
+  /* ---------------- tabs: Shelly HQ (3D office) | Brain map */
+  function tab(k) {
+    const hq = k === "hq";
+    $("#tabHq").setAttribute("aria-selected", String(hq)); $("#tabMap").setAttribute("aria-selected", String(!hq));
+    $("#paneHq").hidden = !hq; $("#paneMap").hidden = hq; $("#legHq").hidden = !hq; $("#legMap").hidden = hq;
+    try { localStorage.setItem("shelly.brain.tab", k); } catch (e) { /* */ }
+  }
+  $("#tabHq").onclick = () => tab("hq"); $("#tabMap").onclick = () => tab("map");
+  document.addEventListener("shelly:hq-unavailable", () => { $("#tabHq").hidden = true; tab("map"); });
+  try { if (localStorage.getItem("shelly.brain.tab") === "map") tab("map"); } catch (e) { /* */ }
+
   window.ShellyBrain = { openAgent };
 })();
