@@ -8,3 +8,5 @@ state/
 /reports/
 .env
 *.env
+docs/data/live.json
+/k_*.png

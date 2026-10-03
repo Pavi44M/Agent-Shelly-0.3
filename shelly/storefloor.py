@@ -107,7 +107,19 @@ def _linked_actions(prods: list[dict], actions: list[dict]) -> list[dict]:
     return out
 
 
+def _category_shares(web: dict) -> tuple[dict, dict, dict]:
+    """Category sales, 7-day forecast and budget gap, so each fixture can carry its share."""
+    cat_sales, cat_fc, cat_bud = {}, {}, {}
+    for c in web.get("categories", []):
+        cat_sales[c["category"]] = _num(c.get("sales"))
+        cat_bud[c["category"]] = _num(c.get("vs_budget"))
+    for f in web.get("forecast_by_cat", []):
+        cat_fc[f["category"]] = cat_fc.get(f["category"], 0.0) + _num(f.get("v"))
+    return cat_sales, cat_fc, cat_bud
+
+
 def build_floor(web: dict, pg: dict | None = None) -> dict:
+    _CS = _category_shares(web)
     pg = pg or load_planogram()
     targets = web.get("targets", {})
     by_fx, unplaced = place_skus(pg, web.get("products", []))
@@ -142,6 +154,11 @@ def build_floor(web: dict, pg: dict | None = None) -> dict:
                 "units": int(sum(_num(p.get("units_7d")) for p in prods)),
                 "min_cover": round(min(covers), 1) if covers else None,
                 "to_order": sum(1 for p in prods if (p.get("reorder_status") or "").startswith("Order")),
+                "order_now": sum(1 for p in prods if (p.get("reorder_status") or "").startswith("Order now")),
+                "forecast_7d": round(sum(_num(p.get("sales_7d")) / _CS[0][p["category"]] * _CS[1].get(p["category"], 0)
+                                         for p in prods if _CS[0].get(p.get("category")))),
+                "vs_budget": round(sum(_num(p.get("sales_7d")) / _CS[0][p["category"]] * _CS[2].get(p["category"], 0)
+                                       for p in prods if _CS[0].get(p.get("category")))),
             },
             "trend": [round(v) for v in trend] if prods else [],
             "status": status, "reasons": reasons[:6],
@@ -157,10 +174,17 @@ def build_floor(web: dict, pg: dict | None = None) -> dict:
         avg_day = sum(daily) / len(daily) if daily else total / 7
         ops["avg_daily_sales"] = round(avg_day)
         ops["customers_per_day"] = int(round(avg_day / max(1.0, float(ops.get("avg_basket_nzd", 14)))))
+    ch = web.get("channels", [])[-7:]
+    ue, od = sum(_num(x.get("uber_eats")) for x in ch), sum(_num(x.get("on_demand")) for x in ch)
+    if ops:
+        ops["delivery"] = {"share_pct": web.get("kpis", {}).get("delivery_pct", 0), "uber_share": round(ue / (ue + od), 2) if ue + od else 0.7,
+                           "outages": [e for e in web.get("exceptions", []) if e.get("item") in ("uber_eats", "on_demand")]}
     counts = {s: sum(1 for f in fixtures if f["status"] == s) for s in ("alert", "watch", "ok", "empty", "service")}
     meta = web.get("meta", {})
     return {
         "plan": pg["plan"], "fixtures": fixtures, "counts": counts, "targets": targets,
+        "kpis": web.get("kpis", {}), "roster": web.get("roster", []),
+        "categories": [{k: c.get(k) for k in ("category", "sales", "vs_budget", "waste", "gm_pct", "wow_pct")} for c in web.get("categories", [])],
         "operations": ops, "backroom": pg.get("backroom") or {},
         "unplaced": [{"sku": p["sku"], "name": p["name"], "category": p.get("category")} for p in unplaced],
         "meta": {"asof": meta.get("asof"), "asof_label": meta.get("asof_label"), "store": meta.get("store"),

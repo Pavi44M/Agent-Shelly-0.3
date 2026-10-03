@@ -7,6 +7,13 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v1.5: Store Floor, points to improve and live trade
+- **Improve tab**: points to improve worked out from this week's results, today's rostered team and the store plan: recall, lines below lead-time cover, hours with fewer than two people on the floor, the busiest hour per person, waste over target, the shelf furthest behind budget, delivery-app outages and shelf-space productivity (gross margin per metre of shelf). Tap a point to fly to the shelf.
+- **New shelf views**: Stock cover, vs Budget and Forecast (next 7 days), alongside Status, Sales, WoW, Margin and Waste.
+- **Delivery drivers** (Uber Eats / On-Demand) come in at the store's delivery share and collect at the counter.
+- **Live POS (optional, private)**: `python -m shelly live path/to/till_export.csv --watch 60` writes `docs/data/live.json` (git-ignored, never published); open `store/?live=1` and the shopper rate and Improve tab follow today's real hourly trade.
+- **Linked both ways**: every action in the store app has a "🗺 On the floor" link (`store/#cat=<category>&m=<view>`, `store/#fx-<shelf>`).
+
 ## What's new in v1.4: Store Floor v3, the store in 3D with the team at work
 - **[Store Floor](https://pavi44m.github.io/Agent-Shelly-0.3/store/)** ([`modules/store-floor`](modules/store-floor/)): the Neighbourhood store built in 3D from the printed store plan (1 px = 2 cm): back-wall chillers, produce walls and islands, five grocery aisles, the beer and wine corner, freezer doors, grab & go, hot food, specials and checkout. **Overview** orbits the floor; **Walk** puts you at eye height with a joystick or W A S D.
 - **This week's numbers on every shelf.** `shelly/storefloor.py` places each SKU on its fixture (by SKU, then by category; anything that fits nowhere is listed, never dropped) and rolls up 7-day sales, change on last week, margin, waste, lowest stock cover and count variance. Shelves turn **red** (act today: recall, likely stock-out, shrinkage, waste blow-out, under a day of cover), **amber** (watch) or **green**; colour by sales, change, margin or waste instead; gaps on a shelf mean low cover. Tap a shelf for its products, reasons, 14-day trend, report links and the decisions waiting for sign-off (approve from the shelf, same queue as everywhere else).

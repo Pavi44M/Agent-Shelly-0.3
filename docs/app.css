@@ -70,6 +70,7 @@ svg text{fill:var(--ink-3);font-family:var(--mono);font-size:10px}
 .icon-btn[aria-pressed="false"]{opacity:.55}
 .icon-btn.mic[aria-pressed="true"]{border-color:var(--neg);box-shadow:0 0 0 3px rgba(230,103,103,.2);opacity:1}
 .pill-btn{border:1px solid var(--etch);background:var(--panel);border-radius:3px;padding:7px 12px;cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--ink-2)}
+a.pill-btn{display:inline-block;margin-top:6px;text-decoration:none}
 .pill-btn:hover{border-color:var(--accent);color:var(--ink)}
 .pill-btn.speaking{border-color:var(--accent);color:var(--accent)}
 .log{max-height:min(460px,58vh);min-height:180px;overflow-y:auto;padding:16px 14px 6px;scroll-behavior:smooth}

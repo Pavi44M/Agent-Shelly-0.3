@@ -15,6 +15,7 @@
     python -m shelly brain                             the Shelly Brain org: businesses, departments, agents, autonomy
     python -m shelly brain ask "which medical products will run out?"   which department agent takes it
     python -m shelly store [--web docs/data/shelly-data.js]   walk the store floor: every shelf, worst first
+    python -m shelly live path/to/pos_export.csv [--watch 60]   live POS feed for the Store Floor (docs/data/live.json, never published)
     python -m shelly report all [--data ...] [--pdf]   every report: Excel (dashboard, model, pivots, raw, lookups) + web page (+ PDF)
     python -m shelly report budget --months 6 --category Dairy --pdf --theme light,present
 """
@@ -45,6 +46,7 @@ def main(argv=None):
     sub.add_parser("learn"); sub.add_parser("connectors")
     k = sub.add_parser("ask"); k.add_argument("text")
     c = sub.add_parser("check"); c.add_argument("--data", default="data/sample")
+    lv = sub.add_parser("live"); lv.add_argument("source"); lv.add_argument("--watch", type=int, default=0); lv.add_argument("--out")
     br = sub.add_parser("brain"); br.add_argument("action", nargs="?", default="org", choices=["org", "ask"]); br.add_argument("text", nargs="?")
     sf = sub.add_parser("store"); sf.add_argument("--web", default=str(ROOT / "docs/data/shelly-data.js"))
     rp = sub.add_parser("report"); rp.add_argument("which", nargs="?", default="all")
@@ -123,6 +125,10 @@ def main(argv=None):
             return
         print(floor_text(build_floor(read_web_data(web))))
 
+    elif a.cmd == "live":
+        from .live import OUT, run as live_run
+        live_run(a.source, Path(a.out) if a.out else OUT, a.watch)
+        print("Open the floor with ?live=1  (cd docs && python -m http.server, then http://localhost:8000/store/?live=1)")
     elif a.cmd == "brain":
         from .brain import AGENTS, BUSINESSES, DEPARTMENTS, ask
         if a.action == "ask":

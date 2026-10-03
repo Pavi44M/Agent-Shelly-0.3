@@ -95,3 +95,24 @@ def test_page_is_built():
     assert 'id="boot"' in html and "boot.js" in html
     for f in ["store.js", "boot.js", "store.css", "v3/sim.js", "v3/nav.js", "v3/people.js", "v3/backroom.js", "v3/ui.js"]:
         assert (ROOT / "docs/store" / f).exists(), f
+
+
+def test_floor_kpis_for_new_views():
+    """Stock cover / budget / forecast views and the Improve tab need these on each shelf."""
+    s = (ROOT / "docs/data/store-floor.js").read_text()
+    d = json.loads(s[s.index("{"):s.rstrip().rstrip(";").rindex("}") + 1])
+    k = [f["kpi"] for f in d["fixtures"] if f.get("kpi") and f["kpi"].get("sales")]
+    assert k and all("order_now" in x and "forecast_7d" in x and "vs_budget" in x for x in k)
+    assert "share_pct" in d["operations"]["delivery"]
+
+
+def test_live_feed(tmp_path):
+    import pandas as pd
+    from shelly.live import build
+    rows = [{"timestamp": f"2026-10-03 {h:02d}:{m:02d}:00", "receipt_id": f"R{h}{m // 20}", "net_sales": 5.0}
+            for h in (7, 8) for m in range(0, 60, 10)] + [{"timestamp": "2026-10-02 09:00:00", "receipt_id": "OLD", "net_sales": 99.0}]
+    pd.DataFrame(rows).to_csv(tmp_path / "pos.csv", index=False)
+    d = build(tmp_path)
+    assert d["date"] == "2026-10-03" and d["sales_today"] == 60.0        # only the latest day
+    assert [x["h"] for x in d["by_hour"]] == [7, 8] and d["by_hour"][0]["baskets"] == 3 and d["baskets_from"] == "receipts"
+    assert "live.json" in (ROOT / ".gitignore").read_text()             # real trading data never published

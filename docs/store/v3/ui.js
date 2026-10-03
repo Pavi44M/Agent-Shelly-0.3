@@ -3,6 +3,7 @@
    stage, and the side panel tabs: Shelf (from store.js) · Tasks · Team · Day. */
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const $ = s => document.querySelector(s);
+import { improvePane } from "./improve.js";
 
 export function initUI(ctx, S, { fmt, hm, DAYS }) {
   const ops = $("#ops"), live = $("#live");
@@ -22,13 +23,13 @@ export function initUI(ctx, S, { fmt, hm, DAYS }) {
     else if (b.id === "nowBtn") { const n = S.nzNow(); S.setTime(n.day, n.t); S.setSpeed(1); ops.querySelectorAll("[data-sp]").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.sp === "1"))); }
     update();
   });
-  $("#dayPick").addEventListener("change", e => { S.setTime(+e.target.value, hm("05:50")); update(); });
+  $("#dayPick").addEventListener("change", e => { S.setTime(+e.target.value, hm("05:50")); dispatchEvent(new CustomEvent("shelly:day")); update(); });
 
   /* tabs */
   const tabs = $("#tabs");
   tabs.hidden = false;
   const show = k => { tabs.querySelectorAll("[role=tab]").forEach(t => t.setAttribute("aria-selected", String(t.dataset.tab === k)));
-    ["shelf", "tasks", "team", "day"].forEach(n => { const p = $("#pane-" + n); if (p) p.hidden = n !== k; }); cur = k; update(); };
+    ["shelf", "tasks", "team", "day", "improve"].forEach(n => { const p = $("#pane-" + n); if (p) p.hidden = n !== k; }); cur = k; update(); };
   let cur = "tasks";
   tabs.addEventListener("click", e => { const t = e.target.closest("[role=tab]"); if (t) show(t.dataset.tab); });
   window.addEventListener("store:shelf", () => show("shelf"));
@@ -49,7 +50,7 @@ export function initUI(ctx, S, { fmt, hm, DAYS }) {
   function liveCard() {
     const cust = S.agents.filter(a => a.kind === "customer").length, team = staffA(), onBreak = team.filter(a => ["break", "toBreak", "rest"].includes(a.state)).length;
     const dm = team.find(a => a.role === "Duty Manager");
-    live.innerHTML = `<span class="tag">In store now</span><div class="lv"><div><b>${cust}</b><span>customers</span></div><div><b>${S.queue.length}</b><span>in queue</span></div>` +
+    live.innerHTML = `<span class="tag">In store now${window.SHELLY_LIVE ? ` · <b class="lvpos">● LIVE POS ${esc(window.SHELLY_LIVE.asof || "")}</b>` : ""}</span><div class="lv"><div><b>${cust}</b><span>customers</span></div><div><b>${S.queue.length}</b><span>in queue</span></div>` +
       `<div><b>${team.length}</b><span>team${onBreak ? ` · ${onBreak} on break` : ""}</span></div><div><b>${S.stats.served}</b><span>served today</span></div></div>` +
       `<div class="lv2"><span>Self-checkouts <b>${S.agents.filter(a => a.kind === "customer" && ["scanning", "help", "toKiosk"].includes(a.state)).length}/${(S.OPS.self_checkouts || {}).count || 0}</b></span>` +
       `<span>Café <b class="${S.cafeTill && S.cafeTill.status === "progress" ? "on" : ""}">${S.cafeTill && S.t < (S.OPS.cafe ? hm(S.OPS.cafe.close) : 0) && S.t >= (S.OPS.cafe ? hm(S.OPS.cafe.open) : 0) ? "open" : "closed"}</b></span>` +
@@ -105,6 +106,9 @@ export function initUI(ctx, S, { fmt, hm, DAYS }) {
       `<p class="note">${done} of ${all} planned jobs done · ${S.stats.served} customers served (${S.stats.self || 0} at self-checkouts, ${S.stats.cafe || 0} at the café). Deliveries ${S.OPS.deliveries.days.join(", ")} at ${S.OPS.deliveries.arrive}. About ${S.OPS.customers_per_day} customers a day from average sales of $${S.OPS.avg_daily_sales.toLocaleString("en-NZ")} at a $${S.OPS.avg_basket_nzd} basket.</p>` +
       `<div class="logl"><p class="sub-h">What's happening</p>${S.log.slice(0, 14).map(l => `<div><span>${fmt(l.t)}</span>${esc(l.s)}</div>`).join("")}</div>`;
   }
+  let improveDrawn = false;
+  $("#pane-improve").addEventListener("click", e => { const b = e.target.closest("[data-fx]"); if (b) location.hash = "#fx-" + b.dataset.fx; });
+  addEventListener("shelly:day", () => { improveDrawn = false; });
   let holding = false;                                   // don't redraw a panel under a finger or mouse
   $("#side").addEventListener("pointerdown", () => { holding = true; });
   window.addEventListener("pointerup", () => setTimeout(() => { holding = false; }, 120));
@@ -116,6 +120,7 @@ export function initUI(ctx, S, { fmt, hm, DAYS }) {
     $("#dayPick").value = String(S.day);
     liveCard();
     if (cur === "tasks") tasksPane(); else if (cur === "team") teamPane(); else if (cur === "day") dayPane();
+    else if (cur === "improve" && !improveDrawn) { $("#pane-improve").innerHTML = improvePane(S, window.SHELLY_STORE, fmt); improveDrawn = true; }
   }
   show("tasks");
   return { update, showPerson: id => { if (id.startsWith("c")) return; personId = id; show("team"); } };

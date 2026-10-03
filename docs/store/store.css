@@ -207,3 +207,11 @@ table.fl td.why-c{color:var(--ink-3);font-size:12.5px;min-width:240px}
 #skipBoot{font:11px var(--mono);background:none;border:1px solid var(--etch);color:var(--ink-3);border-radius:3px;padding:6px 12px;cursor:pointer}
 #skipBoot:hover{color:var(--ink);border-color:var(--accent)}
 @media (prefers-reduced-motion:reduce){.boot-plan rect{animation:none;opacity:1}#boot{transition:none}}
+/* Improve tab + live POS chip */
+.imp{display:block;width:100%;text-align:left;font:inherit;font-size:13px;color:var(--ink-2);background:var(--panel-2);border:1px solid var(--etch);border-left:3px solid var(--ink-3);border-radius:6px;padding:9px 10px;cursor:pointer}
+.imp b{display:block;font:600 10px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--ink);margin-bottom:3px}
+.imp.high{border-left-color:var(--alert)}.imp.med{border-left-color:var(--watch)}.imp.low{border-left-color:var(--ok)}
+.imp:hover{background:var(--etch-2)}.imp:not([data-fx]){cursor:default}
+.ts-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.ts-h h3{margin:0;font-size:14px;color:var(--ink)}
+.pane .note{margin:4px 0 0;font-size:12px;color:var(--ink-3)}
+.tag.live-on{color:var(--ok)}

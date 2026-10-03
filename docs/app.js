@@ -1085,6 +1085,15 @@ function renderKPIs() {
 }
 
 let actFilter = "all";
+/* where an action lives on the Store Floor (category shelf in the right view, the tills, or the delivery pickup) */
+function floorLink(a) {
+  const txt = a.action + " " + (a.why || "");
+  const prod = (D.products || []).find(p => txt.includes(p.name)) || (D.reorder || []).find(r => txt.includes(r.name));
+  const cat = prod ? prod.category : (D.categories || []).map(c => c.category).find(c => txt.includes(c));
+  const mode = /recall|replenish|availab|order|stock/i.test(a.area) ? "cover" : /waste|shrink/i.test(a.area) ? "waste" : /budget|category|range/i.test(a.area) ? "budget" : "sales";
+  if (/deliver|uber|on-demand|roster|liquor/i.test(a.area + " " + txt)) return "store/#fx-checkout";
+  return cat ? `store/#cat=${encodeURIComponent(cat)}&m=${mode}` : "";
+}
 function renderActions() {
   const doneKey = "done." + M.asof, done = store.get(doneKey, {});
   const f = $("#actFilter");
@@ -1097,7 +1106,7 @@ function renderActions() {
       <div><span class="a-k ${a.priority}">${a.priority} · ${esc(a.when)} · ${esc(a.area)}</span>
         <span class="a-t">${esc(a.action)}</span><span class="a-w">${esc(a.why)}</span></div>
       <div class="a-r">${a.weekly_impact_nzd ? smoney(a.weekly_impact_nzd) + "/wk" : ""}<br><span class="small">${esc(a.owner)}</span>
-        <button class="pill-btn">Ask why</button></div>
+        <button class="pill-btn">Ask why</button>${floorLink(a) ? `<a class="pill-btn fl-go" href="${floorLink(a)}">🗺 On the floor</a>` : ""}</div>
     </div>`).join("");
   $$("#actions .act").forEach(el => {
     const a = D.actions.find(x => x.id === el.dataset.id);

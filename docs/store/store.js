@@ -38,6 +38,17 @@ const MODES = {
   waste: { label: "Waste", col: f => hasData(f) && f.kpi.waste_pct != null ? ramp3("#3fb87f", "#ffc466", "#ff6b6b", f.kpi.waste_pct / (wT * 2)) : STATUS_COL.empty,
     val: f => hasData(f) ? pct(f.kpi.waste_pct) : "–", legend: () => `<span>0%<i class="ramp" style="background:linear-gradient(90deg,#3fb87f,#ffc466,#ff6b6b)"></i>${wT * 2}% of sales wasted (target ${wT}%)</span>` },
 };
+// added: stock cover, budget gap and 7-day forecast (the shelf's share of its categories)
+const maxFc = Math.max(1, ...FX.map(f => f.kpi.forecast_7d || 0)), maxBud = Math.max(1, ...FX.map(f => Math.abs(f.kpi.vs_budget || 0)));
+Object.assign(MODES, {
+  cover: { label: "Stock", col: f => !hasData(f) ? STATUS_COL.empty : f.kpi.order_now ? "#ff6b6b" : f.kpi.to_order ? "#ffc466" : "#3fb87f",
+    val: f => !hasData(f) ? "–" : f.kpi.order_now ? `${f.kpi.order_now} order now` : f.kpi.to_order ? `${f.kpi.to_order} to order` : `${f.kpi.min_cover ?? "–"}d cover`,
+    legend: () => `<span><i style="background:#ff6b6b"></i>below lead-time cover</span><span><i style="background:#ffc466"></i>order today</span><span><i style="background:#3fb87f"></i>covered</span>` },
+  budget: { label: "vs Budget", col: f => hasData(f) ? ramp3("#ff6b6b", "#8a94a3", "#3fb87f", ((f.kpi.vs_budget || 0) / maxBud + 1) / 2) : STATUS_COL.empty,
+    val: f => hasData(f) ? (f.kpi.vs_budget >= 0 ? "+" : "") + money(f.kpi.vs_budget || 0) : "–", legend: () => `<span>−${money(maxBud)}<i class="ramp" style="background:linear-gradient(90deg,#ff6b6b,#8a94a3,#3fb87f)"></i>+${money(maxBud)} vs this week's budget (shelf's share of its categories)</span>` },
+  forecast: { label: "Forecast 7d", col: f => hasData(f) ? ramp3("#173247", "#3f8fb5", "#d8f1fb", Math.sqrt((f.kpi.forecast_7d || 0) / maxFc)) : STATUS_COL.empty,
+    val: f => hasData(f) ? money(f.kpi.forecast_7d || 0) : "–", legend: () => `<span>$0<i class="ramp" style="background:linear-gradient(90deg,#173247,#3f8fb5,#d8f1fb)"></i>${money(maxFc)} next 7 days (best model per category)</span>` },
+});
 let mode = "status";
 
 /* ------------------------------------------------ plan geometry (pixels on the plan -> metres) */
@@ -554,3 +565,27 @@ function start3d() {
   showHint();
   const m = location.hash.match(/^#fx-([\w-]+)$/); if (m) { const i = FX.findIndex(f => f.id === m[1]); if (i >= 0) select(i, true); }
 }
+
+/* ------------------------------------------------ links into the floor (from the store app, Improve tab, HQ)
+   #fx-<fixture id> · #cat=<category>&m=<mode> · #m=<mode>                                                   */
+function fromHash() {
+  const h = location.hash.slice(1); if (!h) return;
+  if (/^fx-/.test(h)) { const i = FX.findIndex(f => f.id === h.slice(3)); if (i >= 0) select(i, true); return; }
+  const q = new URLSearchParams(h), m = q.get("m"), cat = q.get("cat");
+  if (m && MODES[m]) { const b = document.querySelector(`#modes [data-m="${m}"]`); if (b) b.click(); }
+  if (cat) { let best = -1, bs = -1; FX.forEach((f, i) => { const v = (f.products || []).filter(p => p.category === cat).reduce((a, p) => a + (p.sales_7d || 0), 0); if (v > bs) { bs = v; best = i; } });
+    if (best >= 0 && bs > 0) select(best, true); }
+}
+addEventListener("hashchange", fromHash);
+setTimeout(fromHash, 1600);   // after the 3D view has started
+
+/* Live POS (optional): `python -m shelly live <till export>` writes docs/data/live.json (git-ignored, never published).
+   Only asked for with store/?live=1 (remembered on this device), so the public site never requests a file it doesn't have. */
+async function pollLive() {
+  let on = /[?&]live=1/.test(location.search);
+  try { if (on) localStorage.setItem("shelly.floor.live", "1"); else on = localStorage.getItem("shelly.floor.live") === "1"; } catch (e) { /* private mode */ }
+  if (!on) return;
+  try { const r = await fetch("../data/live.json", { cache: "no-store" }); if (!r.ok) return; const d = await r.json();
+    if (d && Array.isArray(d.by_hour)) window.SHELLY_LIVE = d; } catch (e) { /* no feed: typical day from the footfall profile */ }
+}
+pollLive(); setInterval(pollLive, 60000);

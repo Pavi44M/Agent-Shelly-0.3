@@ -356,7 +356,19 @@ export function startSim(ctx) {
   const pickShelf = () => { let r = Math.random() * wsum; for (const i of shelves) { r -= weight(i); if (r <= 0) return i; } return shelves[0]; };
   S.queue = []; S.selfQueue = []; S.cafeQueue = [];
   let cid = 0, owed = 0;
-  const ratePerMin = () => { if (!S.doorsOpen || S.t < OPEN || S.t >= CLOSE) return 0; const h = String(Math.floor(S.t / 60)); return CPD * (FOOT[h] || 0) / FSUM / 60; };
+  const ratePerMin = () => { if (!S.doorsOpen || S.t < OPEN || S.t >= CLOSE) return 0; const h = String(Math.floor(S.t / 60));
+    const L = window.SHELLY_LIVE, r = L && L.by_hour && L.by_hour.find(x => String(x.h) === h);
+    if (r && r.baskets != null) return r.baskets / 60;                        // live POS: real baskets this hour
+    return CPD * (FOOT[h] || 0) / FSUM / 60; };
+  // delivery-app drivers (Uber Eats / On-Demand) collect bagged orders at the checkout
+  const DLV = OPS.delivery || { share_pct: 0, uber_share: .7 };
+  function spawnDriver() {
+    const uber = Math.random() < (DLV.uber_share ?? .7);
+    const c = spawn("customer", { id: "d" + (++cid), seed: Math.random(), plan: [], state: "enter", driver: uber ? "Uber Eats" : "On-Demand" }, [PL.outside[0] + (Math.random() - .5) * 2, PL.outside[1]]);
+    c.p.g.traverse(o => { if (o.isMesh && o.material && o.material.color && "#" + o.material.color.getHexString() === c.p.shirtHex.toLowerCase()) o.material.color.set(uber ? "#06c167" : "#3d7bff"); });
+    c.p.carry.visible = false; c.cart = "hands"; S.stats.drivers = (S.stats.drivers || 0) + 1;
+    goTo(c, "entrance", () => { joinQueue(c); if (Math.random() < .5) say(c, `${uber ? "Uber Eats" : "On-Demand"} pickup`, "say", 2); });
+  }
   // café customers queue on the shop side of the café counter
   const cafeFront = (() => { if (cafeFx < 0 || !PL.cafeTill) return null; const f = FX[cafeFx]; const [x, z] = nav.snap(f.cx - (f.Dp / 2 + .45), PL.cafeTill[1]); return { x, z }; })();
   function giveCart(c, kind) {
@@ -492,7 +504,7 @@ export function startSim(ctx) {
         goTo(a, "entrance", () => goTo(a, "staffDoor", () => { a.state = "free"; say(a, "Clocked in 👋", "say", 2); })); } });
       if (S.delivery && !BR.pallets.visible && S.t >= hm(OPS.deliveries.arrive) && S.tasks.some(x => x.title.startsWith("Unload") && x.status !== "done")) { BR.pallets.visible = true; log(`Delivery from ${OPS.deliveries.from} at the dock`); }
       // customers arrive
-      owed += ratePerMin() * dt; while (owed >= 1) { owed -= 1; if (agents.filter(a => a.kind === "customer").length < 45) spawnCustomer(); }
+      owed += ratePerMin() * dt; while (owed >= 1) { owed -= 1; if (agents.filter(a => a.kind === "customer").length < 45) { if (Math.random() < (DLV.share_pct || 0) / 100 * .45) spawnDriver(); else spawnCustomer(); } }
       restockCheck();
       agents.filter(a => a.kind === "staff").forEach(a => thinkStaff(a, dt));
       agents.filter(a => a.kind === "customer").forEach(a => thinkCustomer(a, dt));
