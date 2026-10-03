@@ -413,7 +413,12 @@ function start3d() {
 
   /* v3: hand the built world to the store-team simulation (docs/store/v3/) */
   const ctx = { THREE, scene, camera, canvas, ST, FX, wx, wz, inside, colliders, box, mat, glow, BOXG, buildWall,
-    hooks: [], people: [], view: () => view, select: (i, fly) => select(i, fly), onPerson: null, still };
+    hooks: [], people: [], view: () => view, select: (i, fly) => select(i, fly), onPerson: null, still, mode: () => mode };
+  /* Classic look (docs/store/v3/classic.js): glass walls and a darker floor so the category cards read; Detailed = the store as built */
+  const LOOK0 = { wall: WM.color.getHex(), floor: floor.material.color.getHex(), boh: boh.material.color.getHex() };
+  ctx.setLook = l => { const c = l === "classic";
+    WM.transparent = c; WM.opacity = c ? .28 : 1; WM.color.set(c ? "#7fc6e6" : LOOK0.wall); WM.depthWrite = !c; WM.needsUpdate = true;
+    floor.material.color.set(c ? "#6f7d8c" : LOOK0.floor); boh.material.color.set(c ? "#1b232d" : LOOK0.boh); };
   import("./v3/sim.js").then(m => m.startSim(ctx)).catch(e => { console.error("store team simulation failed", e); });
 
   recolour = () => {

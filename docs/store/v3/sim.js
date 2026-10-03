@@ -10,6 +10,7 @@
 import { makeNav } from "./nav.js";
 import { makePerson, pose, bubbleSprite, tagSprite, makeTrolley, makeBasket } from "./people.js";
 import { buildBackroom } from "./backroom.js";
+import { initClassic } from "./classic.js";
 import { initUI } from "./ui.js";
 
 export const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -535,7 +536,8 @@ export function startSim(ctx) {
   warp(now.day, now.t >= hm("05:45") && now.t < hm("21:40") ? now.t : hm("05:50"));
   if (!(now.t >= hm("05:45") && now.t < hm("21:40"))) log("Store is closed right now: replaying the next trading day from 5:50am");
   const ui = initUI(ctx, S, { fmt, hm, DAYS });
+  const cl = initClassic(ctx, S, { fmt, hm });
   let acc = 0;
-  ctx.hooks.push((dtReal) => { step(dtReal); acc += dtReal; if (acc > .25) { acc = 0; ui.update(); } });
+  ctx.hooks.push((dtReal, t, visible) => { step(dtReal); if (visible) cl.frame(); acc += dtReal; if (acc > .25) { acc = 0; ui.update(); cl.update(); } });
   ctx.onPerson = id => ui.showPerson(id);
 }

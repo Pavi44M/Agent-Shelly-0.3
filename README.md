@@ -7,6 +7,10 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v1.6: Store Floor, Classic look
+- **Classic look (default)**: the live store with one card per category over its shelves (this week's sales and the change on last week, a RECALL badge when one is open), a header with the view ("Sales heat") and a big clock, glass walls, and cards for the checkout (baskets a day), delivery pickup (share of sales) and stockroom. Tap a card to go to the shelf. **Detailed** brings back the sign on every shelf.
+- **Hourly timeline** under the floor: customers expected each hour (today's live POS when connected), a strip for floor cover (red under two people), **Now** and **Play the day**, and tap or drag to jump the store to any time.
+
 ## What's new in v1.5: Store Floor, points to improve and live trade
 - **Improve tab**: points to improve worked out from this week's results, today's rostered team and the store plan: recall, lines below lead-time cover, hours with fewer than two people on the floor, the busiest hour per person, waste over target, the shelf furthest behind budget, delivery-app outages and shelf-space productivity (gross margin per metre of shelf). Tap a point to fly to the shelf.
 - **New shelf views**: Stock cover, vs Budget and Forecast (next 7 days), alongside Status, Sales, WoW, Margin and Waste.
