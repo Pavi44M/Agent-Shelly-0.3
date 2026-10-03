@@ -2,30 +2,12 @@
 .sk-mascot{position:fixed;left:max(14px,env(safe-area-inset-left));bottom:max(14px,env(safe-area-inset-bottom));z-index:45;
   display:flex;align-items:flex-end;gap:8px;font-family:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;pointer-events:none}
 .sk-mascot>*{pointer-events:auto}
-.sk-btn{position:relative;width:64px;height:64px;transform-origin:50% 100%;will-change:transform;padding:0;border:0;background:none;cursor:pointer;border-radius:50%}
+.sk-btn{position:relative;width:64px;height:64px;overflow:visible;transform-origin:50% 100%;will-change:transform;padding:0;border:0;background:none;cursor:pointer;border-radius:50%}
 .sk-btn:focus-visible{outline:2px solid #63b6d8;outline-offset:3px}
 .sk-btn svg{width:100%;height:100%;overflow:visible;animation:sk-bob 3.2s ease-in-out infinite;transform-origin:50% 90%}
-.sk-img .sk-btn>svg{display:none}
-.sk-face{position:absolute;inset:0;border-radius:50%;overflow:hidden;display:block;
-  background:radial-gradient(circle at 38% 32%,#2a4258 0%,#0d1622 70%);
-  box-shadow:0 0 0 2px rgba(79,227,255,.6),0 0 16px rgba(79,227,255,.35),0 8px 20px rgba(0,0,0,.55);
-  transform:perspective(220px) rotateY(var(--ry,0deg)) rotateX(var(--rx,0deg));transition:transform .35s ease-out,box-shadow .4s}
-.sk-img .sk-btn svg{animation:none}
-.sk-face img,.sk-face .sk-gl{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.sk-face.gl img{visibility:hidden}
-.sk-face.gl{transform:none}
-.sk-face.gl .sk-ear{left:63.7%;top:42.9%}
-.sk-ear{position:absolute;left:62.9%;top:43.3%;width:22%;height:22%;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;
-  background:radial-gradient(circle,rgba(79,227,255,.0) 30%,rgba(79,227,255,.85) 48%,rgba(79,227,255,0) 72%);mix-blend-mode:screen;animation:sk-ear 2.6s ease-in-out infinite}
-.sk-shine{position:absolute;inset:0;border-radius:50%;pointer-events:none;
-  background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.28) 48%,transparent 60%);background-size:250% 100%;animation:sk-shine 6s ease-in-out infinite}
-.sk-mascot.alert .sk-face{box-shadow:0 0 0 2px rgba(255,196,102,.75),0 0 18px rgba(255,196,102,.45),0 8px 20px rgba(0,0,0,.55)}
-.sk-mascot.alert .sk-ear{background:radial-gradient(circle,rgba(255,196,102,.0) 25%,rgba(255,170,60,1) 46%,rgba(255,196,102,0) 72%);mix-blend-mode:hard-light}
-.sk-mascot.talk .sk-ear{animation-duration:.45s}
-.sk-mascot.talk .sk-face{box-shadow:0 0 0 2px rgba(79,227,255,.9),0 0 24px rgba(79,227,255,.6),0 8px 20px rgba(0,0,0,.55)}
-@keyframes sk-ear{0%,100%{opacity:.55}50%{opacity:1}}
-@keyframes sk-shine{0%,70%{background-position:120% 0}100%{background-position:-30% 0}}
-.sk-badge{z-index:1;position:absolute;top:2px;right:0;min-width:22px;height:22px;padding:0 6px;border-radius:99px;background:#e66767;color:#fff;
+.sk-bulb{position:absolute;left:-25%;top:-25%;width:150%;height:150%;pointer-events:none}
+.sk-drawn .sk-btn>svg{display:none}
+.sk-badge{z-index:1;position:absolute;top:-6px;right:-12px;min-width:22px;height:22px;padding:0 6px;border-radius:99px;background:#e66767;color:#fff;
   font:600 11px/22px "JetBrains Mono",ui-monospace,monospace;text-align:center;box-shadow:0 0 0 2px #070b12}
 .sk-badge[hidden]{display:none}
 .sk-bubble{max-width:min(300px,calc(100vw - 110px));margin-bottom:36px;background:#141e2c;border:1px solid #2a3a50;border-radius:14px 14px 14px 4px;
@@ -54,7 +36,7 @@
 @keyframes sk-wiggle{0%,100%{rotate:0deg}25%{rotate:-8deg}75%{rotate:8deg}}
 @keyframes sk-glow{0%,100%{opacity:.55}50%{opacity:1}}
 @keyframes sk-pop{from{opacity:0;transform:translateY(6px) scale(.97)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){.sk-btn svg,.sk-mascot .eye,.sk-mascot .mouth-o,.sk-face,.sk-ear,.sk-shine,.sk-mascot .tip,.sk-mascot .scan,.sk-mascot .mouth-o rect{animation:none!important}}
+@media (prefers-reduced-motion:reduce){.sk-btn svg,.sk-mascot .eye,.sk-mascot .mouth-o,.sk-mascot .tip,.sk-mascot .scan,.sk-mascot .mouth-o rect{animation:none!important}}
 @media (max-width:560px){.sk-btn{width:54px;height:54px}.sk-bubble{margin-bottom:30px;font-size:13px}}
 @media print{.sk-mascot,.sk-tray{display:none!important}}
 
@@ -94,9 +76,4 @@
 .sk-emote{position:absolute;left:50%;bottom:100%;font-size:22px;line-height:1;transform:translate(-50%,8px) scale(.2);opacity:0;pointer-events:none;
   filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));transition:transform .45s cubic-bezier(.3,1.6,.5,1),opacity .2s}
 .sk-emote.pop{opacity:1;transform:translate(-50%,-6px) scale(1)}
-.sk-mascot.sleepy .sk-face{filter:saturate(.6) brightness(.8)}
-.sk-mascot.sleepy .sk-ear{animation-duration:5s}
-.sk-mascot.hungry .sk-face{box-shadow:0 0 0 3px #7fd1a8,0 0 22px rgba(127,209,168,.6)}
-.sk-mascot.dizzy .sk-face::after{content:"✦  ✧  ✦";position:absolute;left:0;right:0;top:4%;text-align:center;color:#ffe08a;font-size:11px;letter-spacing:2px;animation:sk-orbit .6s linear infinite}
-@keyframes sk-orbit{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-@media (prefers-reduced-motion:reduce){.sk-emote{transition:none}.sk-mascot.dizzy .sk-face::after{animation:none}}
+@media (prefers-reduced-motion:reduce){.sk-emote{transition:none}}

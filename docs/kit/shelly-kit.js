@@ -95,47 +95,13 @@
 
   /* ------------------------------------------------ mascot */
   /* Shelly Mk-II: original helmet head (teal shell, purple crest, one wide visor, spiral emblem) */
+  /* static bulb (shown until the live canvas character takes over) */
   const SVG = `<svg viewBox="0 0 120 120" aria-hidden="true">
-    <defs>
-      <linearGradient id="skHelm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fd8ee"/><stop offset=".55" stop-color="#3a8fb3"/><stop offset="1" stop-color="#1d5470"/></linearGradient>
-      <linearGradient id="skCrest" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9c9ff"/><stop offset="1" stop-color="#7a5bd0"/></linearGradient>
-      <linearGradient id="skVisor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16243a"/><stop offset="1" stop-color="#05080f"/></linearGradient>
-      <linearGradient id="skPod" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2b6f8f"/><stop offset="1" stop-color="#5fb3d3"/></linearGradient>
-      <clipPath id="skVclip"><path d="M24 58 Q60 46 96 58 L92 76 Q60 86 28 76 Z"/></clipPath>
-    </defs>
-    <ellipse cx="60" cy="112" rx="30" ry="4.5" fill="#000" opacity=".35"/>
-    <!-- antenna masts with status lights -->
-    <path d="M22 50 L14 28" stroke="#5fb3d3" stroke-width="2.6" stroke-linecap="round"/>
-    <path d="M98 50 L106 28" stroke="#5fb3d3" stroke-width="2.6" stroke-linecap="round"/>
-    <circle class="tip" cx="14" cy="26" r="4"/><circle class="tip" cx="106" cy="26" r="4"/>
-    <!-- neck ring -->
-    <path d="M38 96 Q60 104 82 96 L80 106 Q60 112 40 106 Z" fill="#1d5470"/>
-    <path d="M40 100 Q60 107 80 100" stroke="#8fd8ee" stroke-width="1.2" fill="none" opacity=".5"/>
-    <!-- helmet shell -->
-    <path d="M60 12 C88 12 102 34 102 58 C102 80 90 98 60 100 C30 98 18 80 18 58 C18 34 32 12 60 12 Z" fill="url(#skHelm)"/>
-    <path d="M60 15 C84 15 97 33 98 52" stroke="#c8f1ff" stroke-width="2" fill="none" opacity=".45" stroke-linecap="round"/>
-    <!-- side pods -->
-    <rect x="10" y="50" width="14" height="26" rx="7" fill="url(#skPod)"/><rect x="96" y="50" width="14" height="26" rx="7" fill="url(#skPod)" transform="rotate(180 103 63)"/>
-    <circle cx="17" cy="63" r="3" fill="#0b1220"/><circle cx="103" cy="63" r="3" fill="#0b1220"/>
-    <circle class="pod" cx="17" cy="63" r="1.6"/><circle class="pod" cx="103" cy="63" r="1.6"/>
-    <!-- purple crest fin -->
-    <path d="M52 13 Q60 6 68 13 L66 40 Q60 43 54 40 Z" fill="url(#skCrest)"/>
-    <path d="M60 10 L60 40" stroke="#5b3fb0" stroke-width="1.2" opacity=".55"/>
-    <!-- one wide visor -->
-    <path d="M24 58 Q60 46 96 58 L92 76 Q60 86 28 76 Z" fill="url(#skVisor)" stroke="#0b1220" stroke-width="1.6"/>
-    <g clip-path="url(#skVclip)">
-      <rect class="scan" x="20" y="44" width="80" height="5" fill="#63e0ff" opacity=".22"/>
-      <g class="eye"><circle class="eyeglow" cx="45" cy="65" r="5.2"/><circle cx="46.3" cy="63.6" r="1.4" fill="#fff" opacity=".9"/></g>
-      <g class="eye"><circle class="eyeglow" cx="75" cy="65" r="5.2"/><circle cx="76.3" cy="63.6" r="1.4" fill="#fff" opacity=".9"/></g>
-      <path class="mouth" d="M52 75 L68 75" stroke="#63e0ff" stroke-width="2" stroke-linecap="round" opacity=".8"/>
-      <g class="mouth-o" opacity="0" fill="#63e0ff"><rect x="51" y="72" width="2.4" height="6" rx="1"/><rect x="55" y="70" width="2.4" height="10" rx="1"/><rect x="59" y="71" width="2.4" height="8" rx="1"/><rect x="63" y="70" width="2.4" height="10" rx="1"/><rect x="67" y="72" width="2.4" height="6" rx="1"/></g>
-      <path d="M30 56 Q50 50 70 52" stroke="#fff" stroke-width="2" fill="none" opacity=".18" stroke-linecap="round"/>
-    </g>
-    <!-- spiral badge on the brow -->
-    <circle cx="60" cy="47" r="5.5" fill="#1d5470" stroke="#d9c9ff" stroke-width="1"/>
-    <path d="M60 47 m0 -1 a1 1 0 1 1 -1 1 a2 2 0 1 1 2 2 a3.2 3.2 0 1 1 -3.2 -3.2" fill="none" stroke="#d9c9ff" stroke-width="1.1" stroke-linecap="round"/>
-    <!-- chin vents -->
-    <path d="M50 90 L70 90 M52 94 L68 94" stroke="#0b1220" stroke-width="1.6" stroke-linecap="round" opacity=".45"/>
+    <defs><radialGradient id="skG" cx="42%" cy="35%" r="70%"><stop offset="0" stop-color="#fffbe8"/><stop offset="1" stop-color="#ffd76a"/></radialGradient></defs>
+    <path d="M46 84 L41 70 A33 33 0 1 1 79 70 L74 84 Z" fill="url(#skG)" stroke="#fff" stroke-opacity=".4"/>
+    <rect x="45" y="84" width="30" height="16" rx="4" fill="#9aa3ae"/><path d="M52 100 h16 l-3 6 h-10z" fill="#2b2f36"/>
+    <ellipse cx="50" cy="46" rx="4" ry="5.5" fill="#2b2114"/><ellipse cx="70" cy="46" rx="4" ry="5.5" fill="#2b2114"/>
+    <path d="M54 58 Q60 63 66 58" stroke="#2b2114" stroke-width="2.4" fill="none" stroke-linecap="round"/>
   </svg>`;
   function greeting() {
     const h = new Date().getHours();
@@ -162,16 +128,12 @@
     w.innerHTML = `<button class="sk-btn" type="button" aria-label="Shelly: tap for approvals and tips">${SVG}<span class="sk-badge" hidden>0</span></button>
       <div class="sk-bubble" role="status" aria-live="polite" ${hidden ? "hidden" : ""}><button class="sk-x" aria-label="Hide message">×</button><div class="sk-msg"></div><div class="sk-acts"></div></div>`;
     document.body.appendChild(w);
-    // portrait avatar (chrome android) shown as a 3D photo: depth-map parallax + moving chrome highlight (WebGL);
-    // plain image if WebGL is missing, SVG head if the image can't load
-    const face = document.createElement("span"); face.className = "sk-face";
-    face.innerHTML = `<img alt="" src="${esc(BASE)}kit/shelly-face.png"><i class="sk-ear"></i><i class="sk-shine"></i>`;
-    const btn0 = w.querySelector(".sk-btn"); btn0.insertBefore(face, btn0.firstChild);
-    const img = face.querySelector("img"), ear = face.querySelector(".sk-ear");
-    img.addEventListener("load", () => { w.classList.add("sk-img"); try { depth3d(face, img, ear, w); } catch (e) { /* flat image */ } });
-    img.addEventListener("error", () => face.remove());
+    // live light-bulb character (Canvas 2D, drawn every frame); the static SVG bulb is the fallback
+    const btn0 = w.querySelector(".sk-btn");
+    const cv = document.createElement("canvas"); cv.className = "sk-bulb"; btn0.insertBefore(cv, btn0.firstChild);
     const bubble = w.querySelector(".sk-bubble"), msg = w.querySelector(".sk-msg"), acts = w.querySelector(".sk-acts");
     const L = life(w, btn0, bubble);
+    try { bulb(cv, w, btn0, L); } catch (e) { cv.remove(); }
     let i = 0, timer = null;
     function say(k) {
       const list = messages(); i = (k ?? i) % list.length;
@@ -207,6 +169,7 @@
   function life(w, btn, bubble) {
     const still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
     const S = { y: 0, vy: 0, sx: 1, vsx: 0, sy: 1, vsy: 0, r: 0, vr: 0 };   // springs: offset px, scale x/y, rotation rad
+    let moodN = "", moodUntil = 0; const setMood = (n, ms) => { moodN = n; moodUntil = performance.now() + ms; };
     let tuck = 0, dizzyUntil = 0, sleepy = false, lastAct = performance.now(), clicks = [], lastWave = -1e9;
     const emo = document.createElement("span"); emo.className = "sk-emote"; emo.setAttribute("aria-hidden", "true"); btn.appendChild(emo);
     let emoT = 0;
@@ -230,15 +193,15 @@
     };
 
     function kick(o) { Object.keys(o).forEach(k => { S[k] += o[k]; }); }
-    function wake() { lastAct = performance.now(); if (sleepy) { sleepy = false; w.classList.remove("sleepy"); kick({ vy: -260, vsy: 2 }); emote("❗", 900); } }
+    function wake() { lastAct = performance.now(); if (sleepy) { sleepy = false; w.classList.remove("sleepy"); kick({ vy: -260, vsy: 2 }); setMood("alert", 900); emote("❗", 900); } }
     const R = {
       talk: () => kick({ vy: -120, vsy: 1.2, vsx: -0.8 }),
-      squish: () => { kick({ vsx: 4.5, vsy: -5 }); tone(SND.squish); },
-      happy: () => { kick({ vy: -520, vsy: 3, vsx: -2 }); emote(open().length ? "✨" : "🎉", 1600); tone(SND.happy); },
-      alert: () => { kick({ vy: -260, vr: 6 }); emote("❗", 1300); tone(SND.alert); },
+      squish: () => { kick({ vsx: 4.5, vsy: -5 }); setMood("annoyed", 450); tone(SND.squish); },
+      happy: () => { kick({ vy: -520, vsy: 3, vsx: -2 }); setMood("happy", 1700); emote(open().length ? "✨" : "🎉", 1600); tone(SND.happy); },
+      alert: () => { kick({ vy: -260, vr: 6 }); setMood("alert", 1300); emote("❗", 1300); tone(SND.alert); },
       dizzy: () => { dizzyUntil = performance.now() + 3200; emote("😵‍💫", 3200); tone(SND.dizzy); w.classList.add("dizzy"); setTimeout(() => w.classList.remove("dizzy"), 3200); },
-      wave: () => { kick({ vy: -200, vr: -5 }); emote("👋", 1400); tone(SND.wave); },
-      gulp: () => { kick({ vsx: 6, vsy: -7 }); setTimeout(() => { kick({ vy: -380, vsy: 3 }); emote("😋", 1500); }, 260); tone(SND.gulp); },
+      wave: () => { kick({ vy: -200, vr: -5 }); setMood("wink", 1300); emote("👋", 1400); tone(SND.wave); },
+      gulp: () => { kick({ vsx: 6, vsy: -7 }); setMood("gulp", 700); setTimeout(() => { kick({ vy: -380, vsy: 3 }); setMood("happy", 1300); emote("😋", 1500); }, 260); tone(SND.gulp); },
     };
     function react(k) { if (still && k !== "dizzy") { if (k === "happy") emote("🎉"); if (k === "alert") emote("❗"); return; } if (R[k]) R[k](); }
 
@@ -281,7 +244,7 @@
     requestAnimationFrame(frame);
 
     return {
-      react, emote, soundOn: () => snd,
+      react, emote, soundOn: () => snd, mood: () => (performance.now() < moodUntil ? moodN : ""),
       toggleSound() { snd = !snd; try { localStorage.setItem("shelly.kit.sound", snd ? "1" : "0"); } catch (e) { /* */ } if (snd) tone(SND.pop); },
       click() {   // returns true when the click was used up by a reaction
         wake(); const now = performance.now(); clicks = clicks.filter(x => now - x < 650); clicks.push(now);
@@ -291,66 +254,100 @@
     };
   }
 
-  /* ------------------------------------------------ 3D photo (depth parallax) */
-  function depth3d(face, img, ear, wrap) {
+  /* ------------------------------------------------ Shelly the light bulb: drawn live (eyes follow the cursor, blinks, moods; light shows status) */
+  function bulb(cv, w, btn, L) {
+    const g = cv.getContext("2d"); if (!g) throw new Error("no 2d");
     const still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const cv = document.createElement("canvas"); cv.className = "sk-gl";
-    const gl = cv.getContext("webgl", { premultipliedAlpha: false, alpha: true, antialias: true });
-    if (!gl) return;
-    const dimg = new Image();
-    dimg.onload = () => {
-      const sh = (t, src) => { const o = gl.createShader(t); gl.shaderSource(o, src); gl.compileShader(o); return o; };
-      const pr = gl.createProgram();
-      gl.attachShader(pr, sh(gl.VERTEX_SHADER, "attribute vec2 p;varying vec2 v;void main(){v=vec2(p.x*.5+.5,.5-p.y*.5);gl_Position=vec4(p,0.,1.);}"));
-      gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, `precision mediump float;varying vec2 v;uniform sampler2D C,D;uniform vec2 T,L;uniform float Z;
-        void main(){
-          vec2 uv=(v-.5)/Z+.5; vec2 q=uv;
-          for(int i=0;i<5;i++){float d=texture2D(D,q).r;q=uv-T*(d-.45);}   /* near parts shift more */
-          vec4 c=texture2D(C,q); float e=1./192.;
-          float dx=texture2D(D,q+vec2(e,0.)).r-texture2D(D,q-vec2(e,0.)).r, dy=texture2D(D,q+vec2(0.,e)).r-texture2D(D,q-vec2(0.,e)).r;
-          vec3 n=normalize(vec3(-dx*6.,dy*6.,1.)); vec3 h=normalize(vec3(L,1.)+vec3(0.,0.,1.));
-          float s=pow(max(dot(n,h),0.),48.)*.22+pow(max(dot(n,normalize(vec3(-L,.6))),0.),6.)*.04;
-          gl_FragColor=vec4(c.rgb+vec3(.85,.93,1.)*s*c.a,c.a);
-        }`));
-      gl.linkProgram(pr); if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) return;
-      gl.useProgram(pr);
-      const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
-      const lp = gl.getAttribLocation(pr, "p"); gl.enableVertexAttribArray(lp); gl.vertexAttribPointer(lp, 2, gl.FLOAT, false, 0, 0);
-      const tex = (unit, im) => { const t = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, t);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, im);
-        [gl.TEXTURE_WRAP_S, gl.TEXTURE_WRAP_T].forEach(k => gl.texParameteri(gl.TEXTURE_2D, k, gl.CLAMP_TO_EDGE));
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR); };
-      tex(0, img); tex(1, dimg);
-      gl.uniform1i(gl.getUniformLocation(pr, "C"), 0); gl.uniform1i(gl.getUniformLocation(pr, "D"), 1);
-      const uT = gl.getUniformLocation(pr, "T"), uL = gl.getUniformLocation(pr, "L"), uZ = gl.getUniformLocation(pr, "Z");
-      gl.uniform1f(uZ, 1.06);
-      face.insertBefore(cv, img); face.classList.add("gl");
-      const size = () => { const r = face.getBoundingClientRect(), k = Math.min(devicePixelRatio || 1, 3);
-        cv.width = Math.round(r.width * k) || 192; cv.height = cv.width; gl.viewport(0, 0, cv.width, cv.height); };
-      size(); new ResizeObserver(size).observe(face);
-      let tx = 0, ty = 0, cx = 0, cy = 0, last = -1e9;
-      window.addEventListener("pointermove", e => {
-        const r = face.getBoundingClientRect();
-        tx = Math.max(-1, Math.min(1, (e.clientX - r.left - r.width / 2) / (innerWidth / 2)));
-        ty = Math.max(-1, Math.min(1, (e.clientY - r.top - r.height / 2) / (innerHeight / 2)));
-        last = performance.now();
-      }, { passive: true });
-      const EAR_D = 0.93;
-      function frame(ms) {
-        const t = ms / 1000, idle = performance.now() - last > 2500;
-        const gx = still ? 0.3 : idle ? Math.sin(t * 0.55) * 0.75 : tx, gy = still ? -0.2 : idle ? Math.sin(t * 0.4) * 0.35 : ty;
-        cx += (gx - cx) * 0.08; cy += (gy - cy) * 0.08;
-        const T = [cx * 0.075, cy * 0.05];
-        gl.uniform2f(uT, T[0], T[1]); gl.uniform2f(uL, cx * 0.9, -cy * 0.7);
-        gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-        // the glowing ear overlay rides on the ear's depth
-        ear.style.translate = `${(T[0] * (EAR_D - 0.45) * 1.06 / 0.22 * 100).toFixed(1)}% ${(T[1] * (EAR_D - 0.45) * 1.06 / 0.22 * 100).toFixed(1)}%`;
-        if (!still || !frame.done) { frame.done = true; requestAnimationFrame(frame); }
-      }
-      if (still) frame(0); else requestAnimationFrame(frame);
-    };
-    dimg.src = img.src.replace("shelly-face.png", "shelly-depth.png");
+    w.classList.add("sk-drawn");
+    let lx = 0, ly = 0, tx = 0, ty = 0, blinkAt = 2500, blinkEnd = 0, light = 0.8, last = 0;
+    addEventListener("pointermove", e => { const r = btn.getBoundingClientRect();
+      tx = Math.max(-1, Math.min(1, (e.clientX - r.left - r.width / 2) / 260)); ty = Math.max(-1, Math.min(1, (e.clientY - r.top - r.height / 2) / 260)); }, { passive: true });
+    const COL = { warm: [255, 215, 106], amber: [255, 165, 58], bright: [255, 246, 190], green: [127, 209, 168], cool: [120, 220, 255] };
+    const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+    const INK = "#2b2114";
+    function eye(x, y, kind, t, blink) {
+      g.save(); g.translate(x, y); g.lineCap = "round"; g.strokeStyle = INK; g.fillStyle = INK; g.lineWidth = 2.6;
+      if (kind === "happy") { g.beginPath(); g.arc(0, 2, 4.6, Math.PI * 1.1, Math.PI * 1.9); g.stroke(); }
+      else if (kind === "closed") { g.beginPath(); g.arc(0, -1, 4.4, Math.PI * 0.15, Math.PI * 0.85); g.stroke(); }
+      else if (kind === ">" || kind === "<") { const s = kind === ">" ? 1 : -1; g.beginPath(); g.moveTo(-3.5 * s, -4); g.lineTo(3.5 * s, 0); g.lineTo(-3.5 * s, 4); g.stroke(); }
+      else if (kind === "spiral") { g.rotate(t * 9); g.lineWidth = 1.8; g.beginPath(); for (let k = 0; k <= 40; k++) { const a = k / 40 * Math.PI * 4, r = k / 40 * 5.2; k ? g.lineTo(Math.cos(a) * r, Math.sin(a) * r) : g.moveTo(0, 0); } g.stroke(); }
+      else { const big = kind === "big" ? 1.22 : 1;
+        g.beginPath(); g.ellipse(lx * 2.4, ly * 2.2, 4.2 * big, 5.6 * big * blink, 0, 0, Math.PI * 2); g.fill();
+        if (blink > 0.5) { g.fillStyle = "#fff"; g.beginPath(); g.arc(lx * 2.4 + 1.5, ly * 2.2 - 2.1 * big, 1.4 * big, 0, 7); g.fill(); } }
+      g.restore();
+    }
+    function frame(now) {
+      requestAnimationFrame(frame);
+      const css = btn.clientWidth || 64, dpr = Math.min(devicePixelRatio || 1, 3), px = Math.round(css * 1.5 * dpr);
+      if (cv.width !== px) { cv.width = cv.height = px; }
+      const t = now / 1000, dt = Math.min(0.05, (now - (last || now)) / 1000); last = now;
+      lx += (tx - lx) * Math.min(1, dt * 8); ly += (ty - ly) * Math.min(1, dt * 8);
+      const cls = w.classList, mood = L.mood(), sleepy = cls.contains("sleepy"), dizzy = cls.contains("dizzy"), talk = cls.contains("talk");
+      const alert = cls.contains("alert"), hungry = cls.contains("hungry");
+      // light level and colour = status
+      let want = 0.78 + (still ? 0 : Math.sin(t * 2.2) * 0.04), col = COL.warm;
+      if (alert) { col = COL.amber; want = 0.72 + (still ? 0.1 : 0.22 * (0.5 + 0.5 * Math.sin(t * 4))); }
+      if (talk) want = Math.max(want, 0.95);
+      if (mood === "happy") { col = COL.bright; want = 1.25; }
+      if (hungry) { col = COL.green; want = 1; }
+      if (dizzy) want = still ? 0.6 : (Math.random() < 0.18 ? 0.25 : 0.95);
+      if (sleepy) { want = 0.06; }
+      light += (want - light) * Math.min(1, dt * (dizzy ? 30 : 6));
+      if (!still && now > blinkAt) { blinkEnd = now + 130; blinkAt = now + 2600 + Math.random() * 3200; }
+      const blink = now < blinkEnd ? 0.12 : 1;
+
+      g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, cv.width, cv.height);
+      const k = cv.width / 150; g.setTransform(k, 0, 0, k, cv.width / 2, cv.width / 2 + 4 * k);
+      // halo
+      const L0 = Math.max(0, Math.min(1.3, light));
+      const halo = g.createRadialGradient(0, -12, 10, 0, -12, 72); halo.addColorStop(0, rgba(col, 0.5 * L0)); halo.addColorStop(1, rgba(col, 0));
+      g.fillStyle = halo; g.beginPath(); g.arc(0, -12, 72, 0, 7); g.fill();
+      // glass
+      g.beginPath(); g.moveTo(-14, 24); g.lineTo(-19, 10); g.arc(0, -12, 33, 2.284, 0.858, false); g.lineTo(14, 24); g.closePath();
+      const lit = Math.min(1, L0), gl = g.createRadialGradient(-9, -22, 3, 0, -10, 42);
+      const mix = (a, b, f) => a.map((v, i) => Math.round(v + (b[i] - v) * f));
+      gl.addColorStop(0, rgba(mix([92, 100, 112], [255, 252, 236], lit), 0.97)); gl.addColorStop(1, rgba(mix([40, 46, 56], col, lit), 0.95));
+      g.fillStyle = gl; g.fill(); g.lineWidth = 1.4; g.strokeStyle = "rgba(255,255,255,.38)"; g.stroke();
+      // highlight
+      g.strokeStyle = "rgba(255,255,255,.6)"; g.lineWidth = 3.4; g.lineCap = "round"; g.beginPath(); g.arc(-4, -14, 24, Math.PI * 1.08, Math.PI * 1.42); g.stroke();
+      g.fillStyle = "rgba(255,255,255,.7)"; g.beginPath(); g.arc(-21, -21, 1.8, 0, 7); g.fill();
+      // filament
+      g.save(); g.lineWidth = 1.5; g.strokeStyle = lit > 0.3 ? "#fff6c8" : "#7a7f88"; if (lit > 0.3) { g.shadowColor = rgba(col, 1); g.shadowBlur = 8 * lit; }
+      g.beginPath(); g.moveTo(-5, 24); g.lineTo(-6, 15); for (let q = 0; q <= 12; q++) g.lineTo(-6 + q, 15 + (q % 2 ? -2.2 : 0)); g.lineTo(5, 24); g.stroke(); g.restore();
+      // base (screw)
+      const mb = g.createLinearGradient(-14, 0, 14, 0); mb.addColorStop(0, "#6c7480"); mb.addColorStop(0.45, "#d7dce3"); mb.addColorStop(1, "#5b626d");
+      g.fillStyle = mb; g.beginPath(); g.roundRect ? g.roundRect(-14.5, 23, 29, 17, 4) : g.rect(-14.5, 23, 29, 17); g.fill();
+      g.strokeStyle = "rgba(30,34,40,.55)"; g.lineWidth = 1.3; [28.5, 33.5].forEach(y => { g.beginPath(); g.moveTo(-14, y); g.lineTo(14, y + 1.2); g.stroke(); });
+      g.fillStyle = "#2b2f36"; g.beginPath(); g.moveTo(-8, 40); g.lineTo(8, 40); g.lineTo(5, 46); g.lineTo(-5, 46); g.closePath(); g.fill();
+      // face
+      const fy = -15;
+      let le = "dot", re = "dot";
+      if (sleepy) le = re = "closed";
+      else if (dizzy) le = re = "spiral";
+      else if (mood === "happy" || mood === "gulp") le = re = "happy";
+      else if (mood === "annoyed") { le = ">"; re = "<"; }
+      else if (mood === "alert" || hungry) le = re = "big";
+      else if (mood === "wink") re = "happy";
+      eye(-10, fy, le, t, blink); eye(10, fy, re, t, blink);
+      // cheeks
+      g.fillStyle = `rgba(255,120,140,${mood === "happy" || mood === "gulp" ? 0.5 : 0.28})`;
+      [[-17, -6], [17, -6]].forEach(([x, y]) => { g.beginPath(); g.ellipse(x, y, mood === "gulp" ? 5.5 : 4, mood === "gulp" ? 4 : 2.6, 0, 0, 7); g.fill(); });
+      // mouth
+      g.save(); g.translate(lx * 1.5, -4 + ly * 1.2); g.strokeStyle = INK; g.fillStyle = INK; g.lineWidth = 2.4; g.lineCap = "round";
+      if (sleepy) { g.beginPath(); g.ellipse(0, 1, 2.2, 1.6 + (still ? 0 : Math.abs(Math.sin(t * 1.2))), 0, 0, 7); g.fill(); }
+      else if (dizzy || mood === "annoyed") { g.beginPath(); for (let q = -6; q <= 6; q++) g[q === -6 ? "moveTo" : "lineTo"](q, Math.sin(q * 1.3 + t * (dizzy ? 10 : 0)) * 1.4); g.stroke(); }
+      else if (hungry) { g.beginPath(); g.ellipse(0, 1, 6, 5, 0, 0, 7); g.fill(); }
+      else if (mood === "gulp") { g.beginPath(); g.moveTo(-4, 0); g.lineTo(4, 0); g.stroke(); }
+      else if (mood === "alert") { g.beginPath(); g.ellipse(0, 1, 2.6, 3, 0, 0, 7); g.fill(); }
+      else if (talk && !still) { g.beginPath(); g.ellipse(0, 1, 4, 1.2 + 2.6 * Math.abs(Math.sin(t * 13)), 0, 0, 7); g.fill(); }
+      else if (mood === "happy") { g.beginPath(); g.arc(0, -1, 6.2, 0.05 * Math.PI, 0.95 * Math.PI); g.closePath(); g.fill();
+        g.fillStyle = "#ff8fa3"; g.beginPath(); g.ellipse(0, 3.2, 2.6, 1.4, 0, 0, 7); g.fill(); }
+      else { g.beginPath(); g.arc(0, -2.5, 5, 0.18 * Math.PI, 0.82 * Math.PI); g.stroke(); }
+      g.restore();
+      // sleepy z
+      if (sleepy && !still) { g.fillStyle = `rgba(200,210,230,${0.4 + 0.4 * Math.sin(t * 1.5)})`; g.font = "bold 11px system-ui"; g.fillText("z", 26 + Math.sin(t) * 2, -40 - (t * 6 % 12)); }
+    }
+    requestAnimationFrame(frame);
   }
 
   function refresh() { paintBadge(); renderTray(); }
