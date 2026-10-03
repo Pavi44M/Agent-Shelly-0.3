@@ -162,20 +162,14 @@
     w.innerHTML = `<button class="sk-btn" type="button" aria-label="Shelly: tap for approvals and tips">${SVG}<span class="sk-badge" hidden>0</span></button>
       <div class="sk-bubble" role="status" aria-live="polite" ${hidden ? "hidden" : ""}><button class="sk-x" aria-label="Hide message">×</button><div class="sk-msg"></div><div class="sk-acts"></div></div>`;
     document.body.appendChild(w);
-    // portrait avatar (chrome android); the SVG head stays as fallback if the image can't load
+    // portrait avatar (chrome android) shown as a 3D photo: depth-map parallax + moving chrome highlight (WebGL);
+    // plain image if WebGL is missing, SVG head if the image can't load
     const face = document.createElement("span"); face.className = "sk-face";
     face.innerHTML = `<img alt="" src="${esc(BASE)}kit/shelly-face.png"><i class="sk-ear"></i><i class="sk-shine"></i>`;
     const btn0 = w.querySelector(".sk-btn"); btn0.insertBefore(face, btn0.firstChild);
-    face.querySelector("img").addEventListener("load", () => w.classList.add("sk-img"));
-    face.querySelector("img").addEventListener("error", () => face.remove());
-    if (!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) {
-      window.addEventListener("pointermove", e => {   // gentle tilt toward the cursor
-        const r = btn0.getBoundingClientRect();
-        const ry = Math.max(-1, Math.min(1, (e.clientX - r.left - r.width / 2) / (innerWidth / 2))) * 16;
-        const rx = Math.max(-1, Math.min(1, (e.clientY - r.top - r.height / 2) / (innerHeight / 2))) * -10;
-        face.style.setProperty("--ry", ry.toFixed(1) + "deg"); face.style.setProperty("--rx", rx.toFixed(1) + "deg");
-      }, { passive: true });
-    }
+    const img = face.querySelector("img"), ear = face.querySelector(".sk-ear");
+    img.addEventListener("load", () => { w.classList.add("sk-img"); try { depth3d(face, img, ear, w); } catch (e) { /* flat image */ } });
+    img.addEventListener("error", () => face.remove());
     const bubble = w.querySelector(".sk-bubble"), msg = w.querySelector(".sk-msg"), acts = w.querySelector(".sk-acts");
     let i = 0, timer = null;
     function say(k) {
@@ -196,6 +190,69 @@
     if (boot && !boot.classList.contains("done")) { w.style.visibility = "hidden";
       const t = setInterval(() => { const b = document.getElementById("boot"); if (!b || b.classList.contains("done")) { clearInterval(t); w.style.visibility = ""; start(); } }, 250);
     } else start();
+  }
+
+
+  /* ------------------------------------------------ 3D photo (depth parallax) */
+  function depth3d(face, img, ear, wrap) {
+    const still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const cv = document.createElement("canvas"); cv.className = "sk-gl";
+    const gl = cv.getContext("webgl", { premultipliedAlpha: false, alpha: true, antialias: true });
+    if (!gl) return;
+    const dimg = new Image();
+    dimg.onload = () => {
+      const sh = (t, src) => { const o = gl.createShader(t); gl.shaderSource(o, src); gl.compileShader(o); return o; };
+      const pr = gl.createProgram();
+      gl.attachShader(pr, sh(gl.VERTEX_SHADER, "attribute vec2 p;varying vec2 v;void main(){v=vec2(p.x*.5+.5,.5-p.y*.5);gl_Position=vec4(p,0.,1.);}"));
+      gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, `precision mediump float;varying vec2 v;uniform sampler2D C,D;uniform vec2 T,L;uniform float Z;
+        void main(){
+          vec2 uv=(v-.5)/Z+.5; vec2 q=uv;
+          for(int i=0;i<5;i++){float d=texture2D(D,q).r;q=uv-T*(d-.45);}   /* near parts shift more */
+          vec4 c=texture2D(C,q); float e=1./192.;
+          float dx=texture2D(D,q+vec2(e,0.)).r-texture2D(D,q-vec2(e,0.)).r, dy=texture2D(D,q+vec2(0.,e)).r-texture2D(D,q-vec2(0.,e)).r;
+          vec3 n=normalize(vec3(-dx*6.,dy*6.,1.)); vec3 h=normalize(vec3(L,1.)+vec3(0.,0.,1.));
+          float s=pow(max(dot(n,h),0.),48.)*.22+pow(max(dot(n,normalize(vec3(-L,.6))),0.),6.)*.04;
+          gl_FragColor=vec4(c.rgb+vec3(.85,.93,1.)*s*c.a,c.a);
+        }`));
+      gl.linkProgram(pr); if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) return;
+      gl.useProgram(pr);
+      const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+      const lp = gl.getAttribLocation(pr, "p"); gl.enableVertexAttribArray(lp); gl.vertexAttribPointer(lp, 2, gl.FLOAT, false, 0, 0);
+      const tex = (unit, im) => { const t = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, t);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, im);
+        [gl.TEXTURE_WRAP_S, gl.TEXTURE_WRAP_T].forEach(k => gl.texParameteri(gl.TEXTURE_2D, k, gl.CLAMP_TO_EDGE));
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR); };
+      tex(0, img); tex(1, dimg);
+      gl.uniform1i(gl.getUniformLocation(pr, "C"), 0); gl.uniform1i(gl.getUniformLocation(pr, "D"), 1);
+      const uT = gl.getUniformLocation(pr, "T"), uL = gl.getUniformLocation(pr, "L"), uZ = gl.getUniformLocation(pr, "Z");
+      gl.uniform1f(uZ, 1.06);
+      face.insertBefore(cv, img); face.classList.add("gl");
+      const size = () => { const r = face.getBoundingClientRect(), k = Math.min(devicePixelRatio || 1, 3);
+        cv.width = Math.round(r.width * k) || 192; cv.height = cv.width; gl.viewport(0, 0, cv.width, cv.height); };
+      size(); new ResizeObserver(size).observe(face);
+      let tx = 0, ty = 0, cx = 0, cy = 0, last = -1e9;
+      window.addEventListener("pointermove", e => {
+        const r = face.getBoundingClientRect();
+        tx = Math.max(-1, Math.min(1, (e.clientX - r.left - r.width / 2) / (innerWidth / 2)));
+        ty = Math.max(-1, Math.min(1, (e.clientY - r.top - r.height / 2) / (innerHeight / 2)));
+        last = performance.now();
+      }, { passive: true });
+      const EAR_D = 0.93;
+      function frame(ms) {
+        const t = ms / 1000, idle = performance.now() - last > 2500;
+        const gx = still ? 0.3 : idle ? Math.sin(t * 0.55) * 0.75 : tx, gy = still ? -0.2 : idle ? Math.sin(t * 0.4) * 0.35 : ty;
+        cx += (gx - cx) * 0.08; cy += (gy - cy) * 0.08;
+        const T = [cx * 0.075, cy * 0.05];
+        gl.uniform2f(uT, T[0], T[1]); gl.uniform2f(uL, cx * 0.9, -cy * 0.7);
+        gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        // the glowing ear overlay rides on the ear's depth
+        ear.style.translate = `${(T[0] * (EAR_D - 0.45) * 1.06 / 0.22 * 100).toFixed(1)}% ${(T[1] * (EAR_D - 0.45) * 1.06 / 0.22 * 100).toFixed(1)}%`;
+        if (!still || !frame.done) { frame.done = true; requestAnimationFrame(frame); }
+      }
+      if (still) frame(0); else requestAnimationFrame(frame);
+    };
+    dimg.src = img.src.replace("shelly-face.png", "shelly-depth.png");
   }
 
   function refresh() { paintBadge(); renderTray(); }
