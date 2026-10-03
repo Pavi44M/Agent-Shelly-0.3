@@ -171,19 +171,27 @@
     img.addEventListener("load", () => { w.classList.add("sk-img"); try { depth3d(face, img, ear, w); } catch (e) { /* flat image */ } });
     img.addEventListener("error", () => face.remove());
     const bubble = w.querySelector(".sk-bubble"), msg = w.querySelector(".sk-msg"), acts = w.querySelector(".sk-acts");
+    const L = life(w, btn0, bubble);
     let i = 0, timer = null;
     function say(k) {
       const list = messages(); i = (k ?? i) % list.length;
       msg.innerHTML = list[i];
       acts.innerHTML = (open().length ? `<button data-k="tray">Review approvals</button>` : "") +
-        (PAGE !== "brain" ? `<a href="${esc(BASE)}brain/">🧠 Brain</a>` : `<a href="${esc(BASE)}launchpad/">⌘ Launchpad</a>`) + `<button data-k="next">Next tip</button>`;
+        (PAGE !== "brain" ? `<a href="${esc(BASE)}brain/">🧠 Brain</a>` : `<a href="${esc(BASE)}launchpad/">⌘ Launchpad</a>`) + `<button data-k="next">Next tip</button><button data-k="snd" aria-pressed="${L.soundOn()}">${L.soundOn() ? "🔊" : "🔈"} Sound</button>`;
       w.classList.add("talk"); clearTimeout(timer); timer = setTimeout(() => w.classList.remove("talk"), 1600);
+      L.react("talk");
     }
-    acts.addEventListener("click", e => { const b = e.target.closest("[data-k]"); if (!b) return; if (b.dataset.k === "tray") openTray(); else say(i + 1); });
+    acts.addEventListener("click", e => { const b = e.target.closest("[data-k]"); if (!b) return; if (b.dataset.k === "tray") openTray(); else if (b.dataset.k === "snd") { L.toggleSound(); b.setAttribute("aria-pressed", String(L.soundOn())); b.textContent = (L.soundOn() ? "🔊" : "🔈") + " Sound"; } else say(i + 1); });
     w.querySelector(".sk-x").onclick = () => { bubble.hidden = true; try { sessionStorage.setItem("shelly.kit.quiet", "1"); } catch (e) { /* */ } };
+    let pendingClick = 0;
     w.querySelector(".sk-btn").onclick = () => {
-      if (bubble.hidden) { bubble.hidden = false; try { sessionStorage.removeItem("shelly.kit.quiet"); } catch (e) { /* */ } say(0); }
-      else if (open().length) openTray(); else say(i + 1);
+      // squish now; act a moment later so a fast triple-click can make her dizzy instead
+      clearTimeout(pendingClick);
+      if (L.click()) return;
+      pendingClick = setTimeout(() => {
+        if (bubble.hidden) { bubble.hidden = false; try { sessionStorage.removeItem("shelly.kit.quiet"); } catch (e) { /* */ } say(0); }
+        else if (open().length) openTray(); else say(i + 1);
+      }, 300);
     };
     const boot = document.getElementById("boot");
     const start = () => { if (!bubble.hidden) say(0); };
@@ -192,6 +200,96 @@
     } else start();
   }
 
+
+  /* ------------------------------------------------ life: reactions with spring physics (idea from Coucou's Mochi; own code + sounds)
+     breathe · hover → peek out and wave · click → squish · fast triple-click → dizzy · approval answered → happy jump
+     new approval → alert hop · long idle → sleepy, tucks down · file dropped on her → gulp · emotes above her head */
+  function life(w, btn, bubble) {
+    const still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const S = { y: 0, vy: 0, sx: 1, vsx: 0, sy: 1, vsy: 0, r: 0, vr: 0 };   // springs: offset px, scale x/y, rotation rad
+    let tuck = 0, dizzyUntil = 0, sleepy = false, lastAct = performance.now(), clicks = [], lastWave = -1e9;
+    const emo = document.createElement("span"); emo.className = "sk-emote"; emo.setAttribute("aria-hidden", "true"); btn.appendChild(emo);
+    let emoT = 0;
+    function emote(t, ms = 1500) { emo.textContent = t; emo.classList.remove("pop"); void emo.offsetWidth; emo.classList.add("pop"); clearTimeout(emoT); emoT = setTimeout(() => emo.classList.remove("pop"), ms); }
+
+    /* sounds: tiny synthesized blips (no files), off until the viewer turns them on */
+    let ac = null, snd = false; try { snd = localStorage.getItem("shelly.kit.sound") === "1"; } catch (e) { /* */ }
+    function tone(seq) {
+      if (!snd) return;
+      try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); const t0 = ac.currentTime;
+        seq.forEach(([f0, f1, d, at = 0, type = "sine", vol = 0.06]) => { const o = ac.createOscillator(), g = ac.createGain();
+          o.type = type; o.frequency.setValueAtTime(f0, t0 + at); o.frequency.exponentialRampToValueAtTime(f1, t0 + at + d);
+          g.gain.setValueAtTime(0.0001, t0 + at); g.gain.exponentialRampToValueAtTime(vol, t0 + at + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t0 + at + d);
+          o.connect(g).connect(ac.destination); o.start(t0 + at); o.stop(t0 + at + d + 0.02); });
+      } catch (e) { /* no audio */ }
+    }
+    const SND = {
+      pop: [[520, 880, 0.12]], squish: [[300, 170, 0.14, 0, "triangle"]], happy: [[660, 990, 0.1], [880, 1320, 0.14, 0.1]],
+      alert: [[880, 880, 0.07, 0, "square", 0.03], [880, 880, 0.07, 0.12, "square", 0.03]], dizzy: [[700, 300, 0.5, 0, "sine", 0.05]],
+      gulp: [[240, 120, 0.16, 0, "triangle"], [500, 760, 0.1, 0.18]], wave: [[740, 980, 0.09], [980, 740, 0.09, 0.1]],
+    };
+
+    function kick(o) { Object.keys(o).forEach(k => { S[k] += o[k]; }); }
+    function wake() { lastAct = performance.now(); if (sleepy) { sleepy = false; w.classList.remove("sleepy"); kick({ vy: -260, vsy: 2 }); emote("❗", 900); } }
+    const R = {
+      talk: () => kick({ vy: -120, vsy: 1.2, vsx: -0.8 }),
+      squish: () => { kick({ vsx: 4.5, vsy: -5 }); tone(SND.squish); },
+      happy: () => { kick({ vy: -520, vsy: 3, vsx: -2 }); emote(open().length ? "✨" : "🎉", 1600); tone(SND.happy); },
+      alert: () => { kick({ vy: -260, vr: 6 }); emote("❗", 1300); tone(SND.alert); },
+      dizzy: () => { dizzyUntil = performance.now() + 3200; emote("😵‍💫", 3200); tone(SND.dizzy); w.classList.add("dizzy"); setTimeout(() => w.classList.remove("dizzy"), 3200); },
+      wave: () => { kick({ vy: -200, vr: -5 }); emote("👋", 1400); tone(SND.wave); },
+      gulp: () => { kick({ vsx: 6, vsy: -7 }); setTimeout(() => { kick({ vy: -380, vsy: 3 }); emote("😋", 1500); }, 260); tone(SND.gulp); },
+    };
+    function react(k) { if (still && k !== "dizzy") { if (k === "happy") emote("🎉"); if (k === "alert") emote("❗"); return; } if (R[k]) R[k](); }
+
+    /* events */
+    btn.addEventListener("pointerenter", () => { wake(); const now = performance.now(); if (tuck > 0.2 || now - lastWave > 20000) { lastWave = now; react("wave"); } });
+    addEventListener("pointermove", wake, { passive: true }); addEventListener("keydown", wake); addEventListener("scroll", wake, { passive: true });
+    let prevOpen = open().length;
+    addEventListener("shelly:approvals", () => { const n = open().length; if (n < prevOpen) react("happy"); else if (n > prevOpen) react("alert"); prevOpen = n; });
+    ["dragenter", "dragover"].forEach(ev => btn.addEventListener(ev, e => { if ([...(e.dataTransfer?.types || [])].includes("Files")) { e.preventDefault(); w.classList.add("hungry"); } }));
+    btn.addEventListener("dragleave", () => w.classList.remove("hungry"));
+    btn.addEventListener("drop", e => {
+      e.preventDefault(); w.classList.remove("hungry");
+      const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]; if (!f) return;
+      react("gulp");   // the file is never read or uploaded: the public site only uses synthetic data
+      const m = w.querySelector(".sk-msg"); if (m) { bubble.hidden = false;
+        m.innerHTML = `Yum, <b>${esc(f.name)}</b>! I don't read files on the public site (synthetic data only). On your PC run <code>python -m shelly check "${esc(f.name)}"</code> and I'll map its columns and build reports from it.`; }
+    });
+
+    /* loop */
+    let last = performance.now();
+    function frame(now) {
+      requestAnimationFrame(frame);
+      const dt = Math.min(0.05, (now - last) / 1000); last = now; const t = now / 1000;
+      const idle = now - lastAct;
+      if (!sleepy && idle > 60000 && !open().length) { sleepy = true; w.classList.add("sleepy"); }
+      if (sleepy && Math.floor(t) % 4 === 0 && !emo.classList.contains("pop")) emote("💤", 1800);
+      const wantTuck = sleepy && bubble.hidden ? 0.55 : 0; tuck += (wantTuck - tuck) * Math.min(1, dt * 3);
+      const breathe = still ? 0 : Math.sin(t * (sleepy ? 1.2 : 2.2)) * (sleepy ? 0.03 : 0.018);
+      const dz = now < dizzyUntil && !still;
+      const tr = dz ? Math.sin(t * 11) * 0.28 : 0;
+      // spring toward rest (stiffness k, damping c)
+      const k = 170, c = 11;
+      S.vy += (k * (0 - S.y) - c * S.vy) * dt; S.y += S.vy * dt;
+      S.vsx += (k * (1 - breathe - S.sx) - c * S.vsx) * dt; S.sx += S.vsx * dt;
+      S.vsy += (k * (1 + breathe - S.sy) - c * S.vsy) * dt; S.sy += S.vsy * dt;
+      S.vr += (k * (tr - S.r) - c * S.vr) * dt; S.r += S.vr * dt;
+      const h = btn.offsetHeight || 64;
+      btn.style.transform = `translateY(${(S.y + tuck * h).toFixed(1)}px) rotate(${S.r.toFixed(3)}rad) scale(${S.sx.toFixed(3)},${S.sy.toFixed(3)})`;
+    }
+    requestAnimationFrame(frame);
+
+    return {
+      react, emote, soundOn: () => snd,
+      toggleSound() { snd = !snd; try { localStorage.setItem("shelly.kit.sound", snd ? "1" : "0"); } catch (e) { /* */ } if (snd) tone(SND.pop); },
+      click() {   // returns true when the click was used up by a reaction
+        wake(); const now = performance.now(); clicks = clicks.filter(x => now - x < 650); clicks.push(now);
+        if (clicks.length >= 3) { clicks = []; react("dizzy"); return true; }
+        react("squish"); return false;
+      },
+    };
+  }
 
   /* ------------------------------------------------ 3D photo (depth parallax) */
   function depth3d(face, img, ear, wrap) {
