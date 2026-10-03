@@ -31,7 +31,13 @@ def ask(text: str) -> dict:
     biz_hint = "totara" if re.search(r"medic|t[oō]tara|hospital|medsafe|wand|pharma|clinic", text, re.I) else \
                "store" if re.search(r"store|shop|four square|uber|roster|liquor|bakery|dairy", text, re.I) else None
     if not r.in_scope:
-        return {"in_scope": False, "advice": r.advice, "kind": r.kind}
+        # the brain also knows the company-wide departments: a question that clearly matches an agent's
+        # trigger phrase (every word of one phrase, or two trigger words) is in scope even if the router missed it
+        def clear_hit(a):
+            phrases = [_words(t) for t in a.triggers]
+            return any(p and p <= q for p in phrases) or len(q & set().union(*phrases)) >= 2 if phrases else False
+        if not any(clear_hit(a) for a in AGENTS):
+            return {"in_scope": False, "advice": r.advice, "kind": r.kind}
     def total(a):   # trigger/mission overlap, plus a bonus when the agent owns the router's best skill
         return _score(a, q) + (1.5 if r.skill and r.skill in a.skills else 0) + (0.75 if biz_hint and a.business == biz_hint else 0)
     best = max(AGENTS, key=total)

@@ -7,6 +7,14 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v1.3: Shelly HQ v2, eight departments with heads, approval chains
+- **One company, eight departments** that serve every business (store, Tōtara, Group, and any future business): **Management Team** (with Pavi as Managing Director), **Finance** (funds control, payroll, cash), **Sales**, **Inventory**, **Office Manager** (decides shifts and rosters for every business), **HR** (minimum level), **IT** and **Developers**. 43 agents; each department has a head agent and the person accountable, with a spending limit and a monthly budget.
+- **Approval chains, department by department:** every request goes first to its own department head; over that head's limit (or any budget, markdown or write-off) Finance does a funds check; over Finance's $10k limit, new-business funding, hiring, policy, pricing, credit and customer terms go to Pavi. Payroll runs Office Manager (confirm shifts) → Finance (approve pay run). The tray and every page show the steps (✓ Inventory Manager › ● Finance Manager › ○ Pavi) and approve "as" the current signer.
+- **Shelly HQ v2** (Brain page): a 3D campus with eight department islands around the brain plaza, live cards (agents, doing / next / done, waiting approvals), shirts coloured by the business each agent serves, paper hand-offs and gold sheets flying when an approval moves to the next signer. Tap a department to go in: desks get labels and the left panel becomes its **head**, whom you can ask for status, issues, what's waiting, what's next and budget.
+- **Task status** for the whole office or one department (scheduled · backlog · in progress · waiting · done), and a composer that routes a new task to the best agent in a department; add a spend and it joins the right approval chain.
+- **Calendar** of every routine (daily, weekdays, weekly, monthly) by department; **Funds** board (budget, spent, approved, pending, left per department); **Opportunities** pipeline for future businesses with scoring and funding requests (Chief of Staff › Finance › Pavi). A funded new business is added with one line in `shelly/brain/registry.py`.
+- The orchestrator now knows the new departments ("run payroll", "who is working tomorrow", "should we open a new business").
+
 ## What's new in v1.2: Shelly Brain, the Shelly mascot and one approvals inbox
 - **Shelly Brain** ([docs/brain](docs/brain/)): an operating map of the AI system, in the style of an "AI brain" consultancy build. 24 agents across 19 departments and 3 businesses (Neighbourhood store, Tōtara Medical, Shelly Group), around 8 core modules (orchestrator, memory, governance, knowledge, learning, reporting, voice, connectors). Each agent card shows its mission, skills, inputs, outputs, triggers, schedule, autonomy level (auto / suggest / approve), guardrails, when it escalates, who it hands off to, its human owner and live KPIs.
 - **Shelly HQ** (a 3D office view on the Brain page, with the map as a second tab): one floor per business and one desk per agent. Desk screens show each agent's live numbers; ⚠ marks work waiting for you, 💡 a suggestion, a glow an agent working on its own; paper hand-offs fly between desks; data-source tiles (POS, Excel, Power BI, ERP, Medsafe, news, email) link to the agents that read them, and speech bubbles show real events. Drag to turn, zoom, tap an agent to open its details and approve. Built with three.js (vendored, MIT).
@@ -218,6 +226,7 @@ skills/           OpenJarvis skill   tests/         pytest suite
 MAppBus (Business Analytics, First Class Honours) · [LinkedIn](https://linkedin.com/in/pavithra-maduranga-19624675) · [Portfolio](https://pavi44m.github.io/pavibamunu)
 
 ## Versions
+- **v1.3**: eight company-wide departments with heads, approval chains (head → Finance → Pavi), Shelly HQ v2 (campus, head chat, tasks, calendar, funds, opportunities)
 - **v1.2**: Shelly Brain (24 agents, 19 departments, orchestrator), light-bulb Shelly mascot, shared approvals badge and tray
 - **v1.1**: report engine (Excel with dashboard, formulas, pivots, lookups, raw; PDF and presentation), planning forecasts, real-data intake
 - **v0.3.2**: spoken daily briefing on open, time-aware greeting by name, sign-off

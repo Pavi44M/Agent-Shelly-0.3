@@ -80,3 +80,9 @@
   filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));transition:transform .45s cubic-bezier(.3,1.6,.5,1),opacity .2s}
 .sk-emote.pop{opacity:1;transform:translate(-50%,-6px) scale(1)}
 @media (prefers-reduced-motion:reduce){.sk-emote{transition:none}}
+
+/* approval chains */
+.sk-chain{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:8px 0 2px;font:11px "JetBrains Mono",ui-monospace,monospace}
+.sk-step{padding:2px 7px;border-radius:99px;border:1px solid #2a3a50;color:#7d8a9c}
+.sk-step.ok{color:#3fb87f;border-color:rgba(63,184,127,.45)}.sk-step.now{color:#ffc466;border-color:#ffc466}.sk-step.no{color:#ff7b72;border-color:#ff7b72}
+.sk-arrow{color:#4a5a70}

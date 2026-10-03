@@ -25,7 +25,8 @@
     $("#skipBoot").onclick = () => { skip = true; };
     const s = B.stats;
     const lines = [`› core online · ${B.core.map(c => c.name.toLowerCase()).join(" · ")}`,
-      `› ${s.businesses} businesses · ${s.departments} departments · ${s.agents} agents · ${s.skills} skills`,
+      `› ${s.businesses} businesses · ${s.departments} departments, each with a head · ${s.agents} agents · ${s.skills} skills`,
+      `› approvals · own head → Finance funds check → Pavi`,
       `› autonomy · ${s.auto} run on their own · ${s.suggest} suggest · ${s.approve} need approval`,
       `› memory · ${s.pending} proposals in the approvals queue`,
       `› store data to ${B.store_asof} · Tōtara data to ${B.totara_asof}`];
@@ -55,27 +56,27 @@
   /* ---------------- map */
   const map = $("#map"), tip = $("#mapTip");
   function drawMap() {
-    const agents = B.agents, n = agents.length, gap = 0.06;
-    const order = ["store", "totara", "group"];
-    const sorted = order.flatMap(b => agents.filter(a => a.business === b));
+    const agents = B.agents, n = agents.length, gap = 0.05;
+    const order = B.departments.map(d => d.id);           // one arc per company-wide department
+    const sorted = order.flatMap(d => agents.filter(a => a.department === d));
     const step = (2 * Math.PI - gap * order.length) / n;
     let ang = -Math.PI / 2, pos = {}, depAng = {}, bizArc = {};
-    order.forEach(b => {
-      const list = sorted.filter(a => a.business === b);
-      bizArc[b] = [ang, ang + step * list.length];
+    order.forEach(d => {
+      const list = sorted.filter(a => a.department === d);
+      bizArc[d] = [ang, ang + step * list.length];
       list.forEach(a => { pos[a.id] = ang + step / 2; (depAng[a.department] = depAng[a.department] || []).push(ang + step / 2); ang += step; });
       ang += gap;
     });
     const P = (r, t) => [r * Math.cos(t), r * Math.sin(t)];
     let s = `<circle class="ring" r="200"/><circle class="ring" r="300"/>`;
-    order.forEach(b => {   // business arc
-      const [a0, a1] = bizArc[b], r = 150, [x0, y0] = P(r, a0), [x1, y1] = P(r, a1), big = a1 - a0 > Math.PI ? 1 : 0;
-      s += `<path d="M${x0},${y0} A${r},${r} 0 ${big} 1 ${x1},${y1}" stroke="${BIZ[b].colour}" stroke-width="10" stroke-linecap="round" fill="none" opacity=".75"/>`;
-      const [lx, ly] = P(118, (a0 + a1) / 2);
-      s += `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" fill="${BIZ[b].colour}" style="fill:${BIZ[b].colour};font-size:11px;font-weight:600">${esc(BIZ[b].icon)}</text>`;
+    order.forEach(d => {   // department arc
+      const [a0, a1] = bizArc[d], r = 150, [x0, y0] = P(r, a0), [x1, y1] = P(r, a1), big = a1 - a0 > Math.PI ? 1 : 0, col = DEP[d].colour;
+      s += `<path d="M${x0},${y0} A${r},${r} 0 ${big} 1 ${x1},${y1}" stroke="${col}" stroke-width="10" stroke-linecap="round" fill="none" opacity=".75"/>`;
+      const [lx, ly] = P(124, (a0 + a1) / 2);
+      s += `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" style="fill:${col};font-size:10px;font-weight:700">${esc(DEP[d].icon)}</text>`;
     });
     Object.entries(depAng).forEach(([d, angs]) => {    // departments
-      const t = angs.reduce((x, y) => x + y) / angs.length, [x, y] = P(205, t), col = BIZ[DEP[d].business].colour;
+      const t = angs.reduce((x, y) => x + y) / angs.length, [x, y] = P(205, t), col = DEP[d].colour;
       s += `<line class="spoke" x1="0" y1="0" x2="${x}" y2="${y}" stroke="${col}"/>`;
       angs.forEach(at => { const [ax, ay] = P(290, at); s += `<line class="spoke" x1="${x}" y1="${y}" x2="${ax}" y2="${ay}" stroke="${col}"/>`; });
       s += `<g class="node" tabindex="0" data-dep="${esc(d)}" role="button" aria-label="${esc(DEP[d].name)}"><circle class="dot" cx="${x}" cy="${y}" r="9" fill="#0f1622" stroke="${col}" stroke-width="2"/></g>`;
@@ -99,8 +100,8 @@
     $$(".node", map).forEach(g => {
       const show = e => { const r = map.getBoundingClientRect(), box = $(".map").getBoundingClientRect();
         let h = "";
-        if (g.dataset.agent) { const a = AG[g.dataset.agent]; h = `<b>${esc(a.name)}</b><small>${esc(BIZ[a.business].name)} · ${esc(DEP[a.department].name)} · ${esc(AUTO_L[a.autonomy])}</small>${esc(a.mission)}`; }
-        else if (g.dataset.dep) { const d = DEP[g.dataset.dep]; h = `<b>${esc(d.name)}</b><small>${esc(BIZ[d.business].name)} · head: ${esc(d.head)}</small>${esc(d.purpose)}`; }
+        if (g.dataset.agent) { const a = AG[g.dataset.agent]; h = `<b>${esc(a.name)}</b><small>${esc(DEP[a.department].name)} · ${esc(a.team)} · ${esc(AUTO_L[a.autonomy])}</small>${esc(a.mission)}`; }
+        else if (g.dataset.dep) { const d = DEP[g.dataset.dep]; h = `<b>${esc(d.name)}</b><small>Head: ${esc(d.head)} · signs up to $${d.limit.toLocaleString("en-NZ")}</small>${esc(d.purpose)}`; }
         else { const c = B.core.find(c => c.id === g.dataset.core); h = `<b>${esc(c.name)}</b><small>Brain core</small>${esc(c.what)}`; }
         tip.innerHTML = h; tip.hidden = false;
         const pt = (e.touches ? e.touches[0] : e);
@@ -123,25 +124,24 @@
     if (fA === "waiting" && !pendingOf(a.id).length) return false;
     if (fA !== "all" && fA !== "waiting" && a.autonomy !== fA) return false;
     if (!fQ) return true;
-    const hay = [a.name, a.mission, a.skills.join(" "), a.inputs.join(" "), a.outputs.join(" "), a.triggers.join(" "), DEP[a.department].name, BIZ[a.business].name].join(" ").toLowerCase();
+    const hay = [a.name, a.mission, a.skills.join(" "), a.inputs.join(" "), a.outputs.join(" "), a.triggers.join(" "), DEP[a.department].name, a.team, BIZ[a.business].name].join(" ").toLowerCase();
     return fQ.split(/\s+/).every(w => hay.includes(w));
   }
   function card(a) {
     const pend = pendingOf(a.id).length;
-    return `<button class="agent" data-agent="${esc(a.id)}"><span class="top"><b>${esc(a.name)}</b>${pend ? `<span class="wait-b">${pend}</span>` : ""}<span class="pill ${a.autonomy}">${esc(AUTO_L[a.autonomy])}</span></span>
-      <span class="m">${esc(a.mission)}</span>${a.live.length ? `<span class="lv">${a.live.map(l => `<span>${esc(l.label)} <b>${esc(l.value)}</b></span>`).join("")}</span>` : ""}</button>`;
+    const head = a.head_of ? `<span class="pill head">★ head</span>` : "";
+    return `<button class="agent" data-agent="${esc(a.id)}"><span class="top"><b>${esc(a.name)}</b>${head}${pend ? `<span class="wait-b">${pend}</span>` : ""}<span class="pill ${a.autonomy}">${esc(AUTO_L[a.autonomy])}</span></span>
+      <span class="tm">${esc(a.team)}</span><span class="m">${esc(a.mission)}</span>${a.live.length ? `<span class="lv">${a.live.map(l => `<span>${esc(l.label)} <b>${esc(l.value)}</b></span>`).join("")}</span>` : ""}</button>`;
   }
   function renderOrgs() {
-    $("#orgs").innerHTML = B.businesses.map(b => {
-      const deps = B.departments.filter(d => d.business === b.id).map(d => {
-        const list = B.agents.filter(a => a.department === d.id && matches(a));
-        if (!list.length && (fQ || fA !== "all")) return "";
-        return `<div class="dep" id="dep-${esc(d.id)}"><div class="dep-h"><b>${esc(d.name)}</b><span>${esc(d.purpose)}</span><em>Head: ${esc(d.head)}</em></div>
-          ${list.map(card).join("") || '<span class="empty">No agent matches.</span>'}</div>`;
-      }).join("");
-      return deps ? `<div class="biz-block"><div class="biz-h"><span class="ic" style="background:${b.colour}" aria-hidden="true">${esc(b.icon)}</span>
-        <div><h3>${esc(b.name)}</h3><p>${esc(b.kind)} · ${esc(b.tagline)}</p></div><a href="${esc(b.page)}">Open ›</a></div><div class="deps">${deps}</div></div>` : "";
-    }).join("") || '<p class="empty">No agents match these filters.</p>';
+    $("#orgs").innerHTML = `<div class="deps">` + B.departments.map(d => {
+      const list = B.agents.filter(a => a.department === d.id && matches(a))
+        .sort((x, y) => (y.id === d.head_agent) - (x.id === d.head_agent));
+      if (!list.length && (fQ || fA !== "all")) return "";
+      return `<div class="dep" id="dep-${esc(d.id)}" style="border-top:3px solid ${esc(d.colour)}"><div class="dep-h"><b><span style="color:${esc(d.colour)}">${esc(d.icon)}</span> ${esc(d.name)}</b>
+        <span>${esc(d.purpose)}</span><em>Head: ${esc(d.head)} · signs up to $${d.limit.toLocaleString("en-NZ")}${d.budget ? ` · budget $${d.budget.toLocaleString("en-NZ")}/month` : ""}</em></div>
+        ${list.map(card).join("") || '<span class="empty">No agent matches.</span>'}</div>`;
+    }).join("") + `</div>` || '<p class="empty">No agents match these filters.</p>';
     $$("#orgs .agent").forEach(el => el.onclick = () => openAgent(el.dataset.agent));
   }
   $$(".filters [data-a]").forEach(b => b.onclick = () => { fA = b.dataset.a; $$(".filters [data-a]").forEach(x => x.setAttribute("aria-pressed", String(x === b))); renderOrgs(); });
@@ -155,9 +155,9 @@
     const a = AG[id]; if (!a) return; current = id;
     const d = DEP[a.department], b = BIZ[a.business], pend = pendingOf(id);
     const others = B.agents.filter(x => x.hands_off_to.includes(id)).map(x => x.id);
-    $("#dBody").innerHTML = `<div class="crumb">${esc(b.icon)} ${esc(b.name)} › ${esc(d.name)}</div><h2 id="dTitle">${esc(a.name)}</h2>
+    $("#dBody").innerHTML = `<div class="crumb"><span style="color:${esc(d.colour)}">${esc(d.icon)}</span> ${esc(d.name)} › ${esc(a.team)} · serves ${esc(b.name)}</div><h2 id="dTitle">${esc(a.name)}${a.head_of ? " ★" : ""}</h2>
       <span class="pill ${a.autonomy}">${esc(AUTO_L[a.autonomy])}</span><p class="mission">${esc(a.mission)}</p>
-      <div class="d-grid"><div><span>Answers to</span><b>${esc(a.owner)}</b></div><div><span>Department head</span><b>${esc(d.head)}</b></div>
+      <div class="d-grid"><div><span>Answers to</span><b>${esc(a.owner)}</b></div><div><span>Department head</span><b>${esc(d.head)}</b></div><div><span>Head signs up to</span><b>$${d.limit.toLocaleString("en-NZ")}</b></div>
         <div><span>Schedule</span><b>${esc(a.schedule)}</b></div><div><span>Waiting for you</span><b>${pend.length}</b></div>
         ${a.live.map(l => `<div><span>${esc(l.label)}</span><b>${esc(l.value)}</b></div>`).join("")}</div>
       <div class="d-sec"><h3>What it may do on its own</h3><p style="margin:0;font-size:13.5px">${esc(B.autonomy[a.autonomy])}</p></div>
@@ -168,14 +168,16 @@
       ${a.decision_areas.length ? `<div class="d-sec"><h3>Decision areas it raises</h3><div class="chips">${a.decision_areas.map(x => `<span class="chip">${esc(x)}</span>`).join("")}</div></div>` : ""}
       ${a.hands_off_to.length ? `<div class="d-sec"><h3>Passes work to</h3><div class="chips">${a.hands_off_to.map(x => AG[x] ? `<button class="chip" data-go="${esc(x)}">${esc(AG[x].name)} ›</button>` : "").join("")}</div></div>` : ""}
       ${others.length ? `<div class="d-sec"><h3>Gets work from</h3><div class="chips">${others.map(x => `<button class="chip" data-go="${esc(x)}">${esc(AG[x].name)} ›</button>`).join("")}</div></div>` : ""}
-      <div class="d-sec"><h3>Waiting for your approval (${pend.length})</h3>${pend.length ? pend.slice(0, 12).map(i => `<div class="ap-item"><b style="color:var(--ink)">${esc(i.title)}</b><div>${esc(i.area)}${i.text ? " · " + esc(i.text) : ""}</div>
-        <div class="r"><button class="yes" data-y="${esc(i.key)}">✓ Approve</button><button class="no" data-n="${esc(i.key)}">✕ Reject</button></div></div>`).join("") + (pend.length > 12 ? `<p class="empty">+${pend.length - 12} more in the approvals tray.</p>` : "")
+      <div class="d-sec"><h3>Waiting for your approval (${pend.length})</h3>${pend.length ? pend.slice(0, 12).map(i => { const K = window.ShellyKit, ch = K ? K.chainOf(i) : [], at = K ? K.stepOf(i) : 0;
+        return `<div class="ap-item"><b style="color:var(--ink)">${esc(i.title)}</b><div>${esc(i.area)}${i.text ? " · " + esc(i.text) : ""}</div>
+        <div class="chainline">${ch.map((c, k) => `<span class="${k < at ? "ok" : k === at ? "now" : ""}">${k < at ? "✓" : k === at ? "●" : "○"} ${esc(c.role.replace(/ \(.*\)/, ""))}</span>`).join(" › ")}</div>
+        <div class="r"><button class="yes" data-y="${esc(i.key)}">✓ ${at < ch.length - 1 ? "Approve as " + esc(ch[at].role.replace(/ \(.*\)/, "")) : "Approve"}</button><button class="no" data-n="${esc(i.key)}">✕ Reject</button></div></div>`; }).join("") + (pend.length > 12 ? `<p class="empty">+${pend.length - 12} more in the approvals tray.</p>` : "")
         : '<p class="empty" style="margin:0">Nothing waiting.</p>'}</div>
       <a class="d-open" href="${esc(a.page)}">Open its work ›</a>`;
     $$("[data-go]", drawer).forEach(x => x.onclick = () => openAgent(x.dataset.go));
     $$("[data-y],[data-n]", drawer).forEach(x => x.onclick = () => {
-      const it = AP.items.find(i => i.key === (x.dataset.y || x.dataset.n));
-      if (it && window.ShellyKit) window.ShellyKit.answer(it, x.dataset.y ? "y" : "n");
+      const it = (window.ShellyKit ? window.ShellyKit.items() : AP.items).find(i => i.key === (x.dataset.y || x.dataset.n));
+      if (it && window.ShellyKit) window.ShellyKit.sign(it, x.dataset.y ? "y" : "n");
     });
     if (drawer.hidden) lastFocus = document.activeElement;
     drawer.hidden = false; $("#dClose").focus(); $(".d-in").scrollTop = 0;
@@ -201,7 +203,7 @@
       if (sc > score) { best = a; score = sc; }
     });
     $("#askOut").innerHTML = best && score >= 1.5
-      ? `<div class="res">→ <b>${esc(best.name)}</b> in ${esc(DEP[best.department].name)} (${esc(BIZ[best.business].name)}) · ${esc(AUTO_L[best.autonomy])} · answers to ${esc(best.owner)}<button id="askOpen">See agent ›</button></div>`
+      ? `<div class="res">→ <b>${esc(best.name)}</b> in ${esc(DEP[best.department].name)} · ${esc(best.team)} · ${esc(AUTO_L[best.autonomy])} · answers to ${esc(best.owner)}<button id="askOpen">See agent ›</button></div>`
       : `<div class="res">No department agent owns that. If it's outside Shelly's skills (travel, email, writing, advice), the orchestrator points you to a connected agent in Settings.</div>`;
     const b = $("#askOpen"); if (b) b.onclick = () => openAgent(best.id);
   });
@@ -217,7 +219,7 @@
     try { localStorage.setItem("shelly.brain.tab", k); } catch (e) { /* */ }
   }
   $("#tabHq").onclick = () => tab("hq"); $("#tabMap").onclick = () => tab("map");
-  document.addEventListener("shelly:hq-unavailable", () => { $("#tabHq").hidden = true; tab("map"); });
+  
   try { if (localStorage.getItem("shelly.brain.tab") === "map") tab("map"); } catch (e) { /* */ }
 
   window.ShellyBrain = { openAgent };

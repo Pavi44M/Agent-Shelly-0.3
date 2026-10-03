@@ -14,16 +14,37 @@
     get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* private mode */ } },
   };
-  const SKEY = "shelly.decisions." + AP.store_asof, TKEY = "shelly-sc-dec";
+  const SKEY = "shelly.decisions." + AP.store_asof, TKEY = "shelly-sc-dec", OKEY = "shelly.org.dec", CKEY = "shelly.chain", LKEY = "shelly.org.items";
+  // requests added on this device (new opportunities, tasks that need sign-off) join the shared queue
+  (ls.get(LKEY, []) || []).forEach(it => { if (!AP.items.some(x => x.key === it.key)) AP.items.push(it); });
   const money = v => (v < 0 ? "−" : "") + "$" + Math.abs(Math.round(v)).toLocaleString("en-NZ");
 
   /* ------------------------------------------------ approvals state */
   function stateOf(it) {
     if (it.source === "store") { const s = ls.get(SKEY, {})[it.id]; return s ? (s.status === "confirmed" ? "y" : "n") : null; }
+    if (it.source === "org") return ls.get(OKEY, {})[it.id] || null;
     const s = ls.get(TKEY, {})[it.id]; return s || null;
   }
+  /* approval chains: step 1 own department head → Finance funds check → Pavi. stepOf = steps already signed */
+  const chainOf = it => it.chain && it.chain.length ? it.chain : [{ dept: it.dept || "", role: "Pavi", final: true }];
+  function stepOf(it) { const st = stateOf(it); return st === "y" ? chainOf(it).length : Math.min(ls.get(CKEY, {})[it.key] || 0, chainOf(it).length - 1); }
+  function sign(it, v) {            // approve the current step (moves to the next signer) or decide
+    if (v === "y" && stepOf(it) < chainOf(it).length - 1) {
+      const c = ls.get(CKEY, {}); c[it.key] = stepOf(it) + 1; ls.set(CKEY, c);
+      window.dispatchEvent(new CustomEvent("shelly:approvals", { detail: { step: true, key: it.key } })); return;
+    }
+    if (v === null) { const c = ls.get(CKEY, {}); delete c[it.key]; ls.set(CKEY, c); }
+    answer(it, v);
+  }
+  function addItem(it) {            // a new request raised on this device
+    const list = ls.get(LKEY, []) || []; list.push(it); ls.set(LKEY, list);
+    if (!AP.items.some(x => x.key === it.key)) AP.items.push(it);
+    window.dispatchEvent(new CustomEvent("shelly:approvals", { detail: { added: it.key } }));
+  }
   function answer(it, v) {          // v: "y" | "n" | null (undo)
-    if (it.source === "store") {
+    if (it.source === "org") {
+      const s = ls.get(OKEY, {}); if (v) s[it.id] = v; else delete s[it.id]; ls.set(OKEY, s);
+    } else if (it.source === "store") {
       const s = ls.get(SKEY, {});
       if (v) s[it.id] = { status: v === "y" ? "confirmed" : "rejected", at: new Date().toISOString() }; else delete s[it.id];
       ls.set(SKEY, s);
@@ -49,7 +70,9 @@
 
   /* ------------------------------------------------ tray */
   let filter = "open", tray = null;
-  const BIZ = { store: "Neighbourhood store", totara: "Tōtara Medical", group: "Industry packs" };
+  const agentName = id => { const B = window.SHELLY_BRAIN; const a = B && B.agents.find(x => x.id === id);
+    return a ? a.name : String(id).replace(/^(store|totara|group)-/, "").replace(/-/g, " ") + " agent"; };
+  const BIZ = { store: "Neighbourhood store", totara: "Tōtara Medical", group: "Shelly Group" };
   function buildTray() {
     tray = document.createElement("div");
     tray.className = "sk-tray"; tray.hidden = true; tray.setAttribute("role", "dialog"); tray.setAttribute("aria-modal", "true"); tray.setAttribute("aria-label", "Approvals");
@@ -57,7 +80,8 @@
       <div class="sk-head"><h2>Approvals</h2><p>Every proposal from every Shelly agent, in one place. Nothing happens until you approve it.</p>
       <div class="sk-filters" role="group" aria-label="Filter">
         <button data-f="open" aria-pressed="true">Waiting</button><button data-f="store" aria-pressed="false">🛒 Store</button>
-        <button data-f="totara" aria-pressed="false">✚ Tōtara</button><button data-f="group" aria-pressed="false">◎ Packs</button>
+        <button data-f="totara" aria-pressed="false">✚ Tōtara</button><button data-f="group" aria-pressed="false">◎ Group</button>
+        <button data-f="mine" aria-pressed="false">★ Needs Pavi</button>
         <button data-f="done" aria-pressed="false">Answered</button></div></div>
       <div class="sk-list" id="skList"></div>
       <div class="sk-foot">Answers are kept on this device and shared by every Shelly page. To let Shelly learn from them, use “⬇ Download” under Decisions on the store page and import it on your computer.</div></div>`;
@@ -67,7 +91,7 @@
       const f = e.target.closest("[data-f]"); if (f) { filter = f.dataset.f; renderTray(); return; }
       const b = e.target.closest("[data-a]"); if (!b) return;
       const it = AP.items.find(x => x.key === b.dataset.k); if (!it) return;
-      answer(it, b.dataset.a === "u" ? null : b.dataset.a);
+      sign(it, b.dataset.a === "u" ? null : b.dataset.a);
     });
     tray.addEventListener("keydown", e => { if (e.key === "Escape") closeTray(); });
   }
@@ -77,14 +101,18 @@
     let list = AP.items;
     if (filter === "open") list = open();
     else if (filter === "done") list = AP.items.filter(stateOf);
+    else if (filter === "mine") list = open().filter(it => { const c = chainOf(it); return c[stepOf(it)] && c[stepOf(it)].final; });
     else list = AP.items.filter(it => it.business === filter && !stateOf(it));
     tray.querySelector("#skList").innerHTML = list.length ? list.map(it => {
       const st = stateOf(it);
+      const ch = chainOf(it), at = stepOf(it), cur = ch[Math.min(at, ch.length - 1)];
+      const steps = ch.map((c, i) => `<span class="sk-step ${i < at || st === "y" ? "ok" : st === "n" && i === at ? "no" : i === at ? "now" : ""}">${i < at || st === "y" ? "✓" : i === at && !st ? "●" : "○"} ${esc(c.role.replace(/ \(Managing Director\)/, ""))}</span>`).join('<span class="sk-arrow">›</span>');
       return `<div class="sk-item ${st ? "done" : ""}"><div class="k"><span class="sk-pill ${esc(it.business)}">${esc(BIZ[it.business] || it.business)}</span>
-        <span>${esc(it.area)}</span><span>· ${esc(String(it.agent).replace(/^(store|totara|group)-/, "").replace(/-/g, " "))} agent</span></div>
+        <span>${esc(it.area)}</span><span>· ${esc(agentName(it.agent))}</span>${it.amount ? `<span class="imp">${esc(money(it.amount))}</span>` : ""}</div>
         <div class="t">${esc(it.title)}</div>${it.text ? `<div class="x">${esc(it.text)}</div>` : ""}
+        <div class="sk-chain" aria-label="Approval steps">${steps}</div>
         <div class="r">${st ? `<span class="st ${st}">${st === "y" ? "✓ Approved" : "✕ Rejected"}</span><button data-a="u" data-k="${esc(it.key)}">Undo</button>`
-          : `<button class="yes" data-a="y" data-k="${esc(it.key)}">✓ Approve</button><button class="no" data-a="n" data-k="${esc(it.key)}">✕ Reject</button>`}
+          : `<button class="yes" data-a="y" data-k="${esc(it.key)}">✓ ${at < ch.length - 1 ? "Approve as " + esc(cur.role.replace(/ \(.*\)/, "")) : "Approve" + (ch.length > 1 ? " (final)" : "")}</button><button class="no" data-a="n" data-k="${esc(it.key)}">✕ Reject</button>`}
           <a href="${esc(BASE + it.link)}">Open ›</a>${typeof it.impact === "number" ? `<span class="imp">${esc(money(it.impact))}/wk</span>` : ""}</div></div>`;
     }).join("") : `<p class="sk-empty">${filter === "done" ? "Nothing answered yet." : "Nothing waiting. Nice work."}</p>`;
   }
@@ -111,7 +139,7 @@
   }
   function messages() {
     const n = open().length, by = b => open().filter(i => i.business === b).length;
-    const ask = n ? `I've got <b>${n} approvals</b> waiting: ${by("store")} store, ${by("totara")} Tōtara, ${by("group")} packs.` : "Nothing is waiting for your approval.";
+    const ask = n ? `I've got <b>${n} approvals</b> waiting: ${by("store")} store, ${by("totara")} Tōtara, ${by("group")} group.` : "Nothing is waiting for your approval.";
     const M = {
       launchpad: [`${greeting()}! I'm Shelly. ${ask}`, "Tap 🛒 or ✚ at the top to switch business. 🧠 Brain shows every agent I run."],
       store: [`${greeting()}! ${ask}`, "Ask me for any report: “make a budget for the next 3 months”."],
@@ -360,7 +388,7 @@
   function refresh() { paintBadge(); renderTray(); }
   window.addEventListener("shelly:approvals", refresh);
   window.addEventListener("storage", e => { if (e.key === SKEY || e.key === TKEY) refresh(); });
-  window.ShellyKit = { openTray, open, answer };
+  window.ShellyKit = { openTray, open, answer, sign, stepOf, chainOf, stateOf, addItem, items: () => AP.items };
   mascot();
   paintBadge();
   window.dispatchEvent(new CustomEvent("shelly:approvals"));

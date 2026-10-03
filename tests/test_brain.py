@@ -57,3 +57,35 @@ def test_mascot_assets():
     for f in ["shelly-bulb3d.js", "vendor/RoomEnvironment.js", "vendor/three.module.min.js"]:
         assert (ROOT / "docs/kit" / f).exists(), f
     assert "./three.module.min.js" in (ROOT / "docs/kit/vendor/RoomEnvironment.js").read_text()
+
+
+def test_departments_and_heads():
+    from shelly.brain.registry import DEPARTMENTS, AGENTS
+    ids = {a.id: a for a in AGENTS}
+    assert {d.id for d in DEPARTMENTS} == {"mgmt", "finance", "sales", "inventory", "office", "hr", "it", "dev"}
+    for d in DEPARTMENTS:
+        assert d.head_agent in ids and ids[d.head_agent].department == d.id
+        for a in AGENTS:   # every agent reports to its own head
+            if a.department == d.id and a.id != d.head_agent:
+                assert d.head_agent in a.hands_off_to, a.id
+
+
+def test_approval_chains():
+    from shelly.brain.registry import approval_chain
+    roles = lambda *a: [c["role"] for c in approval_chain(*a)]
+    assert roles("inventory", "Purchase order", 1500) == ["Inventory Manager"]                       # within the head's limit
+    assert roles("inventory", "Purchase order", 5000) == ["Inventory Manager", "Finance Manager"]    # over it: funds check
+    assert roles("inventory", "Purchase order", 14600)[-1].startswith("Pavi")                       # over Finance's limit
+    assert roles("office", "Pay run", 11840) == ["Office Manager", "Finance Manager"]               # shifts → pay
+    assert roles("hr", "Hiring", 0) == ["HR Advisor", "Finance Manager", "Pavi (Managing Director)"]
+    assert roles("mgmt", "Opportunity funding", 6500) == ["Chief of Staff", "Finance Manager", "Pavi (Managing Director)"]
+
+
+def test_hq_v2_assets():
+    js = (ROOT / "docs/data/brain.js").read_text()
+    for k in ['"tasks"', '"routines"', '"opportunities"', '"policy"', '"head_agent"']:
+        assert k in js, k
+    ap = (ROOT / "docs/data/approvals.js").read_text()
+    assert '"chain"' in ap and '"source":"org"' in ap
+    assert (ROOT / "docs/brain/hq-panels.js").exists()
+    assert 'id="hqLeft"' in (ROOT / "docs/brain/index.html").read_text()

@@ -7,7 +7,7 @@
 <meta name="author" content="Pavithra Bamunu">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
-<meta name="description" content="Shelly Brain: one AI brain running department agents for a neighbourhood store, Tōtara Medical and industry packs, with governance, memory and learning.">
+<meta name="description" content="Shelly Brain and Shelly HQ: eight company-wide departments with heads, agents, approval chains, tasks, a calendar, funds control and an opportunities pipeline for every business.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500;600&display=swap">
 <link rel="stylesheet" href="brain.css">
@@ -23,7 +23,7 @@
 <header>
   <span class="tag">Shelly Brain · one brain, every department</span>
   <h1>How Shelly <b>runs the businesses.</b></h1>
-  <p class="sub">A shared brain (orchestrator, memory, governance, knowledge, learning) with an agent for every department job. Each agent knows its data, its skills, its schedule, how much it may do on its own, and when to hand over to a person.</p>
+  <p class="sub">One brain, eight company-wide departments (Management, Finance, Sales, Inventory, Office Manager, HR, IT, Developers), each with a head you can ask for status and issues. Agents serve every business; requests climb an approval chain from their own head to Finance to you.</p>
   <div class="stats" id="stats"></div>
 </header>
 
@@ -37,12 +37,34 @@
   <div class="sec-h"><div class="tabs" role="tablist" aria-label="View">
       <button role="tab" id="tabHq" aria-selected="true" aria-controls="paneHq">🏢 Shelly HQ</button>
       <button role="tab" id="tabMap" aria-selected="false" aria-controls="paneMap">◎ Brain map</button></div>
-    <span class="legend" id="legHq"><span>⚠ waiting for you</span><span>💡 suggestion ready</span><span><i class="lg auto"></i>working on its own</span><span>✓ up to date</span><span>📄 hand-off</span></span>
+    <span class="legend" id="legHq"><span>★ department head</span><span>⚠ waiting for sign-off</span><span><i class="lg auto"></i>working on its own</span><span>📄 hand-off · 📜 approval moving</span><span>shirt = business served</span></span>
     <span class="legend" id="legMap" hidden><span><i class="lg auto"></i>runs on its own</span><span><i class="lg suggest"></i>suggests</span><span><i class="lg approve"></i>needs approval</span><span><i class="lg wait"></i>waiting for you</span></span></div>
   <div id="paneHq" role="tabpanel" aria-labelledby="tabHq">
-    <div class="hq" id="hq" aria-label="3D office: every agent at its desk. Tap an agent to open its details.">
-      <div class="hq-ctl"><button data-hq="in" aria-label="Zoom in">＋</button><button data-hq="out" aria-label="Zoom out">－</button><button data-hq="reset" aria-label="Reset view">⟲</button></div>
-      <div class="hq-hint">Drag to turn · tap an agent · ⌃/⌘ + scroll to zoom</div>
+    <div class="hqx" id="hqx">
+      <div class="hqx-top">
+        <b class="hqx-title">SHELLY HQ <sup>v2</sup></b><span class="hqx-org">Shelly Group</span>
+        <label class="hqx-biz"><span class="sr">Business</span><select id="hqBiz" aria-label="Show business"></select></label>
+        <span class="hqx-conn" id="hqConn" aria-label="Connected data sources"></span>
+        <span class="hqx-sp"></span>
+        <button type="button" data-sheet="calendar">📅 Calendar</button>
+        <button type="button" data-sheet="funds">$ Funds</button>
+        <button type="button" data-sheet="opps">✦ Opportunities</button>
+        <button type="button" class="hqx-ap" id="hqAp" aria-label="Approvals waiting">⚠ <b id="hqApN">0</b></button>
+        <span class="hqx-clock" id="hqClock" aria-hidden="true"></span>
+        <button type="button" id="hqFull" aria-label="Full screen" title="Full screen">⤢</button>
+      </div>
+      <div class="hqx-body">
+        <aside class="hqx-left" id="hqLeft" aria-label="Departments"></aside>
+        <div class="hqx-stage">
+          <div class="hq" id="hq" aria-label="3D office: eight departments around the brain. Tap a department to go in, tap an agent for details.">
+            <div class="hq-ctl"><button data-hq="in" aria-label="Zoom in">＋</button><button data-hq="out" aria-label="Zoom out">－</button><button data-hq="reset" aria-label="Overview">⌂</button></div>
+            <button type="button" class="hq-over" id="hqOver" hidden>‹ Overview</button>
+            <div class="hq-hint">Drag to turn · tap a department · tap an agent</div>
+          </div>
+        </div>
+        <aside class="hqx-right" id="hqRight" aria-label="Tasks"></aside>
+      </div>
+      <div class="hqx-sheet" id="hqSheet" hidden role="dialog" aria-modal="false" aria-labelledby="hqSheetT"></div>
     </div>
   </div>
   <div id="paneMap" role="tabpanel" aria-labelledby="tabMap" hidden>
