@@ -49,3 +49,11 @@ def test_hq_assets():
     html = (ROOT / "docs/brain/index.html").read_text()
     assert 'type="module" src="hq.js"' in html and 'id="hq"' in html and 'id="tabMap"' in html
     assert (ROOT / "docs/brain/hq.js").exists() and (ROOT / "docs/kit/vendor/three.module.min.js").exists()
+
+
+def test_mascot_assets():
+    kit = (ROOT / "docs/kit/shelly-kit.js").read_text()
+    assert "shelly-bulb3d.js" in kit and "function bulb(" in kit and "function life(" in kit
+    for f in ["shelly-bulb3d.js", "vendor/RoomEnvironment.js", "vendor/three.module.min.js"]:
+        assert (ROOT / "docs/kit" / f).exists(), f
+    assert "./three.module.min.js" in (ROOT / "docs/kit/vendor/RoomEnvironment.js").read_text()

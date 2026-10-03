@@ -4,9 +4,12 @@
 .sk-mascot>*{pointer-events:auto}
 .sk-btn{position:relative;width:64px;height:64px;overflow:visible;transform-origin:50% 100%;will-change:transform;padding:0;border:0;background:none;cursor:pointer;border-radius:50%}
 .sk-btn:focus-visible{outline:2px solid #63b6d8;outline-offset:3px}
+.sk-btn:focus:not(:focus-visible){outline:none}
 .sk-btn svg{width:100%;height:100%;overflow:visible;animation:sk-bob 3.2s ease-in-out infinite;transform-origin:50% 90%}
 .sk-bulb{position:absolute;left:-25%;top:-25%;width:150%;height:150%;pointer-events:none}
 .sk-drawn .sk-btn>svg{display:none}
+.sk-3d .sk-bulb:not(.sk-bulb3d){display:none}
+.sk-bulb3d[hidden]{display:none}
 .sk-badge{z-index:1;position:absolute;top:-6px;right:-12px;min-width:22px;height:22px;padding:0 6px;border-radius:99px;background:#e66767;color:#fff;
   font:600 11px/22px "JetBrains Mono",ui-monospace,monospace;text-align:center;box-shadow:0 0 0 2px #070b12}
 .sk-badge[hidden]{display:none}

@@ -134,6 +134,12 @@
     const bubble = w.querySelector(".sk-bubble"), msg = w.querySelector(".sk-msg"), acts = w.querySelector(".sk-acts");
     const L = life(w, btn0, bubble);
     try { bulb(cv, w, btn0, L); } catch (e) { cv.remove(); }
+    try {   // real 3D bulb when WebGL2 is available; the 2D bulb above stays as the fallback
+      const c3 = document.createElement("canvas"); c3.className = "sk-bulb sk-bulb3d"; c3.hidden = true; btn0.insertBefore(c3, btn0.firstChild);
+      import(new URL(BASE + "kit/shelly-bulb3d.js", location.href).href)
+        .then(m => { if (m.mount(c3, w, btn0, L)) c3.hidden = false; else c3.remove(); })
+        .catch(() => c3.remove());
+    } catch (e) { /* 2D bulb */ }
     let i = 0, timer = null;
     function say(k) {
       const list = messages(); i = (k ?? i) % list.length;
@@ -278,6 +284,7 @@
     }
     function frame(now) {
       requestAnimationFrame(frame);
+      if (w.classList.contains("sk-3d")) return;   // the 3D bulb has taken over
       const css = btn.clientWidth || 64, dpr = Math.min(devicePixelRatio || 1, 3), px = Math.round(css * 1.5 * dpr);
       if (cv.width !== px) { cv.width = cv.height = px; }
       const t = now / 1000, dt = Math.min(0.05, (now - (last || now)) / 1000); last = now;
