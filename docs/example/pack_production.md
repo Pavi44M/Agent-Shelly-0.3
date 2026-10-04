@@ -1,11 +1,11 @@
 # Shelly · Production & manufacturing report
-_Generated 03 Oct 2026 · demo data unless stated_
+_Generated 04 Oct 2026 · demo data unless stated_
 
 ## Actions
 
 | Priority | Area | Action | $/week | Confirm? |
 |---|---|---|---:|---|
-| P2 | Quality | Line 3: root-cause scrap at 6.7% ($16,101 in 4 weeks) <br><sub>above the 5% threshold; start with changeovers and first-off checks</sub> | -4,025 | ⏳ D-4c03dee9 |
+| P2 | Quality | Line 3: root-cause scrap at 6.7% ($16,101 in 4 weeks) <br><sub>above the 5% threshold; start with changeovers and first-off checks</sub> | -4,025 | ⏳ D-08f6a90f |
 
 ## OEE by line (4 weeks, %)  (`production.oee`)
 

@@ -1,11 +1,11 @@
 # Shelly · Warehousing & logistics report
-_Generated 03 Oct 2026 · demo data unless stated_
+_Generated 04 Oct 2026 · demo data unless stated_
 
 ## Actions
 
 | Priority | Area | Action | $/week | Confirm? |
 |---|---|---|---:|---|
-| P2 | Slotting | Re-slot 47 A-class SKUs into the golden zone <br><sub>they're 66% of pick lines but sit in mid/back zones; ~4.6 picker-hours/day saved</sub> | +694 | ⏳ D-8c52427b |
+| P2 | Slotting | Re-slot 47 A-class SKUs into the golden zone <br><sub>they're 66% of pick lines but sit in mid/back zones; ~4.6 picker-hours/day saved</sub> | +694 | ⏳ D-b0a5a294 |
 | P2 | Capacity | Plan overflow storage or a range clean-out: 89% full, 95% in ~12 weeks <br><sub>above ~90% utilisation, putaway and picking slow down sharply</sub> | +0 | auto |
 | P3 | People | Coaching check-in with P7: pick rate 60/h vs team median 95/h <br><sub>look at training, zone allocation and equipment first; this is a conversation, not a verdict</sub> | +0 | auto |
 
