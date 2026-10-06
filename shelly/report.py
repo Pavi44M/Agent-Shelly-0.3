@@ -332,7 +332,7 @@ PCA explains {sum(seg['pca_var']) * 100:.0f}% of variance in 2 components.</p>
 <h2>Data quality score: {quality.score:.0f}/100</h2>
 <div class="card"><ul>{q_html}</ul><p class="note">{sum(quality.rows.values()):,} rows across {len(quality.rows)} tables · {quality.date_range[0]} to {quality.date_range[1]}</p></div>
 
-<footer>Generated {datetime.now():%d %b %Y %H:%M} by Shelly v0.1 · CRISP-DM pipeline · Python (pandas, scikit-learn, statsmodels, XGBoost) ·
+<footer>Generated {datetime.now():%d %b %Y %H:%M} by Shelly v{__import__('shelly').__version__} · CRISP-DM pipeline · Python (pandas, scikit-learn, statsmodels, XGBoost) ·
 The Excel, Power BI, Tableau and SQL outputs are in the same folder.</footer>
 </div></body></html>"""
 

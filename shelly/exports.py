@@ -167,7 +167,7 @@ def export_excel(P, R, sql_results: dict, out_path: Path) -> Path:
 
     # 1. KPI summary
     ws = wb.create_sheet("Summary")
-    ws["A1"], ws["A1"].font = f"Shelly v0.1 · Weekly Sales Digest - week ending {P.asof:%d %b %Y}", Font(bold=True, size=14)
+    ws["A1"], ws["A1"].font = f"Shelly v{__import__('shelly').__version__} · Weekly Sales Digest - week ending {P.asof:%d %b %Y}", Font(bold=True, size=14)
     rows = [("Metric", "This week", "Last week", "Same week LY"),
             ("Sales", k["current"]["sales"], k["previous"]["sales"], k["last_year"]["sales"]),
             ("Units", k["current"]["units"], k["previous"]["units"], k["last_year"]["units"]),

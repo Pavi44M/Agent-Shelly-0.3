@@ -183,7 +183,7 @@ def main():
   <span><a href="https://github.com/Pavi44M/Agent-Shelly-0.3">Source on GitHub</a></span>
   <span><a href="../guide/index.html">How Shelly works (guide)</a></span>
   <span><a href="../guide/security.html">Security</a></span>
-  <span><a href="../digest.html">Classic digest (v0.1)</a></span>
+  <span><a href="../digest.html">Classic weekly digest</a></span>
 </footer>
 </div>
 <script src="launchpad.js"></script>

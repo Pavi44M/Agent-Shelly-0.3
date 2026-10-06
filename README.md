@@ -7,6 +7,10 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v1.7: Shelly switches on
+- **New loading screen for Shelly AI**: a light bulb that switches on as the weekly run finishes. Its filament is the store's last 14 days of sales, the three bands of the base fill as data, models and actions are done, data points drift up into it, and the step list counts up the real figures (rows read, data quality, best model, 7-day forecast, actions). It then flies to Shelly's corner, where the mascot takes over. Quick on repeat visits, Skip any time, calm with reduced motion.
+- **One version everywhere**: every page, report and export now shows the running version (no more old v0.1 / v1.2 labels).
+
 ## What's new in v1.6: Store Floor, Classic look
 - **Classic look (default)**: the live store with one card per category over its shelves (this week's sales and the change on last week, a RECALL badge when one is open), a header with the view ("Sales heat") and a big clock, glass walls, and cards for the checkout (baskets a day), delivery pickup (share of sales) and stockroom. Tap a card to go to the shelf. **Detailed** brings back the sign on every shelf.
 - **Hourly timeline** under the floor: customers expected each hour (today's live POS when connected), a strip for floor cover (red under two people), **Now** and **Play the day**, and tap or drag to jump the store to any time.

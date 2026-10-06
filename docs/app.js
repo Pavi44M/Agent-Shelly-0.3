@@ -1,4 +1,4 @@
-/* Shelly v0.3.2 - conversational retail analytics front-end.
+/* Shelly - conversational retail analytics front-end.
  * Reads window.SHELLY_DATA (written by `python -m shelly.agent`), renders the
  * interactive dashboard, and answers questions by text or voice.
  * No build step, no external JS: plain ES2020 so it runs on GitHub Pages or from disk.
@@ -50,27 +50,79 @@ const K = D.kpis, M = D.meta;
  * 1. BOOT SEQUENCE
  * ===================================================================*/
 async function boot() {
-  const box = $("#boot"), log = $("#bootLog");
+  /* "Switching Shelly on": the bulb's filament is the last 14 days of sales; the base fills as data,
+     models and actions are done; then the bulb flies to Shelly's corner (where the mascot appears).
+     Quick on repeat visits in the same tab; Skip jumps straight in; calm with reduced motion. */
+  const box = $("#boot"); if (!box) return;
   let skip = false;
   $("#skipBoot").onclick = () => { skip = true; };
-  const quick = sessionStorage.getItem("shelly.booted") === "1";
-  const lines = [
-    [`› loading ${D.quality.rows.toLocaleString("en-NZ")} rows · ${D.quality.from} → ${D.quality.to}`, 380],
-    [`› data quality ${D.quality.score}/100 · ${D.quality.issues.length} findings fixed`, 320],
-    [`› backtesting 5 forecast models × ${D.best_models.length} categories`, 520],
-    [`› best: ${D.models[0].model} · WAPE ${D.models[0].wape}%`, 280],
-    [`› ${D.exceptions.length} exceptions · ${D.actions.length} actions ranked`, 320],
-    [`› week ending ${M.asof_label}`, 240],
-  ];
+  let quick = false;
+  try { quick = sessionStorage.getItem("shelly.booted") === "1"; sessionStorage.setItem("shelly.booted", "1"); } catch (e) { /* private mode */ }
+  const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const wait = ms => skip ? Promise.resolve() : sleep(quick ? Math.min(ms, 90) : ms);
   $("#bootVer").textContent = "v" + M.version;
-  try { sessionStorage.setItem("shelly.booted", "1"); } catch (e) { /* ignore */ }
-  for (const [txt, ms] of lines) {
-    if (skip) break;
-    log.insertAdjacentHTML("beforeend", esc(txt) + "\n");
-    await sleep(quick ? 60 : ms);
+  const nz = n => Math.round(n).toLocaleString("en-NZ");
+
+  // filament = this store's last 14 days of daily sales, drawn inside the glass
+  const days = (D.daily || []).slice(-14).map(x => x.v), lo = Math.min(...days), hi = Math.max(...days);
+  $("#bootFil").setAttribute("points", days.map((v, i) => `${(62 + i * 76 / Math.max(1, days.length - 1)).toFixed(1)},${(128 - (v - lo) / ((hi - lo) || 1) * 40).toFixed(1)}`).join(" ") + "");
+  const fp = $("#bootFil").getAttribute("points").split(" ");   // join the wires to the ends of the filament
+  if (fp.length > 1) $("#bootBulb .wire").setAttribute("d", `M88,188 L${fp[0]} M112,188 L${fp[fp.length - 1]}`);
+
+  // rising data points: dots drift up from the bottom of the screen into the base of the bulb
+  const sky = $("#bootSky"), cx2 = sky.getContext("2d"); let anim = !calm && !quick, P = 0;
+  const dots = Array.from({ length: 70 }, () => ({ x: Math.random(), y: 1 + Math.random(), s: .4 + Math.random() * .8, r: 1 + Math.random() * 1.8 }));
+  function drawSky() {
+    if (!anim) return;
+    const dpr = devicePixelRatio > 1 ? 2 : 1, w = sky.clientWidth * dpr, h = sky.clientHeight * dpr;
+    if (sky.width !== w || sky.height !== h) { sky.width = w; sky.height = h; }
+    const r = $("#bootBulb").getBoundingClientRect(), k = w / sky.clientWidth, tx = (r.left + r.width / 2) * k, ty = (r.top + r.height * .86) * k;
+    cx2.clearRect(0, 0, w, h);
+    dots.forEach(d => { d.y -= .0028 * d.s * (1 + P * 2.2); if (d.y < 0) { d.y = 1 + Math.random() * .3; d.x = Math.random(); }
+      const t = Math.min(1, Math.max(0, 1 - d.y)), x = d.x * w + (tx - d.x * w) * t * t, y = d.y * h + (ty - d.y * h) * t * t * .2;
+      cx2.globalAlpha = (1 - t) * .7 + .2; cx2.fillStyle = t > .8 ? "#ffd27a" : "#63b6d8"; cx2.beginPath(); cx2.arc(x, y, d.r * k, 0, 7); cx2.fill(); });
+    requestAnimationFrame(drawSky);
   }
-  log.insertAdjacentHTML("beforeend", '<span class="ok">✓ Shelly is ready.</span>');
-  await sleep(skip || quick ? 80 : 450);
+  requestAnimationFrame(drawSky);
+
+  const fc = (D.forecast || []).reduce((a, x) => a + (x.v || 0), 0), best = D.models[0] || {};
+  const steps = [
+    ["Reading till data", D.quality.rows, n => `${nz(n)} rows`, 1],
+    ["Cleaning & checking", D.quality.score, n => `quality ${Math.round(n)}/100 · ${D.quality.issues.length} fixed`, 1],
+    [`Testing ${D.models.length} models × ${D.best_models.length} categories`, best.wape || 0, n => `${best.model} · ${n.toFixed(1)}% WAPE`, 2],
+    ["Forecasting 7 days", fc, n => `$${nz(n)}`, 2],
+    ["Ranking today's actions", D.actions.length, n => `${Math.round(n)} actions · ${D.exceptions.length} alerts`, 3],
+    ["Week ending", 0, () => M.asof_label, 3],
+  ];
+  const ol = $("#bootSteps");
+  ol.innerHTML = steps.map(([t]) => `<li><span class="d"></span><span>${esc(t)}</span><span class="v"></span></li>`).join("");
+  const lis = [...ol.children];
+  const setP = p => { P = p; box.style.setProperty("--p", p.toFixed(3)); };
+  await wait(500);
+  for (let i = 0; i < steps.length; i++) {
+    const [, target, fmtV, band] = steps[i], li = lis[i], v = li.querySelector(".v");
+    li.classList.add("show", "run");
+    const dur = quick || skip || calm ? 0 : 520, t0 = performance.now();
+    while (!skip) { const k = dur ? Math.min(1, (performance.now() - t0) / dur) : 1; v.textContent = fmtV(target * (1 - Math.pow(1 - k, 3)));
+      setP((i + k) / steps.length * .85); if (k >= 1) break; await sleep(16); }
+    v.textContent = fmtV(target); li.classList.remove("run"); li.classList.add("ok");
+    if (i === steps.length - 1 || steps[i + 1][3] !== band) box.classList.add("b" + band);
+    await wait(150);
+  }
+  lis.forEach(li => li.classList.add("show", "ok"));
+  ["b1", "b2", "b3"].forEach(c => box.classList.add(c));
+  // switch on
+  setP(1); box.classList.add("on");
+  const ready = document.createElement("li"); ready.className = "show ready"; ready.innerHTML = `<span class="d"></span><span>Shelly is on</span><span class="v">ready</span>`; ol.appendChild(ready);
+  $("#bootH").innerHTML = "Shelly is <b>on.</b>";
+  await wait(950);
+  // fly to Shelly's corner, where the mascot takes over
+  if (!calm && !skip) {
+    const bulb = $("#bootBulb"), r = bulb.getBoundingClientRect(), tx = 14 + 32 - (r.left + r.width / 2), ty = innerHeight - 14 - 40 - (r.top + r.height / 2);
+    bulb.style.transform = `translate(${tx}px,${ty}px) scale(${(64 / r.width).toFixed(3)})`; box.classList.add("fly");
+    await wait(650);
+  }
+  anim = false;
   box.classList.add("done");
   setTimeout(() => box.remove(), 700);
 }

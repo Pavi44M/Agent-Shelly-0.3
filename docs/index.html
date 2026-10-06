@@ -19,11 +19,37 @@
 
 <!-- ============ BOOT / LOADING ============ -->
 <div id="boot" aria-live="polite">
+  <canvas id="bootSky" aria-hidden="true"></canvas>
   <div class="boot-in">
-    <span class="tag">Shelly · retail analytics agent · <span id="bootVer">v1.2.0</span></span>
-    <div class="orb" aria-hidden="true"><i></i><i></i><i></i></div>
-    <pre id="bootLog"></pre>
-    <button id="skipBoot" class="ghost">Skip</button>
+    <div class="bulb-stage" aria-hidden="true">
+      <div class="bulb-halo"></div>
+      <svg class="bulb" id="bootBulb" viewBox="0 0 200 270">
+        <defs>
+          <radialGradient id="bgGlass" cx="50%" cy="38%" r="60%"><stop offset="0" stop-color="#fff6d8"/><stop offset=".45" stop-color="#ffd47a"/><stop offset="1" stop-color="#ff9f43" stop-opacity="0"/></radialGradient>
+          <clipPath id="bgClip"><path d="M72,188 C72,160 32,142 32,96 A68,68 0 1 1 168,96 C168,142 128,160 128,188 Z"/></clipPath>
+        </defs>
+        <g class="rays"><line x1="14.0" y1="96.0" x2="-8.0" y2="96.0"/><line x1="19.2" y1="66.6" x2="-1.5" y2="59.1"/><line x1="34.1" y1="40.7" x2="17.3" y2="26.6"/><line x1="57.0" y1="21.5" x2="46.0" y2="2.5"/><line x1="85.1" y1="11.3" x2="81.2" y2="-10.4"/><line x1="114.9" y1="11.3" x2="118.8" y2="-10.4"/><line x1="143.0" y1="21.5" x2="154.0" y2="2.5"/><line x1="165.9" y1="40.7" x2="182.7" y2="26.6"/><line x1="180.8" y1="66.6" x2="201.5" y2="59.1"/><line x1="186.0" y1="96.0" x2="208.0" y2="96.0"/></g>
+        <rect class="glass-fill" x="20" y="20" width="160" height="175" fill="url(#bgGlass)" clip-path="url(#bgClip)"/>
+        <path class="glass" pathLength="1" d="M72,188 C72,160 32,142 32,96 A68,68 0 1 1 168,96 C168,142 128,160 128,188 Z"/>
+        <path class="shine" d="M58,70 A50,50 0 0 1 92,42"/>
+        <path class="wire" d="M88,188 L84,128 M112,188 L116,128"/>
+        <polyline class="filament" id="bootFil" pathLength="1" points=""/>
+        <g class="base">
+          <rect x="70" y="193" width="60" height="13" rx="4"/><rect class="fill f1" x="70" y="193" width="60" height="13" rx="4"/>
+          <rect x="72" y="209" width="56" height="13" rx="4"/><rect class="fill f2" x="72" y="209" width="56" height="13" rx="4"/>
+          <rect x="75" y="225" width="50" height="13" rx="4"/><rect class="fill f3" x="75" y="225" width="50" height="13" rx="4"/>
+          <path class="tip" d="M86,241 L114,241 L106,252 L94,252 Z"/>
+          <text x="140" y="203">DATA</text><text x="140" y="219">MODELS</text><text x="140" y="235">ACTIONS</text>
+        </g>
+      </svg>
+      <span class="bulb-cap">filament · last 14 days of sales</span>
+    </div>
+    <div class="boot-side">
+      <span class="tag">Shelly · retail analytics agent · <span id="bootVer"></span></span>
+      <h2 class="boot-h" id="bootH">Switching <b>Shelly</b> on</h2>
+      <ol class="boot-steps" id="bootSteps"></ol>
+      <button id="skipBoot" class="ghost" type="button">Skip</button>
+    </div>
   </div>
 </div>
 
@@ -240,7 +266,7 @@
 <footer>
   <span>Built by <a href="https://pavi44m.github.io/pavibamunu/">Pavithra Bamunu</a></span>
   <span><a href="https://github.com/Pavi44M/Agent-Shelly-0.3">Source on GitHub</a></span>
-  <span><a href="launchpad/">Launchpad</a></span><span><a href="supply-chain/">Tōtara Medical Supply Chain Command</a></span> <span><a href="guide/index.html">How Shelly works (guide)</a></span><span><a href="guide/security.html">Security</a></span><span><a href="digest.html">Classic digest (v0.1)</a></span>
+  <span><a href="launchpad/">Launchpad</a></span><span><a href="supply-chain/">Tōtara Medical Supply Chain Command</a></span> <span><a href="guide/index.html">How Shelly works (guide)</a></span><span><a href="guide/security.html">Security</a></span><span><a href="digest.html">Classic weekly digest</a></span>
   <span id="genLbl"></span>
 </footer>
 </div>

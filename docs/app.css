@@ -1,4 +1,4 @@
-/* Shelly v0.2 - styled to match pavi44m.github.io/pavibamunu */
+/* Shelly - styled to match pavi44m.github.io/pavibamunu */
 :root{
   color-scheme:dark;
   --void:#070b12; --panel:#0f1622; --panel-2:#141e2c;
@@ -44,16 +44,55 @@ section{padding-block:40px 0;border-top:1px solid var(--etch-2);margin-top:40px}
 svg text{fill:var(--ink-3);font-family:var(--mono);font-size:10px}
 .work{display:grid;gap:10px}
 
-/* ---------- boot ---------- */
-#boot{position:fixed;inset:0;z-index:50;background:var(--void);display:grid;place-items:center;padding:24px;transition:opacity .6s ease,visibility .6s}
+/* ---------- boot: "Switching Shelly on" ----------
+   The bulb lights up as the run finishes: the filament is this store's last 14 days of sales,
+   the three bands of the base fill as data, models and actions are done, then the bulb flies
+   to Shelly's corner. --p (0..1) is the progress. */
+#boot{position:fixed;inset:0;z-index:50;background:radial-gradient(120% 90% at 50% 100%,#0c1522 0%,var(--void) 60%);display:grid;place-items:center;padding:24px;transition:opacity .6s ease,visibility .6s;--p:0;overflow:hidden}
 #boot.done{opacity:0;visibility:hidden}
-.boot-in{width:min(560px,100%)}
-#bootLog{font-family:var(--mono);font-size:12.5px;line-height:1.9;color:var(--ink-2);white-space:pre-wrap;min-height:190px;margin:18px 0 0}
-#bootLog .ok{color:var(--accent)}
-.orb{display:flex;gap:7px;margin-top:22px}
-.orb i{width:9px;height:9px;border-radius:50%;background:var(--accent);opacity:.25;animation:pulse 1.2s infinite ease-in-out}
-.orb i:nth-child(2){animation-delay:.18s}.orb i:nth-child(3){animation-delay:.36s}
+#bootSky{position:absolute;inset:0;width:100%;height:100%}
+.boot-in{position:relative;width:min(760px,100%);display:grid;grid-template-columns:240px 1fr;gap:36px;align-items:center}
+.bulb-stage{position:relative;width:240px;height:320px;display:grid;place-items:center}
+.bulb-halo{position:absolute;left:50%;top:38%;width:340px;height:340px;margin:-170px 0 0 -170px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,210,122,.55),rgba(255,170,70,.18) 40%,transparent 68%);opacity:calc(var(--p) * .75);transform:scale(calc(.6 + var(--p) * .4));transition:opacity .5s,transform .5s;pointer-events:none}
+.bulb{position:relative;width:220px;height:auto;overflow:visible;transition:transform .8s cubic-bezier(.6,-.1,.3,1),opacity .8s}
+.bulb .glass{fill:none;stroke:#9fd3ea;stroke-width:2.2;stroke-dasharray:1;stroke-dashoffset:1;animation:bulb-draw 1s .1s ease-out forwards}
+.bulb .glass-fill{opacity:calc(var(--p) * .55);transition:opacity .5s}
+.bulb .shine{fill:none;stroke:rgba(255,255,255,.45);stroke-width:3;stroke-linecap:round}
+.bulb .wire{fill:none;stroke:#5b6b7c;stroke-width:1.6}
+.bulb .filament{fill:none;stroke:color-mix(in srgb,#ffd27a calc(var(--p) * 100%),#3d5266);stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round;
+  stroke-dasharray:1;stroke-dashoffset:1;animation:bulb-draw 1.4s .5s ease-in-out forwards;filter:drop-shadow(0 0 calc(var(--p) * 7px) #ffb347);transition:stroke .4s,filter .4s}
+.bulb .base rect{fill:#1a2533;stroke:#34465a;stroke-width:1}
+.bulb .base .fill{fill:#63b6d8;stroke:none;transform-box:fill-box;transform-origin:left;transform:scaleX(0);transition:transform .7s cubic-bezier(.3,.7,.2,1)}
+#boot.b1 .bulb .f1,#boot.b2 .bulb .f2,#boot.b3 .bulb .f3{transform:scaleX(1)}
+.bulb .base .tip{fill:#34465a}
+.bulb .base text{font:600 8px var(--mono);letter-spacing:.14em;fill:var(--ink-3);opacity:.85}
+.bulb .rays line{stroke:#ffd27a;stroke-width:3;stroke-linecap:round;opacity:0;transform-origin:100px 96px}
+#boot.on .bulb .rays line{animation:bulb-ray .9s ease-out forwards}
+#boot.on .bulb .glass{stroke:#ffe6a8;filter:drop-shadow(0 0 10px #ffc04d)}
+#boot.on .bulb .glass-fill{opacity:.95}
+#boot.on .bulb .filament{stroke:#fff8e0}
+#boot.fly .bulb{opacity:.15}
+@keyframes bulb-draw{to{stroke-dashoffset:0}}
+@keyframes bulb-ray{0%{opacity:0;transform:scale(.8)}35%{opacity:1}100%{opacity:0;transform:scale(1.25)}}
+.bulb-cap{position:absolute;bottom:0;left:0;right:0;text-align:center;font:10px var(--mono);letter-spacing:.12em;color:var(--ink-3);opacity:.8}
+#boot.fly .bulb-cap{opacity:0}
+.boot-side .tag{display:block}
+.boot-h{margin:10px 0 14px;font-size:28px;font-weight:600;color:var(--ink);letter-spacing:-.01em}.boot-h b{color:#ffd27a;font-weight:700}
+.boot-steps{list-style:none;margin:0 0 18px;padding:0;display:grid;gap:7px;min-height:200px}
+.boot-steps li{display:grid;grid-template-columns:16px 1fr auto;gap:10px;align-items:baseline;font:12.5px var(--mono);color:var(--ink-3);opacity:0;transform:translateY(4px);transition:opacity .3s,transform .3s}
+.boot-steps li.show{opacity:1;transform:none}
+.boot-steps li .d{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--ink-3);align-self:center}
+.boot-steps li.run .d{border-color:var(--accent);border-right-color:transparent;animation:spin .7s linear infinite}
+.boot-steps li.ok{color:var(--ink-2)}.boot-steps li.ok .d{background:var(--accent);border-color:var(--accent)}
+.boot-steps li .v{color:var(--ink);font-weight:600;white-space:nowrap}
+.boot-steps li.ready{color:#ffd27a}.boot-steps li.ready .d{background:#ffd27a;border-color:#ffd27a;box-shadow:0 0 10px #ffb347}
+@keyframes spin{to{transform:rotate(360deg)}}
 @keyframes pulse{0%,100%{opacity:.2;transform:scale(.85)}50%{opacity:1;transform:scale(1)}}
+@media (max-width:640px){.boot-in{grid-template-columns:1fr;gap:6px;justify-items:center}.bulb-stage{width:180px;height:220px}.bulb{width:150px}
+  .bulb-halo{width:240px;height:240px;margin:-120px 0 0 -120px}.boot-side{width:100%}.boot-h{font-size:22px;margin:6px 0 10px}.boot-steps{min-height:0}
+  .boot-steps li{font-size:11.5px;grid-template-columns:14px 1fr auto}.boot-steps li .v{max-width:46vw;overflow:hidden;text-overflow:ellipsis}}
+@media (prefers-reduced-motion:reduce){.bulb .glass,.bulb .filament{animation:none;stroke-dashoffset:0}.bulb,.bulb-halo,.boot-steps li{transition:none}#boot.on .bulb .rays line{animation:none}}
 .ghost{background:none;border:1px solid var(--etch);color:var(--ink-3);border-radius:3px;padding:6px 14px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;cursor:pointer}
 .ghost:hover{border-color:var(--accent);color:var(--ink)}
 
