@@ -86,3 +86,12 @@
 .sk-step{padding:2px 7px;border-radius:99px;border:1px solid #2a3a50;color:#7d8a9c}
 .sk-step.ok{color:#3fb87f;border-color:rgba(63,184,127,.45)}.sk-step.now{color:#ffc466;border-color:#ffc466}.sk-step.no{color:#ff7b72;border-color:#ff7b72}
 .sk-arrow{color:#4a5a70}
+/* placed anywhere (dragged, or guiding you through the page): the bubble opens beside her, away from the nearest edge */
+.sk-mascot.sk-placed{display:block;width:auto;right:auto}
+.sk-mascot.sk-placed .sk-bubble{position:absolute;left:calc(100% + 10px);bottom:22px;margin:0;width:max-content;max-width:min(300px,calc(100vw - 100px));border-radius:14px 14px 14px 4px}
+.sk-mascot.sk-placed.sk-flip .sk-bubble{left:auto;right:calc(100% + 10px);border-radius:14px 14px 4px 14px}
+.sk-mascot.sk-placed.sk-low .sk-bubble{bottom:auto;top:0}
+.sk-mascot.sk-drag .sk-btn{cursor:grabbing}.sk-mascot.sk-drag .sk-bubble{display:none}
+.sk-btn{cursor:grab}
+@media (max-width:560px){.sk-mascot.sk-placed .sk-bubble{max-width:calc(100vw - 92px)}}
+@media (max-width:600px){.sk-mascot.sk-placed .sk-bubble,.sk-mascot.sk-placed.sk-flip .sk-bubble,.sk-mascot.sk-placed.sk-low .sk-bubble{position:fixed;left:12px;right:12px;top:auto;bottom:max(14px,env(safe-area-inset-bottom));width:auto;max-width:none;border-radius:14px}}

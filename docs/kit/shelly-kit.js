@@ -169,12 +169,17 @@
         .then(m => { if (m.mount(c3, w, btn0, L)) c3.hidden = false; else c3.remove(); })
         .catch(() => c3.remove());
     } catch (e) { /* 2D bulb */ }
-    let i = 0, timer = null;
+    let i = 0, timer = null, G = null;
+    try {   // drag her anywhere, or let her guide you section by section (docs/kit/shelly-guide.js)
+      import(new URL(BASE + "kit/shelly-guide.js", location.href).href)
+        .then(m => { G = m.start({ w, btn: btn0, bubble, msg, acts, L, esc, PAGE }); if (!bubble.hidden && msg.innerHTML) say(i); })
+        .catch(() => { G = null; });
+    } catch (e) { /* stays in the corner */ }
     function say(k) {
       const list = messages(); i = (k ?? i) % list.length;
       msg.innerHTML = list[i];
       acts.innerHTML = (open().length ? `<button data-k="tray">Review approvals</button>` : "") +
-        (PAGE !== "brain" ? `<a href="${esc(BASE)}brain/">🧠 Brain</a>` : `<a href="${esc(BASE)}launchpad/">⌘ Launchpad</a>`) + `<button data-k="next">Next tip</button><button data-k="snd" aria-pressed="${L.soundOn()}">${L.soundOn() ? "🔊" : "🔈"} Sound</button>`;
+        (PAGE !== "brain" ? `<a href="${esc(BASE)}brain/">🧠 Brain</a>` : `<a href="${esc(BASE)}launchpad/">⌘ Launchpad</a>`) + `<button data-k="next">Next tip</button>${G ? G.acts() : ""}<button data-k="snd" aria-pressed="${L.soundOn()}">${L.soundOn() ? "🔊" : "🔈"} Sound</button>`;
       w.classList.add("talk"); clearTimeout(timer); timer = setTimeout(() => w.classList.remove("talk"), 1600);
       L.react("talk");
     }
@@ -193,8 +198,8 @@
     const boot = document.getElementById("boot");
     const start = () => { if (!bubble.hidden) say(0); };
     if (boot && !boot.classList.contains("done")) { w.style.visibility = "hidden";
-      const t = setInterval(() => { const b = document.getElementById("boot"); if (!b || b.classList.contains("done")) { clearInterval(t); w.style.visibility = ""; start(); } }, 250);
-    } else start();
+      const t = setInterval(() => { const b = document.getElementById("boot"); if (!b || b.classList.contains("done")) { clearInterval(t); w.style.visibility = ""; start(); if (G) G.begin(); } }, 250);
+    } else { start(); setTimeout(() => { if (G) G.begin(); }, 400); }
   }
 
 

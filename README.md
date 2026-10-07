@@ -7,6 +7,12 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v1.8: Shelly guides you
+- **Drag Shelly anywhere** (mouse or finger, or arrow keys when she has focus). She stays where you put her, on every visit, until you tap **🏠 Home**.
+- **🧭 Guide me**: as you scroll she glides beside the section you're reading and explains it, with this week's numbers where she has them (sales, the top action, the category furthest behind budget, the best forecast model…).
+- **Point at anything**: rest the pointer on a section, chart, tile or report for a moment and she flies over, looks at it and explains it. **💬 Ask Shelly** sends a matching question to the chat; **📖 More** opens the section's own "What is this?".
+- On phones her message sits along the bottom of the screen so it never runs off the edge. Works on every page (store, floor, Brain, Launchpad, Tōtara Medical).
+
 ## What's new in v1.7: Shelly switches on
 - **New loading screen for Shelly AI**: a light bulb that switches on as the weekly run finishes. Its filament is the store's last 14 days of sales, the three bands of the base fill as data, models and actions are done, data points drift up into it, and the step list counts up the real figures (rows read, data quality, best model, 7-day forecast, actions). It then flies to Shelly's corner, where the mascot takes over. Quick on repeat visits, Skip any time, calm with reduced motion.
 - **One version everywhere**: every page, report and export now shows the running version (no more old v0.1 / v1.2 labels).
