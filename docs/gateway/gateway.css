@@ -148,3 +148,24 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13.5px;min-width:820px}
 }
 @media (max-width:620px){.wrap{padding:0 12px}.kpis{grid-template-columns:repeat(2,1fr)}.kpi b{font-size:19px}.hint{display:none}.seg button{padding:6px 8px;font-size:11px}}
 @media (prefers-reduced-motion:reduce){.step.cur i{animation:none}.boot-dc .bw{animation:none;stroke-dashoffset:0}.boot-dc .bt{transition:none}}
+/* v1.2: shifts, cold rooms, team, rosters, night */
+.sh{font:700 10px var(--mono);letter-spacing:.12em;text-transform:uppercase;border-radius:99px;padding:3px 9px;background:#1b2a40;color:#ffc466;align-self:center}
+.sh.night{color:#8fb8ff}.sh.aft{color:#ff9f6e}
+.room{display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-items:center;background:#eef6fd;border:1px solid #d3e6f6;border-radius:9px;padding:7px 9px;margin:4px 0}
+.room.freezer{background:#eef1ff;border-color:#d6dcff}.room b{font:700 15px var(--mono);color:#0d1b2e}.room .warn{color:#b53030}
+.room small{grid-column:1/-1;font-size:10.5px;color:#5b6b80}
+.crew{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}.crew span{font:600 10.5px var(--mono);background:#f2f5f9;border-radius:6px;padding:2px 7px;color:#33445c}
+.brow.brk{opacity:.6}
+.ro-top{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.ro-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:12px;align-items:start}
+table.tbl.ro{min-width:640px}
+.tbl.ro td{padding:8px 10px;font-size:13px}.tbl.ro tr.leave td{opacity:.55}.tbl.ro tr.now td:first-child{box-shadow:inset 3px 0 0 #3fb87f}
+.badge{display:inline-block;font:600 10px var(--mono);border-radius:5px;padding:1px 5px;margin-right:3px;background:#1b2a40;color:var(--ink-2)}
+.badge.fl{color:#ffb020}.badge.fa{color:#ff8f8f}.badge.cd{color:#8fd3ff}
+.ro-side{display:grid;gap:10px}
+.ro-chart{background:var(--panel);border:1px solid var(--etch);border-radius:12px;padding:10px 12px}
+.ro-chart svg{width:100%;height:150px;display:block}
+.ro-chart .lg{display:flex;flex-wrap:wrap;gap:10px;font:10.5px var(--mono);color:var(--ink-3);margin-top:4px}.ro-chart .lg i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.chk{display:flex;gap:8px;font-size:13px;align-items:baseline}.chk b{font:700 12px var(--mono)}.chk.ok b{color:#7fe0ad}.chk.bad b{color:var(--alert)}
+.ro-who{cursor:pointer}.ro-who:hover b{color:var(--accent)}
+@media (max-width:980px){.ro-grid{grid-template-columns:1fr}}

@@ -30,7 +30,7 @@ def test_page_and_data_are_built_and_synthetic():
     assert "script-src 'self'" in page and "synthetic" in page.lower()
     s = (ROOT / "docs/data/gateway.js").read_text()
     d = json.loads(s[s.index("{"):s.rstrip().rstrip(";").rindex("}") + 1])
-    assert d["meta"]["synthetic"] is True and d["meta"]["module_version"] == "1.1"
+    assert d["meta"]["synthetic"] is True and d["meta"]["module_version"] == "1.2"
     for f in ["world.js", "app.js", "boot.js", "gateway.css"]:
         assert (ROOT / "docs/gateway" / f).exists()
 
@@ -44,3 +44,21 @@ def test_brain_knows_gateway_and_its_approvals():
     assert set(reqs) == {d["id"] for d in build()["decisions"]}
     chain = approval_chain(reqs["gw-new-client"]["dept"], reqs["gw-new-client"]["area"], 0)
     assert chain[-1]["role"].startswith("Pavi")                    # new business always reaches Pavi
+
+
+def test_rosters_shifts_and_cold_rooms():
+    d = build(asof=date(2026, 10, 7))
+    assert [s["id"] for s in d["shifts"]] == ["day", "aft", "night"]
+    for site in d["sites"]:
+        R = d["rosters"][site["id"]]
+        assert set(R["by_shift"]) == {"day", "aft", "night"} and all(n > 5 for n in R["by_shift"].values())
+        for sh in ("day", "aft", "night"):                         # every shift has a supervisor, a first aider, gate and yard
+            on = [p for p in R["people"] if p["shift"] == sh]
+            assert any(p["role"] == "Shift Supervisor" for p in on) and any(p["first_aid"] for p in on)
+            assert any(p["role"] == "Gatehouse Officer" for p in on) and any(p["role"] == "Yard Marshal" for p in on)
+        ops = [p for p in R["people"] if p["role"] == "Forklift Operator"]
+        assert all(p["forklift_licence"] for p in ops)
+        assert site["cold_rooms"] and all(c["low"] <= c["temp"] <= c["high"] for c in site["cold_rooms"])
+        assert len(d["bookings"][site["id"]]) == 24
+    gaps = [c for R in d["rosters"].values() for c in R["checks"] if not c["ok"]]
+    assert gaps and any(f["area"] == "Roster" for f in d["flags"])     # the leave gap is flagged, not hidden

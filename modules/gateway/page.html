@@ -33,7 +33,8 @@
   <details class="about"><summary>What is this?</summary><p>One Gateway site live in 3D. Trucks check in at the gate, reverse onto a free dock and are unloaded or loaded by forklifts; pickers build orders, the yard marshal guides trucks in, the supervisor walks the dock line. Tap any truck, forklift, person or dock for what it is doing. Zoom in and the roof lifts so you can see inside.</p></details>
   <div class="gw-top">
     <div class="seg" role="tablist" aria-label="Site" id="sites"></div>
-    <div class="clock"><b id="clk">--:--</b><span id="clkDay"></span></div>
+    <div class="seg" role="group" aria-label="Jump to a shift" id="jump"></div>
+    <div class="clock"><span class="sh" id="shChip"></span><b id="clk">--:--</b><span id="clkDay"></span></div>
     <button type="button" class="ctl" id="play" aria-label="Pause">❚❚</button>
     <div class="seg" role="group" aria-label="Speed" id="speed"></div>
   </div>
@@ -42,12 +43,22 @@
     <div class="gw-ctl" aria-label="View controls"><button type="button" id="zin" aria-label="Zoom in">+</button><button type="button" id="zout" aria-label="Zoom out">−</button><button type="button" id="zhome" aria-label="Whole site">⌂</button><button type="button" id="ztop" aria-label="Top or side view">⊤</button></div>
     <aside class="card panel" id="panel" aria-live="polite"></aside>
     <div class="card track" id="track"></div>
-    <div class="card board" id="board"><div class="bt" role="tablist"><button type="button" data-b="docks" aria-selected="true">Docks</button><button type="button" data-b="lifts" aria-selected="false">Forklifts</button><button type="button" data-b="trucks" aria-selected="false">Trucks</button></div><div id="boardList"></div></div>
+    <div class="card board" id="board"><div class="bt" role="tablist"><button type="button" data-b="docks" aria-selected="true">Docks</button><button type="button" data-b="lifts" aria-selected="false">Forklifts</button><button type="button" data-b="trucks" aria-selected="false">Trucks</button><button type="button" data-b="team" aria-selected="false">Team</button></div><div id="boardList"></div></div>
     <p class="hint" id="hint">Drag to turn · scroll to zoom · tap a truck, forklift, person or dock</p>
     <div class="nogl" id="nogl" hidden>This device can't draw the 3D site. Everything below still works.</div>
   </div>
   <div class="stage-cards" id="stageCards"></div>
   <div class="feed card" id="feed" aria-label="Live feed"></div>
+</section>
+
+<section id="s-roster">
+  <div class="sec-h"><h2>Rosters &amp; shifts</h2><span class="note" id="roNote"></span></div>
+  <details class="about"><summary>What is this?</summary><p>Gateway runs 24/7 in three shifts: day 06:00–14:30, afternoon 14:00–22:30 and night 22:00–06:30, with a 30-minute handover. Each site's crew comes from this roster: who works which shift, their station, staggered breaks (so docks are never left empty), and licences (forklift, first aid, cold-room trained). The 3D site follows it: people clock in from the car park, take their breaks in the staff room and go home when their shift ends, and only licensed drivers run forklifts. Night hours are paid at 1.25×.</p></details>
+  <div class="ro-top"><div class="seg" role="tablist" aria-label="Roster site" id="roSite"></div><div class="seg" role="tablist" aria-label="Shift" id="roShift"></div></div>
+  <div class="ro-grid">
+    <div class="tbl-wrap"><table class="tbl ro" id="roTbl"></table></div>
+    <div class="ro-side"><div class="ro-chart" id="roDay"></div><div class="list" id="roChecks"></div></div>
+  </div>
 </section>
 
 <section id="s-clients">

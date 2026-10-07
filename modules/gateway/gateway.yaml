@@ -5,7 +5,7 @@
 company:
   name: Gateway Warehousing & Transport
   short: Gateway
-  module_version: "1.1"
+  module_version: "1.2"
   city: Auckland, New Zealand
   tagline: Warehousing and transport for neighbourhood stores, medical suppliers and food service, run by Shelly.
   promise: [Same-day store replenishment, GDP-compliant cold chain for medicines, Temperature-tracked food-service delivery, One live view for every client]
@@ -23,6 +23,10 @@ sites:
     rack_rows: 7
     forklifts: 6
     staff_on_shift: 34
+    crew_scale: 1.0
+    cold_rooms:
+      - {id: CH-1, name: Chiller, kind: chiller, set: 3.0, low: 2, high: 5, rows: [5], clients: [NBS, HFF]}
+      - {id: FZ-1, name: Freezer, kind: freezer, set: -20.0, low: -25, high: -18, rows: [6], clients: [HFF]}
   - id: WH-02
     name: Gateway Cold Chain
     kind: Temperature-controlled · GDP pharmaceutical
@@ -34,6 +38,10 @@ sites:
     rack_rows: 5
     forklifts: 4
     staff_on_shift: 21
+    crew_scale: 0.75
+    cold_rooms:
+      - {id: PH-1, name: Pharma cold room, kind: chiller, set: 5.0, low: 2, high: 8, rows: [0, 1, 2], clients: [TOT, PDX]}
+      - {id: FZ-2, name: Freezer, kind: freezer, set: -20.0, low: -25, high: -15, rows: [3], clients: [TOT]}
   - id: WH-03
     name: Gateway Cross-Dock
     kind: Flow-through cross-dock (inbound to outbound within 24 h)
@@ -45,6 +53,28 @@ sites:
     rack_rows: 3
     forklifts: 5
     staff_on_shift: 26
+    crew_scale: 0.85
+    cold_rooms:
+      - {id: CL-3, name: Chilled staging, kind: chiller, set: 4.0, low: 2, high: 6, rows: [2], clients: [SPC]}
+
+# Shifts: Gateway runs 24/7. Breaks are hours after the shift starts and are staggered so docks stay covered.
+shifts:
+  - {id: day, name: Day, start: "06:00", hours: 8.5, colour: "#ffc466"}
+  - {id: aft, name: Afternoon, start: "14:00", hours: 8.5, colour: "#ff9f6e"}
+  - {id: night, name: Night, start: "22:00", hours: 8.5, colour: "#8fb8ff"}
+breaks:
+  - {after_h: 2, minutes: 15, name: Tea break}
+  - {after_h: 4.5, minutes: 30, name: Meal break}
+  - {after_h: 6.5, minutes: 15, name: Tea break}
+break_stagger_minutes: 15
+pay: {base_hour: 29.5, night_rate: 1.25, weekend_rate: 1.5}
+# Crew per shift at a full-size site (scaled by each site's crew_scale; leaders and safety roles never drop below one)
+crew:
+  day:   {Shift Supervisor: 1, Team Leader: 2, Forklift Operator: 5, Order Picker: 7, Receiver / Checker: 2, Loader: 3, Inventory Controller: 1, Yard Marshal: 1, Gatehouse Officer: 1, Cleaner / Hygiene: 1}
+  aft:   {Shift Supervisor: 1, Team Leader: 2, Forklift Operator: 4, Order Picker: 6, Receiver / Checker: 1, Loader: 3, Inventory Controller: 1, Yard Marshal: 1, Gatehouse Officer: 1, Cleaner / Hygiene: 1}
+  night: {Shift Supervisor: 1, Team Leader: 1, Forklift Operator: 3, Order Picker: 4, Receiver / Checker: 1, Loader: 2, Yard Marshal: 1, Gatehouse Officer: 1, Cleaner / Hygiene: 1}
+# Truck bookings by hour of the day (share of a site's daily trucks): early store runs, a lunch peak, night containers
+bookings: {"0": 2, "1": 2, "2": 3, "3": 3, "4": 5, "5": 8, "6": 9, "7": 8, "8": 7, "9": 6, "10": 6, "11": 6, "12": 5, "13": 5, "14": 6, "15": 6, "16": 5, "17": 4, "18": 3, "19": 3, "20": 2, "21": 2, "22": 3, "23": 2}
 
 # Clients (all fictional). share = share of pallets stored; site = where their stock mainly sits.
 clients:

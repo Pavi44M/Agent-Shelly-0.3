@@ -7,6 +7,13 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v1.10: Gateway v1.2, cold storage, 24/7 shifts and night
+- **Cold storage** at every Gateway site: chillers (2–8°C pharma, 2–5°C food), freezers (−20°C) and a chilled cross-dock lane, built as insulated rooms around their racks with strip-curtain doors, cold mist when a forklift goes through, rooftop units and live temperatures (alarm colours outside range). Reefer trucks are put away into the right cold room.
+- **Day, afternoon and night shifts** from a real roster: names, stations, staggered breaks, forklift / first-aid / cold-room licences. In 3D the crew clocks in from the car park, takes breaks in the staff room, hands over and goes home; only licensed operators drive forklifts, so the night shift runs fewer. Roster checks (supervisor, first aider, licensed drivers, gate and yard, cold-trained) flag a real gap.
+- **Rosters & shifts** section: each site × shift, wages per day (night ×1.25), and a 24-hour chart of crew on site against trucks booked.
+- **Day and night**: the sky, sun and shadows follow the clock; yard light towers, office windows, light panels and truck headlights come on at night. Jump to Day / Afternoon / Night / Now.
+- **Bolder and smoother**: ink outlines, ribbed walls, painted bay numbers and hazard edges; trucks follow curved paths and their wheels turn; eased zoom and drag; busier yard with road traffic, queues at the gate and replenishment moves in quiet times.
+
 ## What's new in v1.9: Gateway Warehousing & Transport (new business, module v1.1)
 - **[Gateway](https://pavi44m.github.io/Agent-Shelly-0.3/gateway/)**: Shelly's third business, a third-party logistics company that stores, picks and delivers for the Neighbourhood store, Tōtara Medical, other medical suppliers and food-service operators (all fictional, synthetic data).
 - **Three Auckland sites live in 3D** (Wiri DC, Cold Chain, Cross-Dock): trucks book in at the gatehouse, reverse onto a free dock and are unloaded or loaded by forklifts; pickers build orders, receivers check temperatures and ASNs, the yard marshal guides trucks in, the supervisor walks the dock line, drivers wait in the drivers' room. Zoom in and the roof lifts to show the racks. Tap any truck, forklift, person or dock.

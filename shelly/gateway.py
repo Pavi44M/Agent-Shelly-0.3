@@ -32,7 +32,79 @@ PLACES = {  # fictional delivery points
     "HFF": ["Viaduct Seafood Bar", "Kingsland Café", "Newmarket Bistro", "Takapuna Hotel Kitchen"],
     "SPC": ["Showgrounds Event Kitchen", "Waterfront Conference Centre"],
 }
+LAST = ["Walker", "Ngata", "Tuilagi", "Singh", "Chen", "Kumar", "Brown", "Patel", "Smith", "Fa'alogo", "Lee", "Wilson", "Taufa", "Park",
+        "Henare", "Nguyen", "Williams", "Tipene", "Reddy", "Martin", "Fifita", "Kaur", "Thompson", "Pōtae", "Wang", "Davies"]
 STAGES = ["Order confirmed", "Picked", "Loaded", "In transit", "Delivered"]
+LEADS = {"Shift Supervisor", "Yard Marshal", "Gatehouse Officer", "Cleaner / Hygiene"}
+
+
+def _hm(s: str) -> float:
+    h, m = s.split(":")
+    return int(h) + int(m) / 60
+
+
+def _fmt(h: float) -> str:
+    h %= 24
+    return f"{int(h):02d}:{int(round(h % 1 * 60)):02d}"
+
+
+def rosters(cfg: dict, rnd: random.Random) -> dict:
+    """Shift crews for every site: name, role, start/end, staggered breaks, station, licences, plus coverage checks."""
+    out = {}
+    for site in cfg["sites"]:
+        used, people, n = set(), [], 0
+        cold = bool(site.get("cold_rooms"))
+        for sh in cfg["shifts"]:
+            start, hrs = _hm(sh["start"]), sh["hours"]
+            crew = dict(cfg["crew"][sh["id"]])
+            k_in_shift = 0
+            if cold and site["id"] == "WH-02":
+                crew["Quality Officer (GDP)"] = 1
+            for role, k in crew.items():
+                count = max(1, round(k * site.get("crew_scale", 1))) if role in LEADS or "Leader" in role else round(k * site.get("crew_scale", 1))
+                if role == "Forklift Operator":
+                    count = min(count, site["forklifts"])
+                for j in range(count):
+                    while True:
+                        nm = f"{rnd.choice(FIRST)} {rnd.choice(LAST)}"
+                        if nm not in used:
+                            used.add(nm)
+                            break
+                    off = (k_in_shift % 4) * cfg.get("break_stagger_minutes", 15) / 60   # four break groups across the shift, so docks stay covered
+                    k_in_shift += 1
+                    brk = [{"name": b["name"], "at": _fmt(start + b["after_h"] + off), "minutes": b["minutes"]} for b in cfg["breaks"]]
+                    st = {"Forklift Operator": f"FL-{site['id'][-2:]}{j % site['forklifts'] + 1:02d}", "Order Picker": f"Aisles {1 + j % 4}–{2 + j % 4}",
+                          "Loader": f"Docks {1 + (j * 3) % site['docks']}–{min(site['docks'], 3 + (j * 3) % site['docks'])}", "Receiver / Checker": "Inbound docks",
+                          "Yard Marshal": "Yard", "Gatehouse Officer": "Gate", "Shift Supervisor": "Whole site", "Team Leader": ["Receiving", "Picking", "Despatch"][j % 3],
+                          "Inventory Controller": "Cycle counts", "Cleaner / Hygiene": "Chilled zones + amenities", "Quality Officer (GDP)": "Cold rooms"}.get(role, "")
+                    if cold and role in ("Order Picker", "Forklift Operator") and j == 0:
+                        st += " · cold room"
+                    n += 1
+                    people.append({"id": f"{site['id']}-{n:03d}", "name": nm, "role": role, "shift": sh["id"], "start": sh["start"], "end": _fmt(start + hrs),
+                                   "hours": hrs, "breaks": brk, "station": st, "forklift_licence": role == "Forklift Operator" or (role == "Team Leader" and j == 0),
+                                   "first_aid": role in ("Shift Supervisor", "Team Leader") and j == 0, "cold_trained": cold and (role in ("Order Picker", "Forklift Operator", "Quality Officer (GDP)", "Receiver / Checker") or "Leader" in role)})
+        if site["id"] == "WH-02":   # someone is always away: one night forklift driver on annual leave this week
+            lv = next((p for p in people if p["shift"] == "night" and p["role"] == "Forklift Operator"), None)
+            if lv:
+                lv["leave"] = "Annual leave"
+        checks = []
+        for sh in cfg["shifts"]:
+            on = [p for p in people if p["shift"] == sh["id"] and not p.get("leave")]
+            def ok(text, good):
+                checks.append({"shift": sh["id"], "ok": bool(good), "text": text})
+            ok(f"{sh['name']}: a shift supervisor on site", any(p["role"] == "Shift Supervisor" for p in on))
+            ok(f"{sh['name']}: first aider on every shift", any(p["first_aid"] for p in on))
+            lic = sum(p["forklift_licence"] for p in on)
+            ok(f"{sh['name']}: {lic} licensed forklift drivers for {site['forklifts']} forklifts", lic >= min(3, site["forklifts"]))
+            ok(f"{sh['name']}: yard marshal and gatehouse covered", any(p["role"] == "Yard Marshal" for p in on) and any(p["role"] == "Gatehouse Officer" for p in on))
+            if cold:
+                ok(f"{sh['name']}: {sum(p['cold_trained'] for p in on)} people trained for the cold rooms", sum(p["cold_trained"] for p in on) >= 3)
+        hrs = sum(p["hours"] for p in people)
+        night = sum(p["hours"] for p in people if p["shift"] == "night")
+        cost = round((hrs - night) * cfg["pay"]["base_hour"] + night * cfg["pay"]["base_hour"] * cfg["pay"]["night_rate"])
+        out[site["id"]] = {"people": people, "checks": checks, "hours": hrs, "cost_day": cost,
+                           "by_shift": {sh["id"]: sum(1 for p in people if p["shift"] == sh["id"]) for sh in cfg["shifts"]}}
+    return out
 
 
 def load(path: Path | str = CFG) -> dict:
@@ -143,11 +215,22 @@ def build(cfg: dict | None = None, asof: date | None = None) -> dict:
         {"id": "gw-new-client", "area": "New business", "amount": 0, "owner": "General Manager", "title": "Onboard Tūī Pharmacy Group: 3-month trial, 120 pallets, 2–8°C", "why": "Fits spare Cold Chain capacity; margin about 16% at the proposed rate."},
         {"id": "gw-batteries", "area": "Capex", "amount": 9800, "owner": "Fleet & Maintenance Manager", "title": "Replace lithium batteries on two Wiri reach trucks", "why": "Run time down to 4.5 h; a mid-shift swap costs about 40 minutes a day."},
     ]
+    R = rosters(cfg, random.Random(int(wk.strftime("%Y%m%d")) + 7))
+    for s in sites.values():
+        s["cold_rooms"] = [dict(c, temp=round(c["set"] + rnd.uniform(-.6, .6), 1), fill_pct=round(rnd.uniform(62, 91), 1), door_opens_h=rnd.randint(9, 26))
+                           for c in s.get("cold_rooms", [])]
+        s["crew"] = R[s["id"]]["by_shift"]
+    gaps = [(sid, c) for sid, r in R.items() for c in r["checks"] if not c["ok"]]
+    for sid, c in gaps[:2]:
+        flags.append({"sev": "med", "area": "Roster", "text": f"{sites[sid]['name']} · {c['text']}: not met. Move someone from another shift or book a temp.", "site": sid})
+    bk = cfg["bookings"]
+    bookings = {sid: [round(s["inbound_today"] + s["outbound_today"]) * bk[str(h)] / sum(bk.values()) for h in range(24)] for sid, s in sites.items()}
     return {"meta": {"name": cfg["company"]["name"], "short": cfg["company"]["short"], "module_version": cfg["company"]["module_version"],
                      "asof": asof.isoformat(), "week_start": wk.isoformat(), "synthetic": True},
             "company": cfg["company"], "kpis": kpis, "sites": list(sites.values()), "clients": clients, "fleet_types": cfg["fleet"],
             "trucks": trucks, "forklifts": forklifts, "shipments": ships, "stages": STAGES, "management": cfg["management"],
-            "roles": cfg["roles"], "roadmap": cfg["roadmap"], "flags": flags, "decisions": decisions}
+            "roles": cfg["roles"], "roadmap": cfg["roadmap"], "flags": flags, "decisions": decisions,
+            "shifts": cfg["shifts"], "breaks": cfg["breaks"], "pay": cfg["pay"], "rosters": R, "bookings": bookings}
 
 
 def write_js(data: dict, path: Path | str) -> Path:
