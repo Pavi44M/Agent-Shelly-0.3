@@ -3,9 +3,16 @@
 ![tests](https://github.com/Pavi44M/Agent-Shelly-0.3/actions/workflows/tests.yml/badge.svg)
 ![Python](https://img.shields.io/badge/python-3.11-blue) ![License: MIT](https://img.shields.io/badge/license-MIT-green)
 
-**[🚀 Launchpad](https://pavi44m.github.io/Agent-Shelly-0.3/launchpad/)** · **[▦ Store Floor (3D)](https://pavi44m.github.io/Agent-Shelly-0.3/store/)** · **[▶ Talk to Shelly (live demo)](https://pavi44m.github.io/Agent-Shelly-0.3/)** · [Tōtara Medical Supply Chain Command](https://pavi44m.github.io/Agent-Shelly-0.3/supply-chain/) · [Example Excel output](docs/example/) · [Portfolio](https://pavi44m.github.io/pavibamunu)
+**[🚀 Launchpad](https://pavi44m.github.io/Agent-Shelly-0.3/launchpad/)** · **[▦ Store Floor (3D)](https://pavi44m.github.io/Agent-Shelly-0.3/store/)** · **[▶ Talk to Shelly (live demo)](https://pavi44m.github.io/Agent-Shelly-0.3/)** · [Tōtara Medical Supply Chain Command](https://pavi44m.github.io/Agent-Shelly-0.3/supply-chain/) · **[⛟ Gateway Warehousing & Transport](https://pavi44m.github.io/Agent-Shelly-0.3/gateway/)** · [Example Excel output](docs/example/) · [Portfolio](https://pavi44m.github.io/pavibamunu)
 
 ![Shelly v0.2](docs/screenshot.png)
+
+## What's new in v1.9: Gateway Warehousing & Transport (new business, module v1.1)
+- **[Gateway](https://pavi44m.github.io/Agent-Shelly-0.3/gateway/)**: Shelly's third business, a third-party logistics company that stores, picks and delivers for the Neighbourhood store, Tōtara Medical, other medical suppliers and food-service operators (all fictional, synthetic data).
+- **Three Auckland sites live in 3D** (Wiri DC, Cold Chain, Cross-Dock): trucks book in at the gatehouse, reverse onto a free dock and are unloaded or loaded by forklifts; pickers build orders, receivers check temperatures and ASNs, the yard marshal guides trucks in, the supervisor walks the dock line, drivers wait in the drivers' room. Zoom in and the roof lifts to show the racks. Tap any truck, forklift, person or dock.
+- **Control-room cards**: site status, stock vs capacity, clients stored, shipment tracking (order → picked → loaded → in transit → delivered), the docks / forklifts / trucks board and a live feed.
+- **The business behind it**: client contracts with OTIF against SLA, what Shelly flagged (service, cold chain, capacity, docks, fleet), decisions that join the approvals tray, Gateway's own management team (General Manager reporting to Pavi), 17 floor and road roles with headcounts ("Show me" finds one in 3D), fleet and the roadmap to v2.0.
+- **Brain**: five Gateway agents (warehouse operations, transport planning, cold chain & quality, client accounts, shifts) in the company-wide departments; the business switch now has three businesses. `python -m shelly gateway` prints the summary.
 
 ## What's new in v1.8: Shelly guides you
 - **Drag Shelly anywhere** (mouse or finger, or arrow keys when she has focus). She stays where you put her, on every visit, until you tap **🏠 Home**.

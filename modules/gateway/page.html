@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en-NZ">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Gateway Warehousing & Transport · Shelly</title>
+<meta name="description" content="Gateway Warehousing & Transport, Shelly's third business: three Auckland sites, docks, trucks, forklifts and every role live in 3D, with client service, the management team and what Shelly flagged. Synthetic demo data.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="gateway.css">
+<link rel="stylesheet" href="../switch.css">
+<link rel="stylesheet" href="../kit/shelly-kit.css">
+</head>
+<body>
+<div id="boot" aria-live="polite"><div class="boot-in">
+  <span class="tag">Shelly · Gateway Warehousing &amp; Transport</span>
+  <svg class="boot-dc" id="bootDc" viewBox="0 0 420 170" aria-hidden="true"></svg>
+  <h2 class="boot-h" id="bootH">Opening <b>the docks</b></h2>
+  <pre id="bootLog"></pre><button id="skipBoot" type="button">Skip</button></div></div>
+{{SWITCH}}
+<div class="wrap">
+<header>
+  <span class="tag">Shelly · Gateway Warehousing &amp; Transport · module <span id="modv"></span> · synthetic demo</span>
+  <h1>Every pallet, truck and person, <b>live.</b></h1>
+  <p class="sub" id="sub"></p>
+  <div class="chips" id="clientChips"></div>
+</header>
+
+<section class="kpis" id="kpis" aria-label="This site right now"></section>
+
+<section class="floor" id="s-floor" aria-label="Live 3D site">
+  <details class="about"><summary>What is this?</summary><p>One Gateway site live in 3D. Trucks check in at the gate, reverse onto a free dock and are unloaded or loaded by forklifts; pickers build orders, the yard marshal guides trucks in, the supervisor walks the dock line. Tap any truck, forklift, person or dock for what it is doing. Zoom in and the roof lifts so you can see inside.</p></details>
+  <div class="gw-top">
+    <div class="seg" role="tablist" aria-label="Site" id="sites"></div>
+    <div class="clock"><b id="clk">--:--</b><span id="clkDay"></span></div>
+    <button type="button" class="ctl" id="play" aria-label="Pause">❚❚</button>
+    <div class="seg" role="group" aria-label="Speed" id="speed"></div>
+  </div>
+  <div class="stage" id="stage">
+    <canvas id="c" tabindex="0" aria-label="3D view of the site. Drag to turn, scroll or pinch to zoom, right-drag or two fingers to pan. Tap a truck, forklift, person or dock."></canvas>
+    <div class="gw-ctl" aria-label="View controls"><button type="button" id="zin" aria-label="Zoom in">+</button><button type="button" id="zout" aria-label="Zoom out">−</button><button type="button" id="zhome" aria-label="Whole site">⌂</button><button type="button" id="ztop" aria-label="Top or side view">⊤</button></div>
+    <aside class="card panel" id="panel" aria-live="polite"></aside>
+    <div class="card track" id="track"></div>
+    <div class="card board" id="board"><div class="bt" role="tablist"><button type="button" data-b="docks" aria-selected="true">Docks</button><button type="button" data-b="lifts" aria-selected="false">Forklifts</button><button type="button" data-b="trucks" aria-selected="false">Trucks</button></div><div id="boardList"></div></div>
+    <p class="hint" id="hint">Drag to turn · scroll to zoom · tap a truck, forklift, person or dock</p>
+    <div class="nogl" id="nogl" hidden>This device can't draw the 3D site. Everything below still works.</div>
+  </div>
+  <div class="stage-cards" id="stageCards"></div>
+  <div class="feed card" id="feed" aria-label="Live feed"></div>
+</section>
+
+<section id="s-clients">
+  <div class="sec-h"><h2>Clients &amp; service</h2><span class="note" id="cliNote"></span></div>
+  <details class="about"><summary>What is this?</summary><p>Every client contract: what Gateway does for them, where their stock sits, how many pallets, deliveries and on-time-in-full (OTIF) over the last 4 weeks against the target in their contract, and what they pay.</p></details>
+  <div class="tbl-wrap"><table class="tbl" id="cliTbl"></table></div>
+</section>
+
+<section id="s-flags">
+  <div class="sec-h"><h2>What Shelly flagged · decisions waiting</h2></div>
+  <details class="about"><summary>What is this?</summary><p>Shelly reads the week's service, temperatures, capacity, docks and fleet, and lists what needs a person. Spending, new clients and capex wait for approval in the Shelly approvals tray (Transport or Operations Manager first, then Finance, then Pavi above $10k or for new business).</p></details>
+  <div class="grid2"><div id="flags" class="list"></div><div id="decs" class="list"></div></div>
+</section>
+
+<section id="s-team">
+  <div class="sec-h"><h2>Who runs Gateway</h2><span class="note">Its own management team, reporting to Pavi</span></div>
+  <details class="about"><summary>What is this?</summary><p>Gateway has its own management team. The General Manager reports to Pavi (Shelly Group). Each manager owns part of the operation and is measured on the KPIs shown.</p></details>
+  <div class="org" id="org"></div>
+</section>
+
+<section id="s-roles">
+  <div class="sec-h"><h2>Every role on the floor and on the road</h2><span class="note" id="roleNote"></span></div>
+  <details class="about"><summary>What is this?</summary><p>The jobs that make a 3PL work, how many people do each across the three sites, and what they do. Tap “Show me” to find one of them working in the 3D site.</p></details>
+  <div class="roles" id="roles"></div>
+</section>
+
+<section id="s-fleet">
+  <div class="sec-h"><h2>Fleet</h2></div>
+  <div class="fleet" id="fleet"></div>
+</section>
+
+<section id="s-next">
+  <div class="sec-h"><h2>Where Gateway goes next</h2><span class="note">module v1.1 today</span></div>
+  <div class="road" id="road"></div>
+</section>
+
+<section id="s-how">
+  <div class="sec-h"><h2>How it is built</h2></div>
+  <div class="how">
+    <p><b>Business model.</b> <code>modules/gateway/gateway.yaml</code>: sites, docks and racks, clients and contracts, fleet, the management team and every floor role. Change it and the page and 3D sites follow.</p>
+    <p><b>Numbers.</b> <code>shelly/gateway.py</code> builds this week's service, stock, fleet, shipments, flags and decisions (synthetic, seeded by week) into <code>docs/data/gateway.js</code>. <code>python -m shelly gateway</code> prints the same summary.</p>
+    <p><b>Live site.</b> <code>docs/gateway/world.js</code> (three.js): trucks book in, reverse onto docks and leave; forklifts unload to racks or pick for outbound; people work by role. Nothing here is real company data.</p>
+    <p><b>Brain.</b> Gateway's agents sit in the Shelly Brain (warehouse, transport, cold chain, fleet, client accounts) and its approvals join the one approvals tray.</p>
+  </div>
+</section>
+<p class="foot" id="foot"></p>
+</div>
+<script src="../data/gateway.js"></script>
+<script src="../data/approvals.js"></script>
+<script src="boot.js"></script>
+<script type="module" src="app.js"></script>
+<script src="../kit/shelly-kit.js" data-page="gateway" data-base="../"></script>
+</body>
+</html>

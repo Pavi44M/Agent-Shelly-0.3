@@ -117,6 +117,16 @@ def main():
              "inbound holds, supplier OTIF and SARIMA-X forecasts.",
              f"{tot['ach'] * 100:.1f}%", f"network sales vs plan · 12 wks · {sck['at_risk_skus']}/{sck['skus']} SKUs need action",
              "New", "new", ring(net_ratio), "wide")
+    gw_p = ROOT / "docs/data/gateway.js"
+    if gw_p.exists():
+        gw = js_data(gw_p, "SHELLY_GATEWAY")
+        gk = gw["kpis"]
+        trucks = "".join(f'<i style="background:{c["colour"]}" title="{html.escape(c["name"])}"></i>' for c in gw["clients"])
+        card("../gateway/", "Warehousing · transport · separate business", "Gateway Warehousing & Transport",
+             "Three Auckland sites live in 3D: trucks on the docks, forklifts, pickers, the yard and the gate, for the store, Tōtara Medical, "
+             "other medical suppliers and food service. Its own management team and every floor role.",
+             f"{gk['otif']}%", f"on-time-in-full · {gk['trucks']} trucks · {gk['stock']:,} pallets stored · {len(gw['clients'])} clients",
+             "New · v" + gw["meta"]["module_version"], "new", f'<span class="shelves" aria-hidden="true">{trucks}</span>', "wide")
     card("../index.html#s-packs", "Electronics · wholesale · warehousing · production", "Industry packs",
          "The same engine applied beyond retail: sell-through and markdowns, cost-to-serve and OTIF, ABC-XYZ slotting, OEE and scrap.",
          str(len(pack_titles) or 4), "industry packs on demo data", "Demo data")

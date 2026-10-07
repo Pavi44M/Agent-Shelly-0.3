@@ -86,6 +86,9 @@ BUSINESSES = [
     {"id": "totara", "name": "Tōtara Medical", "kind": "Medical imports · distribution", "colour": "#b69cf2", "icon": "✚",
      "page": "../supply-chain/", "tagline": "An importer of medicines, consumables and equipment: stock-outs, expiry, inbound holds and suppliers under one command.",
      "data": "Sales by client and product, purchase orders, batches with expiry, supplier lead times, Medsafe / WAND status (synthetic demo)"},
+    {"id": "gateway", "name": "Gateway Warehousing & Transport", "kind": "3PL · warehousing and transport", "colour": "#2f6fd6", "icon": "⛟",
+     "page": "../gateway/", "tagline": "Stores, picks and delivers for the store, Tōtara Medical, other medical suppliers and food service from three Auckland sites; its own management team.",
+     "data": "Client contracts, site stock, dock bookings, fleet and forklift status, temperatures, shipments (synthetic demo)"},
     {"id": "group", "name": "Shelly Group", "kind": "Advisory · shared services", "colour": "#7fd1a8", "icon": "◎",
      "page": "../launchpad/", "tagline": "Shared services every business uses (reporting, market intelligence) and advisory packs for other industries.",
      "data": "Outputs of the other businesses, public news sources, industry-pack demo data"},
@@ -435,6 +438,36 @@ AGENTS += [
       work=[["next", "Weekly backtest (Sun)"], ["done", "XGBoost re-ranked first on 12-week error"]]),
 ]
 
+# Gateway Warehousing & Transport (module v1.1): its agents sit in the company-wide departments,
+# working for Gateway's own managers (General Manager Rangi Walker reports to Pavi)
+AGENTS += [
+    A("gw-warehouse", "Warehouse operations agent", "gateway", "inventory", "Runs the three Gateway sites' floor plan for the day: dock bookings, dock-to-stock, put-away slots and pick waves.",
+      inputs=["dock bookings", "ASNs", "site stock", "forklift status"], outputs=["dock plan", "pick waves", "site status"], triggers=["gateway warehouse", "dock plan", "which docks are free", "3pl"],
+      schedule="Every 15 min, 5am–10pm", autonomy="suggest", guardrails=["Never moves a booking a client has confirmed without the Warehouse Manager"],
+      escalates_when=["A dock queue over 30 minutes", "Site over 85% full"], hands_off_to=["gw-transport"], owner="Warehouse Manager (Gateway)", page="../gateway/", team="Gateway · Warehousing",
+      work=[["doing", "Rebalancing Wiri dock slots for the lunch peak"], ["next", "Night put-away plan for Cold Chain"], ["done", "Pick waves for 14 store orders"]]),
+    A("gw-transport", "Transport planning agent", "gateway", "inventory", "Plans routes and trucks for every Gateway delivery and watches them on the road: ETAs, delays and re-routes.",
+      inputs=["orders by client", "truck availability", "delivery windows", "traffic"], outputs=["tomorrow's routes", "live ETAs", "late-risk alerts"], triggers=["gateway truck", "route plan", "where is my delivery", "eta"],
+      schedule="Nightly 9pm + live", autonomy="suggest", guardrails=["Driver hours and rest breaks are never planned over the limit"],
+      escalates_when=["Any client delivery at risk of missing its window", "Spot hire needed"], hands_off_to=["gw-accounts"], owner="Transport Manager (Gateway)", page="../gateway/", team="Gateway · Transport",
+      work=[["doing", "ETAs for 9 trucks on the road"], ["next", "Harbour Fresh weekend peak: 40 drops"], ["done", "Routes for tomorrow published"]]),
+    A("gw-coldchain", "Cold chain & quality agent", "gateway", "inventory", "Watches every temperature (rooms, reefers, vans), opens deviations and keeps Gateway GDP-ready for medicines.",
+      inputs=["temperature loggers", "reefer telemetry", "batch and expiry"], outputs=["excursion alerts", "deviation reports", "audit pack"], triggers=["temperature", "cold chain", "excursion", "gdp"],
+      schedule="Every minute", autonomy="approve", guardrails=["Product is quarantined until Quality releases it"], escalates_when=["Any excursion over 8°C or under 2°C"],
+      hands_off_to=["gw-warehouse"], owner="Cold Chain & Quality Manager (Gateway)", page="../gateway/#WH-02", team="Gateway · Quality",
+      work=[["doing", "Deviation report: reefer at 8.6°C for 14 min"], ["next", "Quarterly temperature mapping (Penrose)"], ["done", "Recall drill passed"]]),
+    A("gw-accounts", "Client accounts agent", "gateway", "sales", "Keeps every client contract on track: service against SLA, monthly reviews, invoices per pallet and per drop, and new clients.",
+      inputs=["OTIF by client", "storage and drops", "contracts"], outputs=["client scorecards", "monthly review packs", "new-client proposals"], triggers=["client sla", "otif by client", "gateway client"],
+      schedule="Weekly Monday", autonomy="suggest", guardrails=["Price and terms changes go to Management"], escalates_when=["Client below SLA two weeks running", "New client or price change"],
+      hands_off_to=["sales-head"], owner="Client Account Manager (Gateway)", page="../gateway/#s-clients", team="Gateway · Clients",
+      work=[["doing", "Pōhutukawa Diagnostics below 99% OTIF: recovery plan"], ["next", "Tūī Pharmacy Group trial proposal"], ["done", "September reviews sent"]]),
+    A("gw-shifts", "Gateway shifts agent", "gateway", "office", "Builds shifts for three sites around dock bookings and pick volumes, so every dock and forklift has a licensed person.",
+      inputs=["dock bookings", "volumes", "licences and inductions"], outputs=["site rosters", "overtime requests"], triggers=["gateway roster", "gateway shifts", "overtime"],
+      schedule="Weekly Thursday", autonomy="approve", guardrails=["Only licensed operators on forklifts", "Breaks staggered so docks stay covered"],
+      escalates_when=["Overtime over the site budget"], hands_off_to=["office-head"], owner="People & Rostering Lead (Gateway)", page="../gateway/#s-roles", team="Gateway · People",
+      work=[["doing", "Cold Chain night shift for Tōtara containers"], ["next", "Christmas peak roster"], ["done", "Forklift licence check: 26 of 26 current"]]),
+]
+
 # where each existing agent now sits: department + its team (business unit)
 _HOME = {
     "store-briefing": "mgmt", "totara-brief": "mgmt", "group-td": "mgmt", "group-governance": "mgmt",
@@ -449,7 +482,7 @@ _HOME = {
     "group-learning": "dev",
 }
 _TEAM = {t.id: t for t in TEAMS}
-_BIZN = {"store": "Store", "totara": "Tōtara", "group": "Group"}
+_BIZN = {"store": "Store", "totara": "Tōtara", "gateway": "Gateway", "group": "Group"}
 for _a in AGENTS:
     if _a.department in _TEAM:
         _t = _TEAM[_a.department]
@@ -541,6 +574,18 @@ ORG_REQUESTS = [
     {"id": "inv-po", "agent": "inv-head", "dept": "inventory", "area": "Purchase order", "amount": 14_600,
      "title": "Tōtara sea-freight order: nitrile gloves and dressings for Q1",
      "text": "Over the Inventory head's $2k limit and Finance's $10k limit"},
+    {"id": "gw-reefer-hire", "agent": "gw-transport", "dept": "inventory", "area": "Spend", "amount": 3_400,
+     "title": "Gateway: spot-hire 2 reefer trucks for Harbour Fresh's Friday–Saturday peak",
+     "text": "Forecast 40 drops vs 31 reefer slots; late drops cost about $180 each in SLA credits"},
+    {"id": "gw-night-ot", "agent": "gw-shifts", "dept": "office", "area": "Spend", "amount": 2_150,
+     "title": "Gateway: overtime night shift at Cold Chain to clear Tōtara containers",
+     "text": "Keeps dock-to-stock inside the 24 h GDP target"},
+    {"id": "gw-new-client", "agent": "gw-accounts", "dept": "sales", "area": "New business", "amount": 0,
+     "title": "Gateway: onboard Tūī Pharmacy Group (3-month trial, 120 pallets, 2–8°C)",
+     "text": "Fits spare Cold Chain capacity · margin about 16% at the proposed rate"},
+    {"id": "gw-batteries", "agent": "gw-warehouse", "dept": "inventory", "area": "Capex", "amount": 9_800,
+     "title": "Gateway: replace lithium batteries on two Wiri reach trucks",
+     "text": "Run time down to 4.5 h; mid-shift swaps cost about 40 minutes a day"},
 ]
 
 

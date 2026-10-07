@@ -139,13 +139,14 @@
   }
   function messages() {
     const n = open().length, by = b => open().filter(i => i.business === b).length;
-    const ask = n ? `I've got <b>${n} approvals</b> waiting: ${by("store")} store, ${by("totara")} Tōtara, ${by("group")} group.` : "Nothing is waiting for your approval.";
+    const ask = n ? `I've got <b>${n} approvals</b> waiting: ${by("store")} store, ${by("totara")} Tōtara, ${by("gateway") ? by("gateway") + " Gateway, " : ""}${by("group")} group.` : "Nothing is waiting for your approval.";
     const M = {
       launchpad: [`${greeting()}! I'm Shelly. ${ask}`, "Tap 🛒 or ✚ at the top to switch business. 🧠 Brain shows every agent I run."],
       store: [`${greeting()}! ${ask}`, "Ask me for any report: “make a budget for the next 3 months”."],
       medical: [`${greeting()}! Welcome to Tōtara Medical. ${ask}`, "Tap any tile or pipeline step to open the detail behind the number."],
       brain: [`This is my brain: every department and agent, and what each may do on its own. ${ask}`, "Tap an agent to see its skills, data, schedule, rules and who it reports to."],
       floor: [`${greeting()}! This is the shop floor. Red shelves need something today. ${ask}`, "Tap any shelf for its numbers, or switch to 🚶 Walk and use the joystick to walk the aisles."],
+      gateway: [`${greeting()}! Welcome to Gateway Warehousing & Transport. ${ask}`, "Pick a site, then tap any truck, forklift, person or dock. Zoom in and the roof lifts so you can see the racks."],
       report: [ask, "Print for white paper, Dark for the Shelly look, Present for one section per screen."],
     };
     return M[PAGE] || M.launchpad;

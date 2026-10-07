@@ -1,0 +1,115 @@
+# Gateway Warehousing & Transport: Shelly's third business (module v1.1).
+# A third-party logistics (3PL) company: it stores, picks, packs and delivers for other companies:
+# neighbourhood stores, Tōtara Medical and other medical suppliers, and food-service operators.
+# Everything here is fictional (synthetic demo data): no real company, person or contract.
+company:
+  name: Gateway Warehousing & Transport
+  short: Gateway
+  module_version: "1.1"
+  city: Auckland, New Zealand
+  tagline: Warehousing and transport for neighbourhood stores, medical suppliers and food service, run by Shelly.
+  promise: [Same-day store replenishment, GDP-compliant cold chain for medicines, Temperature-tracked food-service delivery, One live view for every client]
+
+# Sites. Layout numbers drive the 3D view: docks along the front of the building, racks inside.
+sites:
+  - id: WH-01
+    name: Gateway Wiri DC
+    kind: Ambient + chilled distribution centre
+    address: Wiri, South Auckland
+    docks: 10
+    pallet_positions: 6000
+    temp: "Ambient 15–25°C · chilled 2–8°C zone"
+    building: {w: 64, d: 34, h: 11}
+    rack_rows: 7
+    forklifts: 6
+    staff_on_shift: 34
+  - id: WH-02
+    name: Gateway Cold Chain
+    kind: Temperature-controlled · GDP pharmaceutical
+    address: Penrose, Auckland
+    docks: 6
+    pallet_positions: 2400
+    temp: "2–8°C pharma · −20°C frozen · 15–25°C controlled ambient"
+    building: {w: 46, d: 28, h: 10}
+    rack_rows: 5
+    forklifts: 4
+    staff_on_shift: 21
+  - id: WH-03
+    name: Gateway Cross-Dock
+    kind: Flow-through cross-dock (inbound to outbound within 24 h)
+    address: East Tāmaki, Auckland
+    docks: 12
+    pallet_positions: 800
+    temp: "Ambient · chilled staging lane"
+    building: {w: 72, d: 22, h: 9}
+    rack_rows: 3
+    forklifts: 5
+    staff_on_shift: 26
+
+# Clients (all fictional). share = share of pallets stored; site = where their stock mainly sits.
+clients:
+  - {id: NBS, name: Neighbourhood Store, sector: Retail · convenience grocery, colour: "#63b6d8", site: WH-01, services: [Store replenishment, Chilled delivery, Returns], pallets: 640, deliveries_wk: 14, otif_target: 98, temp: Ambient + chilled, fee_month: 38400}
+  - {id: TOT, name: Tōtara Medical, sector: Medical imports, colour: "#b69cf2", site: WH-02, services: [GDP cold-chain storage, Batch & expiry (FEFO), Hospital deliveries], pallets: 520, deliveries_wk: 22, otif_target: 99, temp: "2–8°C + controlled ambient", fee_month: 61200}
+  - {id: KHS, name: Kauri Health Supplies, sector: Medical consumables, colour: "#e89bd0", site: WH-02, services: [Storage, Clinic deliveries], pallets: 310, deliveries_wk: 16, otif_target: 98, temp: Controlled ambient, fee_month: 27900}
+  - {id: PDX, name: Pōhutukawa Diagnostics, sector: Diagnostics & lab kits, colour: "#ff8fa3", site: WH-02, services: [2–8°C storage, Same-day lab runs], pallets: 140, deliveries_wk: 25, otif_target: 99, temp: "2–8°C", fee_month: 19600}
+  - {id: HFF, name: Harbour Fresh Foodservice, sector: Food service, colour: "#7fd1a8", site: WH-01, services: [Chilled & frozen storage, Restaurant deliveries], pallets: 880, deliveries_wk: 40, otif_target: 97, temp: "Chilled + frozen", fee_month: 72600}
+  - {id: SPC, name: Southern Plate Catering, sector: Food service · events, colour: "#ffc466", site: WH-03, services: [Cross-dock, Event deliveries], pallets: 210, deliveries_wk: 18, otif_target: 97, temp: Ambient + chilled, fee_month: 21800}
+
+# Fleet types (counts across the business)
+fleet:
+  - {type: Refrigerated rigid, code: RR, pallets: 12, count: 9, colour: "#e9eef3", stripe: "#2f6fd6", reefer: true}
+  - {type: Curtain-sider semi, code: CS, pallets: 22, count: 6, colour: "#f4f6f8", stripe: "#e8692f", reefer: false}
+  - {type: EV medium truck, code: EV, pallets: 8, count: 5, colour: "#f4f6f8", stripe: "#1fa37a", reefer: false}
+  - {type: Pharma van (2–8°C), code: PV, pallets: 2, count: 4, colour: "#ffffff", stripe: "#8c6bdc", reefer: true}
+
+# The company's own structure. head = leader (fictional name); team = roles under them with headcount.
+management:
+  - {id: gm, title: General Manager, name: Rangi Walker, reports_to: Pavi (Shelly Group MD), colour: "#f2c14e", icon: "★",
+     owns: [Strategy and new clients, P&L, Safety culture], kpis: [Revenue, EBIT margin, Client retention, LTI-free days]}
+  - {id: ops, title: Operations Manager, name: Mei Lin Zhou, reports_to: General Manager, colour: "#63b6d8", icon: "⚙",
+     owns: [All three sites day to day, Shift planning with site managers, Continuous improvement], kpis: [OTIF, Cost per pallet, Dock-to-stock time]}
+  - {id: whm, title: Warehouse Manager (per site), name: Sione Taufa, reports_to: Operations Manager, colour: "#5ec8c8", icon: "▦",
+     owns: [Receiving, putaway, picking and despatch, Stock accuracy, Forklift fleet], kpis: [Pick accuracy, Lines per hour, Stock accuracy]}
+  - {id: tpm, title: Transport Manager, name: Aroha Ngata, reports_to: Operations Manager, colour: "#ff9f6e", icon: "⛟",
+     owns: [Routes and dispatch, Drivers and subcontractors, Proof of delivery], kpis: [On-time delivery, Cost per drop, Truck utilisation]}
+  - {id: ccq, title: Cold Chain & Quality Manager, name: Dr Priya Raman, reports_to: General Manager, colour: "#b69cf2", icon: "❄",
+     owns: [GDP compliance (medicines), Temperature mapping and excursions, Audits and recalls], kpis: [Temperature excursions, Audit findings, Recall readiness]}
+  - {id: flt, title: Fleet & Maintenance Manager, name: Jack Thompson, reports_to: Transport Manager, colour: "#9aa7ff", icon: "🔧",
+     owns: [Trucks, reefers and forklifts serviced, Batteries and EV charging, Road compliance (RUC, CoF)], kpis: [Vehicle uptime, Cost per km, Charging plan]}
+  - {id: hse, title: Health, Safety & Environment Lead, name: Leilani Faleolo, reports_to: General Manager, colour: "#e66767", icon: "⛑",
+     owns: [Traffic management in yards, Inductions and forklift licences, Incidents and near misses], kpis: [LTI-free days, Near-miss reports, Induction completion]}
+  - {id: cam, title: Client Account Manager, name: Tom Fraser, reports_to: General Manager, colour: "#7fd1a8", icon: "🤝",
+     owns: [Contracts and SLAs, Monthly client reviews, New client onboarding], kpis: [SLA met, Client NPS, Revenue growth]}
+  - {id: fin, title: Finance & Commercial Lead, name: Hannah Lee, reports_to: General Manager, colour: "#7fd1a8", icon: "$",
+     owns: [Invoicing per pallet / per drop, Cost to serve per client, Budgets and capex], kpis: [Debtor days, Margin per client, Budget vs actual]}
+  - {id: sys, title: Systems Lead (WMS / TMS), name: Arjun Mehta, reports_to: Operations Manager, colour: "#5ec8c8", icon: "⌁",
+     owns: [Warehouse and transport systems, Client portal and EDI, Shelly agents and data], kpis: [System uptime, EDI errors, Portal adoption]}
+  - {id: ppl, title: People & Rostering Lead, name: Grace Kim, reports_to: General Manager, colour: "#f28fb3", icon: "♥",
+     owns: [Shifts across sites, Recruitment and training, Wellbeing], kpis: [Absence rate, Overtime hours, Turnover]}
+
+roles:   # floor and road roles: who does what, and how many across the business
+  - {role: Shift Supervisor, dept: Warehouse, count: 9, colour: "#f2c14e", does: "Runs a shift on one site: allocates people and forklifts, watches the dock board, signs off despatch."}
+  - {role: Team Leader, dept: Warehouse, count: 12, colour: "#ffd27a", does: "Leads a zone (receiving, picking, despatch); first call for problems on the floor."}
+  - {role: Forklift Operator, dept: Warehouse, count: 26, colour: "#ff9f43", does: "Counterbalance and reach trucks: unloads trucks, puts pallets away, lets down for picking, loads outbound."}
+  - {role: Order Picker, dept: Warehouse, count: 34, colour: "#3fb87f", does: "Picks store and clinic orders by scanner (FEFO for medicines), builds and wraps pallets."}
+  - {role: Receiver / Checker, dept: Warehouse, count: 10, colour: "#63b6d8", does: "Checks inbound against the ASN, temperature on arrival and batch/expiry; flags shortages."}
+  - {role: Loader, dept: Warehouse, count: 14, colour: "#5ec8c8", does: "Stages and loads outbound in drop order; seals reefers and records temperatures."}
+  - {role: Inventory Controller, dept: Warehouse, count: 6, colour: "#b69cf2", does: "Cycle counts, stock adjustments, recalls and quarantine."}
+  - {role: Yard Marshal, dept: Yard, count: 5, colour: "#ffe066", does: "Guides trucks onto docks, keeps the yard one-way and pedestrians out of truck lanes."}
+  - {role: Gatehouse Officer, dept: Yard, count: 4, colour: "#9aa7ff", does: "Checks trucks in and out, booking slots, seals and paperwork."}
+  - {role: Transport Planner, dept: Transport, count: 4, colour: "#ff9f6e", does: "Builds tomorrow's routes, books dock slots, balances trucks against drops."}
+  - {role: Dispatcher, dept: Transport, count: 4, colour: "#ff9f6e", does: "Live control of trucks on the road: delays, re-routes, customer ETAs."}
+  - {role: Truck Driver, dept: Transport, count: 28, colour: "#e9eef3", does: "Rigid, semi and reefer drivers: pre-trip checks, deliveries, proof of delivery, temperature logs."}
+  - {role: Van Courier (pharma), dept: Transport, count: 6, colour: "#8c6bdc", does: "Same-day 2–8°C runs to hospitals, clinics and labs."}
+  - {role: Diesel & EV Mechanic, dept: Fleet, count: 4, colour: "#9aa7ff", does: "Services trucks, reefer units and forklifts; manages chargers."}
+  - {role: Quality Officer (GDP), dept: Quality, count: 3, colour: "#b69cf2", does: "Temperature monitoring, deviations, release of quarantined stock."}
+  - {role: Customer Service Coordinator, dept: Clients, count: 5, colour: "#7fd1a8", does: "Client orders, booking changes, delivery questions and claims."}
+  - {role: Cleaner / Hygiene, dept: Facilities, count: 4, colour: "#d9dde2", does: "Food-safe hygiene in chilled zones, dock and amenities."}
+
+# Where Gateway goes next (the module grows from v1.1)
+roadmap:
+  - {v: "1.2", title: Client portal, text: "Each client sees its own stock, orders, deliveries and temperature logs live, and books dock slots itself."}
+  - {v: "1.3", title: Route optimiser, text: "Shelly plans tomorrow's routes overnight: fewer kilometres, deliveries inside each store's receiving window."}
+  - {v: "1.4", title: Electric fleet & solar, text: "Charge EV trucks from rooftop solar at Wiri; carbon per delivery on every client report."}
+  - {v: "1.5", title: Robots in the aisles, text: "Autonomous pallet movers between docks and racks; drones for night-time cycle counts."}
+  - {v: "2.0", title: Gateway network, text: "A second region (Hamilton or Tauranga), multi-tenant pricing and a marketplace for spare pallet space."}
