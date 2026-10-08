@@ -1,11 +1,11 @@
-# Gateway Warehousing & Transport: Shelly's third business (module v1.1).
+# Gateway Warehousing & Transport: Shelly's third business (module v1.1, now v1.3: two gates, fleet park, sorting centres, processing centres).
 # A third-party logistics (3PL) company: it stores, picks, packs and delivers for other companies:
 # neighbourhood stores, Tōtara Medical and other medical suppliers, and food-service operators.
 # Everything here is fictional (synthetic demo data): no real company, person or contract.
 company:
   name: Gateway Warehousing & Transport
   short: Gateway
-  module_version: "1.2"
+  module_version: "1.3"
   city: Auckland, New Zealand
   tagline: Warehousing and transport for neighbourhood stores, medical suppliers and food service, run by Shelly.
   promise: [Same-day store replenishment, GDP-compliant cold chain for medicines, Temperature-tracked food-service delivery, One live view for every client]
@@ -27,6 +27,7 @@ sites:
     cold_rooms:
       - {id: CH-1, name: Chiller, kind: chiller, set: 3.0, low: 2, high: 5, rows: [5], clients: [NBS, HFF]}
       - {id: FZ-1, name: Freezer, kind: freezer, set: -20.0, low: -25, high: -18, rows: [6], clients: [HFF]}
+    sort: {benches: 6, width: 32, flow: 1.0, crew: 1.0}
   - id: WH-02
     name: Gateway Cold Chain
     kind: Temperature-controlled · GDP pharmaceutical
@@ -42,6 +43,7 @@ sites:
     cold_rooms:
       - {id: PH-1, name: Pharma cold room, kind: chiller, set: 5.0, low: 2, high: 8, rows: [0, 1, 2], clients: [TOT, PDX]}
       - {id: FZ-2, name: Freezer, kind: freezer, set: -20.0, low: -25, high: -15, rows: [3], clients: [TOT]}
+    sort: {benches: 4, width: 30, flow: 0.7, crew: 0.7}
   - id: WH-03
     name: Gateway Cross-Dock
     kind: Flow-through cross-dock (inbound to outbound within 24 h)
@@ -56,6 +58,39 @@ sites:
     crew_scale: 0.85
     cold_rooms:
       - {id: CL-3, name: Chilled staging, kind: chiller, set: 4.0, low: 2, high: 6, rows: [2], clients: [SPC]}
+    sort: {benches: 6, width: 32, flow: 1.1, crew: 1.0}
+  # Processing centres: small stores, big sorting halls. Goods for every business are picked, packed and sorted here.
+  - id: WH-04
+    name: Gateway Albany Processing Centre
+    kind: Processing centre · pick, pack & sort for every business
+    address: Albany, North Shore
+    docks: 7
+    pallet_positions: 1200
+    temp: "Ambient · parcel sortation"
+    building: {w: 52, d: 26, h: 9}
+    rack_rows: 3
+    forklifts: 3
+    staff_on_shift: 30
+    crew_scale: 0.7
+    processing: true
+    cold_rooms: []
+    sort: {benches: 10, width: 40, flow: 1.6, crew: 1.6}
+  - id: WH-05
+    name: Gateway Airport Processing Centre
+    kind: Processing centre · air freight, export & medical parcels
+    address: Māngere, near Auckland Airport
+    docks: 6
+    pallet_positions: 900
+    temp: "Ambient · 2–8°C export chiller"
+    building: {w: 48, d: 24, h: 9}
+    rack_rows: 3
+    forklifts: 3
+    staff_on_shift: 28
+    crew_scale: 0.7
+    processing: true
+    cold_rooms:
+      - {id: AX-1, name: Export chiller, kind: chiller, set: 4.0, low: 2, high: 8, rows: [2], clients: [TOT, PDX, HFF]}
+    sort: {benches: 8, width: 38, flow: 1.5, crew: 1.4}
 
 # Shifts: Gateway runs 24/7. Breaks are hours after the shift starts and are staggered so docks stay covered.
 shifts:
@@ -70,9 +105,13 @@ break_stagger_minutes: 15
 pay: {base_hour: 29.5, night_rate: 1.25, weekend_rate: 1.5}
 # Crew per shift at a full-size site (scaled by each site's crew_scale; leaders and safety roles never drop below one)
 crew:
-  day:   {Shift Supervisor: 1, Team Leader: 2, Forklift Operator: 5, Order Picker: 7, Receiver / Checker: 2, Loader: 3, Inventory Controller: 1, Yard Marshal: 1, Gatehouse Officer: 1, Cleaner / Hygiene: 1}
-  aft:   {Shift Supervisor: 1, Team Leader: 2, Forklift Operator: 4, Order Picker: 6, Receiver / Checker: 1, Loader: 3, Inventory Controller: 1, Yard Marshal: 1, Gatehouse Officer: 1, Cleaner / Hygiene: 1}
-  night: {Shift Supervisor: 1, Team Leader: 1, Forklift Operator: 3, Order Picker: 4, Receiver / Checker: 1, Loader: 2, Yard Marshal: 1, Gatehouse Officer: 1, Cleaner / Hygiene: 1}
+# Gatehouse: one officer on Gate 1 (in) and one on Gate 2 (out). Sorting-centre roles scale with each site's sort.crew.
+  day:   {Shift Supervisor: 1, Team Leader: 2, Forklift Operator: 5, Order Picker: 7, Receiver / Checker: 2, Loader: 3, Inventory Controller: 1, Yard Marshal: 1, Gatehouse Officer: 2, Cleaner / Hygiene: 1,
+          Sort Centre Manager: 1, Sort Supervisor: 1, Sort Operative: 4, Pick & Pack Operative: 5}
+  aft:   {Shift Supervisor: 1, Team Leader: 2, Forklift Operator: 4, Order Picker: 6, Receiver / Checker: 1, Loader: 3, Inventory Controller: 1, Yard Marshal: 1, Gatehouse Officer: 2, Cleaner / Hygiene: 1,
+          Sort Centre Manager: 1, Sort Supervisor: 1, Sort Operative: 4, Pick & Pack Operative: 4}
+  night: {Shift Supervisor: 1, Team Leader: 1, Forklift Operator: 3, Order Picker: 4, Receiver / Checker: 1, Loader: 2, Yard Marshal: 1, Gatehouse Officer: 2, Cleaner / Hygiene: 1,
+          Sort Supervisor: 1, Sort Operative: 3, Pick & Pack Operative: 2}
 # Truck bookings by hour of the day (share of a site's daily trucks): early store runs, a lunch peak, night containers
 bookings: {"0": 2, "1": 2, "2": 3, "3": 3, "4": 5, "5": 8, "6": 9, "7": 8, "8": 7, "9": 6, "10": 6, "11": 6, "12": 5, "13": 5, "14": 6, "15": 6, "16": 5, "17": 4, "18": 3, "19": 3, "20": 2, "21": 2, "22": 3, "23": 2}
 
@@ -114,6 +153,8 @@ management:
      owns: [Invoicing per pallet / per drop, Cost to serve per client, Budgets and capex], kpis: [Debtor days, Margin per client, Budget vs actual]}
   - {id: sys, title: Systems Lead (WMS / TMS), name: Arjun Mehta, reports_to: Operations Manager, colour: "#5ec8c8", icon: "⌁",
      owns: [Warehouse and transport systems, Client portal and EDI, Shelly agents and data], kpis: [System uptime, EDI errors, Portal adoption]}
+  - {id: spm, title: Sorting & Processing Manager, name: Lavinia Tupou, reports_to: Operations Manager, colour: "#e8692f", icon: "⇄",
+     owns: [Sorting centres at every site, Albany and Airport processing centres, Pick & pack for all six businesses], kpis: [Parcels sorted per hour, Mis-sorts, Cut-offs met]}
   - {id: ppl, title: People & Rostering Lead, name: Grace Kim, reports_to: General Manager, colour: "#f28fb3", icon: "♥",
      owns: [Shifts across sites, Recruitment and training, Wellbeing], kpis: [Absence rate, Overtime hours, Turnover]}
 
@@ -126,7 +167,11 @@ roles:   # floor and road roles: who does what, and how many across the business
   - {role: Loader, dept: Warehouse, count: 14, colour: "#5ec8c8", does: "Stages and loads outbound in drop order; seals reefers and records temperatures."}
   - {role: Inventory Controller, dept: Warehouse, count: 6, colour: "#b69cf2", does: "Cycle counts, stock adjustments, recalls and quarantine."}
   - {role: Yard Marshal, dept: Yard, count: 5, colour: "#ffe066", does: "Guides trucks onto docks, keeps the yard one-way and pedestrians out of truck lanes."}
-  - {role: Gatehouse Officer, dept: Yard, count: 4, colour: "#9aa7ff", does: "Checks trucks in and out, booking slots, seals and paperwork."}
+  - {role: Gatehouse Officer, dept: Yard, count: 30, colour: "#9aa7ff", does: "Gate 1 checks trucks in against their booking; Gate 2 checks seals and paperwork out. Two on every shift."}
+  - {role: Sort Centre Manager, dept: Sorting, count: 5, colour: "#e8692f", does: "Runs a site's sorting centre: volumes by business, staffing, cut-off times; works from the glass office."}
+  - {role: Sort Supervisor, dept: Sorting, count: 15, colour: "#ffb066", does: "Runs the loop sorter on a shift: loop speed, cage levels, jams and mis-sorts from the sort-control PC."}
+  - {role: Sort Operative, dept: Sorting, count: 48, colour: "#f4a261", does: "Watches the chutes, stacks parcels in each business's roll cage and swaps full cages."}
+  - {role: Pick & Pack Operative, dept: Sorting, count: 52, colour: "#2fae6f", does: "Picks small orders, packs and labels them at a bench PC for the right business."}
   - {role: Transport Planner, dept: Transport, count: 4, colour: "#ff9f6e", does: "Builds tomorrow's routes, books dock slots, balances trucks against drops."}
   - {role: Dispatcher, dept: Transport, count: 4, colour: "#ff9f6e", does: "Live control of trucks on the road: delays, re-routes, customer ETAs."}
   - {role: Truck Driver, dept: Transport, count: 28, colour: "#e9eef3", does: "Rigid, semi and reefer drivers: pre-trip checks, deliveries, proof of delivery, temperature logs."}
@@ -138,8 +183,8 @@ roles:   # floor and road roles: who does what, and how many across the business
 
 # Where Gateway goes next (the module grows from v1.1)
 roadmap:
-  - {v: "1.2", title: Client portal, text: "Each client sees its own stock, orders, deliveries and temperature logs live, and books dock slots itself."}
-  - {v: "1.3", title: Route optimiser, text: "Shelly plans tomorrow's routes overnight: fewer kilometres, deliveries inside each store's receiving window."}
-  - {v: "1.4", title: Electric fleet & solar, text: "Charge EV trucks from rooftop solar at Wiri; carbon per delivery on every client report."}
-  - {v: "1.5", title: Robots in the aisles, text: "Autonomous pallet movers between docks and racks; drones for night-time cycle counts."}
+  - {v: "1.4", title: Client portal, text: "Each client sees its own stock, orders, deliveries and temperature logs live, and books dock slots itself."}
+  - {v: "1.5", title: Route optimiser, text: "Shelly plans tomorrow's routes overnight: fewer kilometres, deliveries inside each store's receiving window."}
+  - {v: "1.6", title: Electric fleet & solar, text: "Charge EV trucks from rooftop solar at Wiri; carbon per delivery on every client report."}
+  - {v: "1.7", title: Robots in the aisles, text: "Autonomous pallet movers between docks and racks; drones for night-time cycle counts."}
   - {v: "2.0", title: Gateway network, text: "A second region (Hamilton or Tauranga), multi-tenant pricing and a marketplace for spare pallet space."}

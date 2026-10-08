@@ -123,9 +123,9 @@ def main():
         gk = gw["kpis"]
         trucks = "".join(f'<i style="background:{c["colour"]}" title="{html.escape(c["name"])}"></i>' for c in gw["clients"])
         card("../gateway/", "Warehousing · transport · separate business", "Gateway Warehousing & Transport",
-             "Three Auckland sites live in 3D: trucks on the docks, forklifts, pickers, the yard and the gate, for the store, Tōtara Medical, "
-             "other medical suppliers and food service. Its own management team and every floor role.",
-             f"{gk['otif']}%", f"on-time-in-full · {gk['trucks']} trucks · {gk['stock']:,} pallets stored · {len(gw['clients'])} clients",
+             "Five Auckland sites live in 3D, including two processing centres: two gates, marshalling lanes, a fleet park, docks, forklifts and "
+             "a sorting centre at every site that sorts parcels for each business. Its own management team and every floor role.",
+             f"{gk['otif']}%", f"on-time-in-full · {gk['trucks']} trucks · {gk['sorted_today']:,} parcels sorted a day · {len(gw['clients'])} clients",
              "New · v" + gw["meta"]["module_version"], "new", f'<span class="shelves" aria-hidden="true">{trucks}</span>', "wide")
     card("../index.html#s-packs", "Electronics · wholesale · warehousing · production", "Industry packs",
          "The same engine applied beyond retail: sell-through and markdowns, cost-to-serve and OTIF, ABC-XYZ slotting, OEE and scrap.",

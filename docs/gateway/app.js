@@ -58,15 +58,16 @@ function kpis(st) {
   const otif = cs.length ? (cs.reduce((a, c) => a + c.deliveries_4wk - c.late, 0) / cs.reduce((a, c) => a + c.deliveries_4wk, 0) * 100).toFixed(1) : K.otif;
   const live = st ? st.stats : { putaway: 0, picked: 0, in: 0, out: 0 };
   const stock = s.stock + (live.putaway || 0) - Math.round((live.picked || 0) / 4);
-  const onSite = st ? st.trucks.filter(t => !["road", "leaving"].includes(t.st)).length : 0, occ = st ? st.docks.filter(d => d.state !== "free").length : 0;
+  const onSite = st ? st.trucks.filter(t => !["road", "turnIn", "roadOut"].includes(t.st)).length : 0, occ = st ? st.docks.filter(d => d.state !== "free").length : 0;
   const T = [["Stock on hand", nz(stock), `of ${nz(s.pallet_positions)} pallets · ${(stock / s.pallet_positions * 100).toFixed(0)}% full`],
-    ["Trucks on site", onSite, `${st ? st.trucks.filter(t => t.st === "road").length : 0} arriving · ${st ? st.trucks.filter(t => t.st === "waiting" || t.st === "staged").length : 0} waiting`],
+    ["Trucks on site", onSite, st ? `${st.queue.arriving} arriving · ${st.queue.waiting} waiting · ${st.queue.parked} parked` : ""],
+    ["Parcels sorted", nz(s.sort.parcels_today + (st && st.sort ? st.sort.sorted : 0)), st && st.sort ? `${st.sort.packed} packed · ${st.sort.loop} on the loop${st.sort.jam ? " · jam " + st.sort.jam : ""}` : "", st && st.sort && st.sort.jam ? "dn" : "up"],
     ["On-time delivery", otif + "%", `4 weeks · clients here`, +otif >= 98 ? "up" : "dn"],
     ["Dock use", `${occ}/${s.docks}`, `${s.dock_util_pct}% of the day this week`],
     ["Pallets moved", nz(s.putaway_today + (live.putaway || 0) + s.outbound_today + Math.round((live.picked || 0) / 3)), `put away ${nz(s.putaway_today + (live.putaway || 0))} · out ${nz(s.outbound_today + (live.out || 0))}`],
     ["Crew on shift", st ? `${st.people.filter(p => p.rid && !p.leaving).length + st.lifts.filter(l => l.crewed).length}` : "–", st && st.shift ? `${st.shift.name} shift · ${st.people.filter(p => p.onBreak).length} on break` : ""],
     ["Cold rooms", st && st.rooms.length ? st.rooms.map(r => (r.temp > 0 ? "+" : "") + r.temp.toFixed(1) + "°").join(" · ") : "–", st && st.rooms.length ? (st.rooms.every(r => r.temp >= r.low && r.temp <= r.high) ? "all in range ✓" : "check temperatures") : "", st && st.rooms.every(r => r.temp >= r.low && r.temp <= r.high) ? "up" : "dn"]];
-  T.splice(4, 1);
+  T.splice(5, 1);
   $("#kpis").innerHTML = T.map(([l, b, sm, cls]) => `<div class="kpi"><span class="l">${esc(l)}</span><b>${esc(b)}</b><small class="${cls || ""}">${esc(sm)}</small></div>`).join("");
 }
 
@@ -146,10 +147,13 @@ narrow.addEventListener("change", placeCards); placeCards();
 
 /* ------------------------------------------------ live cards */
 const IN_STAGES = ["Booked", "At gate", "Docked", "Unloading", "Put away"], OUT_STAGES = G.stages;
-const TXT = { road: "on the road in", gate: "at the gate", staged: "to the waiting bay", waiting: "waiting for a dock", toDock: "reversing onto a dock", docked: "at the dock", closing: "closing up", leaving: "leaving" };
+const TXT = { road: "on the road in", turnIn: "waiting to turn in", gateIn: "checking in at Gate 1", toQueue: "to a marshalling lane", queued: "waiting in a marshalling lane", toLane: "called to a dock",
+  fleetWait: "leaving the fleet park", toBay: "parking in the fleet park", parked: "parked in the fleet park", toDock: "reversing onto a dock", docked: "at the dock", closing: "closing up",
+  waitOut: "ready to pull out", leaving: "leaving through the yard", gateOut: "checking out at Gate 2", kerb: "on the exit driveway", roadWait: "waiting for a gap in traffic", roadOut: "on the road out" };
+const BEFORE = ["road", "turnIn", "gateIn", "toQueue", "queued", "toLane", "fleetWait", "toBay", "parked", "toDock"];
 function stageIdx(t) {
-  if (t.dir === "in") return t.st === "road" ? 0 : ["gate", "staged", "waiting", "toDock"].includes(t.st) ? 1 : t.st === "docked" ? (t.moves ? 3 : 2) : 4;
-  return ["road", "gate", "staged", "waiting", "toDock"].includes(t.st) ? 0 : t.st === "docked" ? (t.prog < .5 ? 1 : 2) : t.st === "closing" ? 3 : 3;
+  if (t.dir === "in") return ["road", "turnIn"].includes(t.st) ? 0 : BEFORE.includes(t.st) ? 1 : t.st === "docked" ? (t.moves ? 3 : 2) : 4;
+  return BEFORE.includes(t.st) ? 0 : t.st === "docked" ? (t.prog < .5 ? 1 : 2) : 3;
 }
 function track(st) {
   const sel = world && world.S.sel, t = (sel && sel.kind === "truck" && st.trucks.find(x => x.id === sel.id)) || st.trucks.find(x => x.st === "docked") || st.trucks[0];
@@ -162,14 +166,16 @@ function track(st) {
 }
 function siteCard(st) {
   const s = st.site, cs = G.clients.filter(c => c.site === s.id), docked = st.trucks.filter(t => t.st === "docked" || t.st === "closing").length;
-  const arriving = st.trucks.filter(t => ["road", "gate", "toDock"].includes(t.st)).length, staged = st.trucks.filter(t => ["staged", "waiting"].includes(t.st)).length;
+  const arriving = st.queue.arriving, staged = st.queue.waiting;
   const busy = st.lifts.filter(l => l.busy).length, stock = s.stock + st.stats.putaway - Math.round(st.stats.picked / 4);
   return `<span class="t">${esc(s.id)} · ${esc(s.kind)}</span><h3>${esc(s.name)}</h3><div class="k">${esc(s.address)} · ${esc(s.temp)}</div>` +
-    `<div style="margin-top:6px"><span class="pill">operational</span> <span class="k">${docked} docked · ${arriving} arriving · ${staged} waiting</span></div>` +
+    `<div style="margin-top:6px"><span class="pill">operational</span> <span class="k">${docked} docked · ${arriving} arriving · ${staged} waiting · ${st.queue.parked} in the fleet park</span></div>` +
     `<div class="grid3"><div><b>${nz(stock)}</b><span>pallets stored</span></div><div><b>${st.docks.filter(d => d.state !== "free").length}/${s.docks}</b><span>docks in use</span></div><div><b>${busy}/${st.lifts.length}</b><span>forklifts working</span></div></div>` +
     `<span class="t">Stock vs capacity</span><div class="bar"><i style="width:${Math.min(100, stock / s.pallet_positions * 100).toFixed(0)}%"></i></div>` +
     `<span class="t">Outbound today · putaway today</span><div class="rowk"><span>${nz(s.outbound_today + st.stats.out)} trucks out</span><b>${nz(s.putaway_today + st.stats.putaway)} pallets put away</b></div>` +
-    `<span class="t" style="display:block;margin-top:8px">Clients stored here</span>` + cs.map(c => `<div class="rowk"><span><span class="sw" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${esc(c.colour)};margin-right:6px"></span>${esc(c.name)}</span><b>${nz(c.pallets_now)} <span class="pill ${c.status}">${c.status === "ok" ? "on target" : c.status}</span></b></div>`).join("") +
+    (st.sort ? `<span class="t" style="display:block;margin-top:8px">Sorting centre · ${nz(s.sort.parcels_today + st.sort.sorted)} parcels today</span><div class="chutes">` +
+      st.sort.chutes.map(c => `<button type="button" data-chute="${c.j}" title="${esc(c.name)}" style="--c:${esc(c.colour)}"><b>${esc(c.code)}</b><i style="height:${Math.min(100, c.count / c.cap * 100).toFixed(0)}%"></i></button>`).join("") + `</div>` : "") +
+    (cs.length ? `<span class="t" style="display:block;margin-top:8px">Clients stored here</span>` : `<p class="k" style="margin:8px 0 0">Processing centre: picks, packs and sorts for all ${G.clients.length} businesses.</p>`) + cs.map(c => `<div class="rowk"><span><span class="sw" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${esc(c.colour)};margin-right:6px"></span>${esc(c.name)}</span><b>${nz(c.pallets_now)} <span class="pill ${c.status}">${c.status === "ok" ? "on target" : c.status}</span></b></div>`).join("") +
     (st.rooms.length ? `<span class="t" style="display:block;margin-top:8px">Cold storage</span>` + st.rooms.map(r => { const bad = r.temp < r.low || r.temp > r.high;
       return `<div class="room ${r.kind}" data-room="${r.i}"><span>❄ <b style="font:600 12.5px 'Plus Jakarta Sans'">${esc(r.name)}</b></span><b class="${bad ? "warn" : ""}">${r.temp > 0 ? "+" : ""}${r.temp.toFixed(1)}°C</b><small>set ${r.set}°C · range ${r.low} to ${r.high}°C · ${(r.fill * 100).toFixed(0)}% full${r.open ? " · door open" : ""}</small></div>`; }).join("") : "") +
     `<span class="t" style="display:block;margin-top:8px">${st.shift ? esc(st.shift.name) + " shift" : "Crew"} on the floor</span><div class="crew">${Object.entries(st.people.filter(p => p.rid && !p.leaving).reduce((a, p) => (a[p.role] = (a[p.role] || 0) + 1, a), { "Forklift Operator": st.lifts.filter(l => l.crewed).length })).filter(([, n]) => n).map(([r, n]) => `<span>${n} ${esc(r.replace(" / Checker", "").replace(" (GDP)", ""))}</span>`).join("")}</div>`;
@@ -193,16 +199,25 @@ function selCard(st) {
     return close + `<span class="t">${r.kind === "freezer" ? "Freezer" : "Chiller"} · ${esc(r.id)}</span><h3>❄ ${esc(r.name)}</h3><div class="room ${r.kind}"><span>Now</span><b class="${bad ? "warn" : ""}">${r.temp > 0 ? "+" : ""}${r.temp.toFixed(2)}°C</b><small>set point ${r.set}°C · alarm below ${r.low}°C or above ${r.high}°C</small></div>` +
       `<span class="t">Full</span><div class="bar"><i style="width:${(r.fill * 100).toFixed(0)}%"></i></div>` +
       [["Door", r.open ? "open: forklift passing" : "closed"], ["Door opens per hour", R.door_opens_h ?? "–"], ["Clients here", (R.clients || []).map(id => (G.clients.find(c => c.id === id) || {}).name).join(", ")], ["Logger", "every minute → Cold chain agent"]].map(([a, b]) => `<div class="rowk"><span>${esc(a)}</span><b>${esc(b)}</b></div>`).join(""); }
+  if (sel.kind === "pc") { const p = st.pcs.find(x => x.id === sel.id); if (!p) return null;
+    return close + `<span class="t">Workstation · ${esc(p.where)}</span><h3>🖥 ${esc(p.name)}</h3><div class="k">${p.user ? "In use: " + esc(p.user) : "Logged in · nobody at the desk"}</div>` +
+      `<pre class="screen">${(p.lines || []).slice(1).map(esc).join("\n")}</pre><p class="k" style="margin:6px 0 0">Live screen: it updates as the site works.</p>`; }
+  if (sel.kind === "chute") { const c = st.sort && st.sort.chutes[sel.id]; if (!c) return null;
+    return close + `<span class="t">Sorting chute · roll cage</span><h3><span class="sw" style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${esc(c.colour)};margin-right:6px"></span>${esc(c.code)} · ${esc(c.name)}</h3>` +
+      `<span class="t">Cage</span><div class="bar ${c.count >= c.cap ? "a" : ""}"><i style="width:${Math.min(100, c.count / c.cap * 100).toFixed(0)}%"></i></div>` +
+      [["In the cage", `${c.count} of ${c.cap} parcels`], ["Sorted here this session", c.today], ["Cages swapped", c.swaps], ["Status", st.sort.jam === c.code ? "jam: parcels going round again" : c.want ? "swap called" : "running"]].map(([a, b]) => `<div class="rowk"><span>${esc(a)}</span><b>${esc(String(b))}</b></div>`).join(""); }
   if (sel.kind === "dock") { const d = st.docks[sel.id]; if (!d) return null;
     return close + `<span class="t">Dock door</span><h3>Bay ${d.i + 1}</h3><span class="pill ${d.state}">${d.state === "free" ? "free" : d.state === "reserved" ? "truck on its way" : d.dir === "in" ? "unloading" : "loading"}</span>` +
       (d.truck ? `<div class="rowk"><span>Truck</span><b>${esc(d.truck)}</b></div><div class="rowk"><span>Client</span><b>${esc(d.client || "")}</b></div><div class="bar"><i style="width:${(d.prog * 100).toFixed(0)}%"></i></div>` : `<p class="k">Ready for the next booking.</p>`); }
   return null;
 }
-$("#panel").addEventListener("click", e => { if (!world) return; const rm = e.target.closest("[data-room]"); if (rm) { world.select({ kind: "room", id: +rm.dataset.room }); return; } if (e.target.closest("[data-close]")) { world.select(null, false); world.roleFilter(null); world.follow(false); render(); } if (e.target.closest("[data-follow]")) { world.follow(!world.S.follow); render(); } });
+$("#panel").addEventListener("click", e => { if (!world) return; const rm = e.target.closest("[data-room]"); if (rm) { world.select({ kind: "room", id: +rm.dataset.room }); return; }
+  const ch = e.target.closest("[data-chute]"); if (ch) { world.select({ kind: "chute", id: +ch.dataset.chute }); return; } if (e.target.closest("[data-close]")) { world.select(null, false); world.roleFilter(null); world.follow(false); render(); } if (e.target.closest("[data-follow]")) { world.follow(!world.S.follow); render(); } });
 $("#board").addEventListener("click", e => { const b = e.target.closest("[data-b]"); if (b) { board = b.dataset.b; $("#board").querySelectorAll("[data-b]").forEach(x => x.setAttribute("aria-selected", String(x === b))); render(); return; }
   const r = e.target.closest("[data-sel]"); if (r && world) { const [kind, id] = r.dataset.sel.split("|"); world.select({ kind, id: kind === "dock" ? +id : id }); } });
 function boardList(st) {
   if (board === "docks") return st.docks.map(d => `<div class="brow" data-sel="dock|${d.i}"><b>Bay ${d.i + 1}</b><div><small>${d.truck ? esc(d.truck) + " · " + esc(d.client || "") : "—"}</small>${d.truck ? `<div class="bar" style="margin:2px 0 0"><i style="width:${(d.prog * 100).toFixed(0)}%"></i></div>` : ""}</div><span class="pill ${d.state === "occupied" ? (d.dir === "in" ? "unload" : "load") : d.state}">${d.state === "free" ? "free" : d.state === "reserved" ? "booked" : d.dir === "in" ? "unloading" : "loading"}</span></div>`).join("");
+  if (board === "pcs") return st.pcs.map(p => `<div class="brow" data-sel="pc|${esc(p.id)}"><b>${esc(p.name)}</b><small>${esc(p.where)} · ${esc(p.user || "free")}</small><span class="pill ${p.user ? "load" : ""}">${p.user ? "in use" : "free"}</span></div>`).join("");
   if (board === "lifts") return st.lifts.map(L => `<div class="brow" data-sel="lift|${esc(L.id)}"><b>${esc(L.id)}</b><small>${esc(L.operator)} · ${esc(L.task)}</small><span class="pill ${L.busy ? "load" : ""}">${L.battery}%</span></div>`).join("");
   if (board === "team") return st.people.filter(p => p.rid || p.role === "Warehouse Manager").sort((a, b) => a.role.localeCompare(b.role)).map(p => `<div class="brow ${p.onBreak ? "brk" : ""}" data-sel="person|${esc(p.id)}"><b>${esc(p.name)}</b><small>${esc(p.role)} · ${esc(p.doing || "")}</small><span class="pill ${p.onBreak ? "watch" : p.leaving ? "" : "load"}">${p.onBreak ? "break" : p.leaving ? "home" : "on"}</span></div>`).join("") +
     st.lifts.map(L => `<div class="brow" data-sel="lift|${esc(L.id)}"><b>${esc(L.operator)}</b><small>Forklift Operator · ${esc(L.id)} · ${esc(L.task)}</small><span class="pill ${L.crewed ? "load" : ""}">${L.crewed ? "on" : "—"}</span></div>`).join("");

@@ -1,4 +1,4 @@
-"""Gateway Warehousing & Transport (module v1.1): data builder, page, brain and approvals."""
+"""Gateway Warehousing & Transport (module v1.3): data builder, page, brain, approvals, sorting centres."""
 import json
 from datetime import date
 from pathlib import Path
@@ -12,7 +12,8 @@ def test_build_is_consistent_and_seeded():
     a, b = build(asof=date(2026, 10, 7)), build(asof=date(2026, 10, 8))
     assert a["kpis"] == b["kpis"]                                   # same week, same numbers
     cfg = load()
-    assert len(a["sites"]) == len(cfg["sites"]) == 3 and len(a["clients"]) == 6
+    assert len(a["sites"]) == len(cfg["sites"]) == 5 and len(a["clients"]) == 6
+    assert sum(1 for s in a["sites"] if s.get("processing")) == 2
     for c in a["clients"]:                                          # OTIF is computed from whole deliveries
         assert c["otif"] == round((c["deliveries_4wk"] - c["late"]) / c["deliveries_4wk"] * 100, 1)
         assert c["status"] in {"ok", "watch", "alert"}
@@ -30,7 +31,7 @@ def test_page_and_data_are_built_and_synthetic():
     assert "script-src 'self'" in page and "synthetic" in page.lower()
     s = (ROOT / "docs/data/gateway.js").read_text()
     d = json.loads(s[s.index("{"):s.rstrip().rstrip(";").rindex("}") + 1])
-    assert d["meta"]["synthetic"] is True and d["meta"]["module_version"] == "1.2"
+    assert d["meta"]["synthetic"] is True and d["meta"]["module_version"] == "1.3"
     for f in ["world.js", "app.js", "boot.js", "gateway.css"]:
         assert (ROOT / "docs/gateway" / f).exists()
 
@@ -55,10 +56,28 @@ def test_rosters_shifts_and_cold_rooms():
         for sh in ("day", "aft", "night"):                         # every shift has a supervisor, a first aider, gate and yard
             on = [p for p in R["people"] if p["shift"] == sh]
             assert any(p["role"] == "Shift Supervisor" for p in on) and any(p["first_aid"] for p in on)
-            assert any(p["role"] == "Gatehouse Officer" for p in on) and any(p["role"] == "Yard Marshal" for p in on)
+            assert sum(p["role"] == "Gatehouse Officer" for p in on) == 2 and any(p["role"] == "Yard Marshal" for p in on)   # Gate 1 in, Gate 2 out
+            assert any(p["role"] in ("Sort Supervisor", "Sort Centre Manager") for p in on) and any(p["role"] == "Sort Operative" for p in on)
         ops = [p for p in R["people"] if p["role"] == "Forklift Operator"]
         assert all(p["forklift_licence"] for p in ops)
-        assert site["cold_rooms"] and all(c["low"] <= c["temp"] <= c["high"] for c in site["cold_rooms"])
+        assert (site["cold_rooms"] or site.get("processing")) and all(c["low"] <= c["temp"] <= c["high"] for c in site["cold_rooms"])
         assert len(d["bookings"][site["id"]]) == 24
     gaps = [c for R in d["rosters"].values() for c in R["checks"] if not c["ok"]]
     assert gaps and any(f["area"] == "Roster" for f in d["flags"])     # the leave gap is flagged, not hidden
+
+
+def test_sorting_centres_and_workstations():
+    d = build(asof=date(2026, 10, 7))
+    for site in d["sites"]:
+        so = site["sort"]
+        assert so["chutes"] == len(d["clients"]) + 2 and set(so["by_client"]) == {c["id"] for c in d["clients"]}
+        assert so["parcels_today"] == sum(so["by_client"].values()) and so["workstations"] >= so["benches"]
+        packers = [p for p in d["rosters"][site["id"]]["people"] if p["role"] == "Pick & Pack Operative"]
+        assert packers and all(sum(q["shift"] == p["shift"] for q in packers) <= so["benches"] for p in packers)
+    big = [s for s in d["sites"] if s.get("processing")]
+    assert all(s["sort"]["benches"] > max(x["sort"]["benches"] for x in d["sites"] if not x.get("processing")) for s in big)
+    assert any(m["id"] == "spm" for m in d["management"]) and d["kpis"]["sorted_today"] > 0
+    assert any(f["area"] == "Sorting" for f in d["flags"])
+    js = (ROOT / "docs/gateway/world.js").read_text()
+    for needle in ("function stepSort", "function makePC", "function tryLock", "function onRoad", "fleetCall", "turnIn"):
+        assert needle in js

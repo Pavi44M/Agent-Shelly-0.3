@@ -43,7 +43,7 @@
     <div class="gw-ctl" aria-label="View controls"><button type="button" id="zin" aria-label="Zoom in">+</button><button type="button" id="zout" aria-label="Zoom out">−</button><button type="button" id="zhome" aria-label="Whole site">⌂</button><button type="button" id="ztop" aria-label="Top or side view">⊤</button></div>
     <aside class="card panel" id="panel" aria-live="polite"></aside>
     <div class="card track" id="track"></div>
-    <div class="card board" id="board"><div class="bt" role="tablist"><button type="button" data-b="docks" aria-selected="true">Docks</button><button type="button" data-b="lifts" aria-selected="false">Forklifts</button><button type="button" data-b="trucks" aria-selected="false">Trucks</button><button type="button" data-b="team" aria-selected="false">Team</button></div><div id="boardList"></div></div>
+    <div class="card board" id="board"><div class="bt" role="tablist"><button type="button" data-b="docks" aria-selected="true">Docks</button><button type="button" data-b="lifts" aria-selected="false">Forklifts</button><button type="button" data-b="trucks" aria-selected="false">Trucks</button><button type="button" data-b="team" aria-selected="false">Team</button><button type="button" data-b="pcs" aria-selected="false">PCs</button></div><div id="boardList"></div></div>
     <p class="hint" id="hint">Drag to turn · scroll to zoom · tap a truck, forklift, person or dock</p>
     <div class="nogl" id="nogl" hidden>This device can't draw the 3D site. Everything below still works.</div>
   </div>
@@ -81,7 +81,7 @@
 
 <section id="s-roles">
   <div class="sec-h"><h2>Every role on the floor and on the road</h2><span class="note" id="roleNote"></span></div>
-  <details class="about"><summary>What is this?</summary><p>The jobs that make a 3PL work, how many people do each across the three sites, and what they do. Tap “Show me” to find one of them working in the 3D site.</p></details>
+  <details class="about"><summary>What is this?</summary><p>The jobs that make a 3PL work, how many people do each across the five sites, and what they do. Tap “Show me” to find one of them working in the 3D site.</p></details>
   <div class="roles" id="roles"></div>
 </section>
 
@@ -100,8 +100,9 @@
   <div class="how">
     <p><b>Business model.</b> <code>modules/gateway/gateway.yaml</code>: sites, docks and racks, clients and contracts, fleet, the management team and every floor role. Change it and the page and 3D sites follow.</p>
     <p><b>Numbers.</b> <code>shelly/gateway.py</code> builds this week's service, stock, fleet, shipments, flags and decisions (synthetic, seeded by week) into <code>docs/data/gateway.js</code>. <code>python -m shelly gateway</code> prints the same summary.</p>
-    <p><b>Live site.</b> <code>docs/gateway/world.js</code> (three.js): trucks book in, reverse onto docks and leave; forklifts unload to racks or pick for outbound; people work by role. Nothing here is real company data.</p>
-    <p><b>Brain.</b> Gateway's agents sit in the Shelly Brain (warehouse, transport, cold chain, fleet, client accounts) and its approvals join the one approvals tray.</p>
+    <p><b>Live site.</b> <code>docs/gateway/world.js</code> (three.js): trucks come in at Gate 1 (two lanes), wait in marshalling lanes, are called one at a time down the one-way dock lane, reverse on, and leave through Gate 2 when there is a gap in traffic. Gateway's own trucks rest in a drive-through fleet park. Every truck and car checks the space ahead, so vehicles never drive through each other. Forklifts unload to racks or pick for outbound; people work by role. Nothing here is real company data.</p>
+    <p><b>Sorting centres (v1.3).</b> Every site has a sorting centre: an overhead conveyor brings goods from the warehouse to a loop sorter with a chute and roll cage for each business, plus Returns and Exceptions. Pick &amp; pack operatives work at bench PCs, sort operatives swap full cages, a sort supervisor clears jams from the sort-control PC and the sort centre manager runs it from the glass office. Albany and Airport are processing centres with bigger halls. Tap any PC to see its live screen.</p>
+    <p><b>Brain.</b> Gateway's agents sit in the Shelly Brain (warehouse, transport, cold chain, sorting, shifts, client accounts) and its approvals join the one approvals tray.</p>
   </div>
 </section>
 <p class="foot" id="foot"></p>

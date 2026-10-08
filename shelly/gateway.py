@@ -1,6 +1,6 @@
 """Gateway Warehousing & Transport: Shelly's third business (a 3PL), module v1.1.
 
-Builds the data behind docs/gateway/ from modules/gateway/gateway.yaml: three sites, six client
+Builds the data behind docs/gateway/ from modules/gateway/gateway.yaml: five sites (three warehouses, two processing centres), six client
 contracts, the fleet, forklifts, the management team and floor roles, this week's service figures,
 today's shipments, what Shelly flagged and the decisions waiting. Everything is synthetic (seeded,
 so the same week always gives the same numbers); no real company, person or contract.
@@ -35,7 +35,8 @@ PLACES = {  # fictional delivery points
 LAST = ["Walker", "Ngata", "Tuilagi", "Singh", "Chen", "Kumar", "Brown", "Patel", "Smith", "Fa'alogo", "Lee", "Wilson", "Taufa", "Park",
         "Henare", "Nguyen", "Williams", "Tipene", "Reddy", "Martin", "Fifita", "Kaur", "Thompson", "Pōtae", "Wang", "Davies"]
 STAGES = ["Order confirmed", "Picked", "Loaded", "In transit", "Delivered"]
-LEADS = {"Shift Supervisor", "Yard Marshal", "Gatehouse Officer", "Cleaner / Hygiene"}
+LEADS = {"Shift Supervisor", "Yard Marshal", "Gatehouse Officer", "Cleaner / Hygiene", "Sort Supervisor", "Sort Centre Manager"}
+SORT_ROLES = {"Sort Centre Manager", "Sort Supervisor", "Sort Operative", "Pick & Pack Operative"}
 
 
 def _hm(s: str) -> float:
@@ -61,7 +62,12 @@ def rosters(cfg: dict, rnd: random.Random) -> dict:
             if cold and site["id"] == "WH-02":
                 crew["Quality Officer (GDP)"] = 1
             for role, k in crew.items():
-                count = max(1, round(k * site.get("crew_scale", 1))) if role in LEADS or "Leader" in role else round(k * site.get("crew_scale", 1))
+                scale = site.get("sort", {}).get("crew", 1) if role in SORT_ROLES else site.get("crew_scale", 1)
+                count = max(1, round(k * scale)) if role in LEADS or "Leader" in role else round(k * scale)
+                if role in ("Gatehouse Officer", "Sort Centre Manager"):
+                    count = k                       # one per gate; one sort-centre manager on day and afternoon
+                if role == "Pick & Pack Operative":
+                    count = min(count, site.get("sort", {}).get("benches", 6))
                 if role == "Forklift Operator":
                     count = min(count, site["forklifts"])
                 for j in range(count):
@@ -76,7 +82,11 @@ def rosters(cfg: dict, rnd: random.Random) -> dict:
                     st = {"Forklift Operator": f"FL-{site['id'][-2:]}{j % site['forklifts'] + 1:02d}", "Order Picker": f"Aisles {1 + j % 4}–{2 + j % 4}",
                           "Loader": f"Docks {1 + (j * 3) % site['docks']}–{min(site['docks'], 3 + (j * 3) % site['docks'])}", "Receiver / Checker": "Inbound docks",
                           "Yard Marshal": "Yard", "Gatehouse Officer": "Gate", "Shift Supervisor": "Whole site", "Team Leader": ["Receiving", "Picking", "Despatch"][j % 3],
-                          "Inventory Controller": "Cycle counts", "Cleaner / Hygiene": "Chilled zones + amenities", "Quality Officer (GDP)": "Cold rooms"}.get(role, "")
+                          "Inventory Controller": "Cycle counts", "Cleaner / Hygiene": "Chilled zones + amenities", "Quality Officer (GDP)": "Cold rooms",
+                          "Sort Centre Manager": "Sort centre office", "Sort Supervisor": "Sort control PC", "Sort Operative": f"Chutes {2 * j + 1}–{2 * j + 2}",
+                          "Pick & Pack Operative": f"Pack bench {j % site.get('sort', {}).get('benches', 6) + 1}"}.get(role, "")
+                    if role == "Gatehouse Officer":
+                        st = ["Gate 1 · in", "Gate 2 · out"][j % 2]
                     if cold and role in ("Order Picker", "Forklift Operator") and j == 0:
                         st += " · cold room"
                     n += 1
@@ -96,7 +106,8 @@ def rosters(cfg: dict, rnd: random.Random) -> dict:
             ok(f"{sh['name']}: first aider on every shift", any(p["first_aid"] for p in on))
             lic = sum(p["forklift_licence"] for p in on)
             ok(f"{sh['name']}: {lic} licensed forklift drivers for {site['forklifts']} forklifts", lic >= min(3, site["forklifts"]))
-            ok(f"{sh['name']}: yard marshal and gatehouse covered", any(p["role"] == "Yard Marshal" for p in on) and any(p["role"] == "Gatehouse Officer" for p in on))
+            ok(f"{sh['name']}: yard marshal and both gates covered", any(p["role"] == "Yard Marshal" for p in on) and sum(p["role"] == "Gatehouse Officer" for p in on) >= 2)
+            ok(f"{sh['name']}: sorting centre led (manager or supervisor) with {sum(p['role'] in SORT_ROLES for p in on)} sort staff", any(p["role"] in ("Sort Supervisor", "Sort Centre Manager") for p in on))
             if cold:
                 ok(f"{sh['name']}: {sum(p['cold_trained'] for p in on)} people trained for the cold rooms", sum(p["cold_trained"] for p in on) >= 3)
         hrs = sum(p["hours"] for p in people)
@@ -152,6 +163,10 @@ def build(cfg: dict | None = None, asof: date | None = None) -> dict:
         s["dock_to_stock_h"] = round(rnd.uniform(1.6, 3.4), 1)
         s["pick_accuracy"] = round(rnd.uniform(99.4, 99.9), 2)
         s["clients"] = [c["id"] for c in clients if c["site"] == s["id"]]
+        so = s.get("sort", {"benches": 6, "flow": 1.0})
+        by = {c["id"]: int(c["deliveries_wk"] * rnd.uniform(9, 16) * so.get("flow", 1)) for c in clients}
+        s["sort"] = dict(so, chutes=len(clients) + 2, by_client=by, parcels_today=sum(by.values()), missorts=rnd.randint(0, 6),
+                         workstations=6 + so.get("benches", 6) + 2)
 
     # ---- fleet: every truck with a driver, a home site and today's job
     trucks, n = [], 2101
@@ -186,6 +201,7 @@ def build(cfg: dict | None = None, asof: date | None = None) -> dict:
     kpis = {"stock": tot_stock, "capacity": cap, "fill_pct": round(tot_stock / cap * 100, 1), "otif": otif,
             "otif_prev": round(otif + rnd.uniform(-0.8, 0.6), 1), "deliveries": sum(c["deliveries"] for c in clients),
             "revenue_wk": sum(c["revenue_wk"] for c in clients), "trucks": len(trucks), "forklifts": len(forklifts),
+            "sorted_today": sum(s["sort"]["parcels_today"] for s in sites.values()), "workstations": sum(s["sort"]["workstations"] for s in sites.values()),
             "temp_excursions": 1, "lti_free_days": 212, "staff": sum(s["staff_on_shift"] for s in sites.values()),
             "headcount": sum(r["count"] for r in cfg["roles"]) + len(cfg["management"])}
 
@@ -205,6 +221,8 @@ def build(cfg: dict | None = None, asof: date | None = None) -> dict:
     idle = min(sites.values(), key=lambda s: s["dock_util_pct"])
     busy = max([c for c in clients if c["site"] == idle["id"]] or clients, key=lambda c: c["deliveries"])
     flags.append({"sev": "low", "area": "Docks", "text": f"{idle['name']} docks are used {idle['dock_util_pct']}% of the day. Offer the spare morning slots to {busy['name']}, the busiest client there, or sell them to a new client.", "site": idle["id"]})
+    pc = max(sites.values(), key=lambda s: s["sort"]["parcels_today"] / max(1, s["sort"]["benches"]))
+    flags.append({"sev": "low", "area": "Sorting", "text": f"{pc['name']} sorts {pc['sort']['parcels_today']:,} parcels a day on {pc['sort']['benches']} pack benches. Add a bench or a twilight pack shift before the pre-Christmas peak.", "site": pc["id"]})
     low = min(forklifts, key=lambda f: f["battery"])
     flags.append({"sev": "low", "area": "Fleet", "text": f"Forklift {low['id']} battery at {low['battery']}%. Swap it before the afternoon despatch peak.", "forklift": low["id"]})
 

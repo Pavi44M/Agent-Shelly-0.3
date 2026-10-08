@@ -461,11 +461,16 @@ AGENTS += [
       schedule="Weekly Monday", autonomy="suggest", guardrails=["Price and terms changes go to Management"], escalates_when=["Client below SLA two weeks running", "New client or price change"],
       hands_off_to=["sales-head"], owner="Client Account Manager (Gateway)", page="../gateway/#s-clients", team="Gateway · Clients",
       work=[["doing", "Pōhutukawa Diagnostics below 99% OTIF: recovery plan"], ["next", "Tūī Pharmacy Group trial proposal"], ["done", "September reviews sent"]]),
-    A("gw-shifts", "Gateway shifts agent", "gateway", "office", "Builds shifts for three sites around dock bookings and pick volumes, so every dock and forklift has a licensed person.",
+    A("gw-shifts", "Gateway shifts agent", "gateway", "office", "Builds shifts for five sites around dock bookings and pick volumes, so every dock and forklift has a licensed person.",
       inputs=["dock bookings", "volumes", "licences and inductions"], outputs=["site rosters", "overtime requests"], triggers=["gateway roster", "gateway shifts", "overtime"],
       schedule="Weekly Thursday", autonomy="approve", guardrails=["Only licensed operators on forklifts", "Breaks staggered so docks stay covered"],
       escalates_when=["Overtime over the site budget"], hands_off_to=["office-head"], owner="People & Rostering Lead (Gateway)", page="../gateway/#s-roles", team="Gateway · People",
       work=[["doing", "Cold Chain night shift for Tōtara containers"], ["next", "Christmas peak roster"], ["done", "Forklift licence check: 26 of 26 current"]]),
+    A("gw-sorting", "Gateway sorting agent", "gateway", "inventory", "Runs the loop sorters and pack benches at all five sites: parcels by business, cage levels, jams and cut-off times.",
+      inputs=["parcel scans", "chute and cage levels", "pack-bench orders"], outputs=["cage swap calls", "jam alerts", "cut-off warnings"], triggers=["gateway sorting", "sort centre", "parcels", "pick and pack"],
+      schedule="Live, every scan", autonomy="auto", guardrails=["Never sends a parcel to another business's cage", "Unreadable labels go to Exceptions for a person to check"],
+      escalates_when=["Mis-sorts above 0.1%", "A cut-off at risk"], hands_off_to=["gw-transport", "gw-warehouse"], owner="Sorting & Processing Manager (Gateway)", page="../gateway/#s-floor", team="Gateway · Sorting",
+      work=[["doing", "Albany: pre-Christmas parcel volumes"], ["next", "Airport export cut-off at 16:00"], ["done", "Cage swap calls automated at 75% full"]]),
 ]
 
 # where each existing agent now sits: department + its team (business unit)

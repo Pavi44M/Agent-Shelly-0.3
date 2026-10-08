@@ -7,6 +7,14 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v1.11: Gateway v1.3, a realistic yard, sorting centres and processing centres
+- **Two gates, no congestion**: Gate 1 (two lanes in, with a 20 m driveway so waiting trucks are off the road) and a separate Gate 2 (out), each with its own gatehouse officer and live PC. Trucks only turn in or out when there is a real gap in traffic, and oncoming drivers hold back to let them through.
+- **One-way yard**: five marshalling lanes where trucks wait to be called, one truck at a time down the dock lane, swing out and reverse straight onto the dock, then leave west to Gate 2. Every truck and car checks the space ahead and the dock lane is locked while a truck reverses on or pulls out, so vehicles never drive through each other (tested with long runs on every site: no overlaps, no gridlock).
+- **Fleet park**: eight drive-through bays for Gateway trucks not on a job; they leave forwards along the back lane when called for an outbound load.
+- **Sorting centre at every site**: an overhead conveyor from the warehouse to a loop sorter with a chute and roll cage for each business (plus Returns and Exceptions), pick & pack benches, a sort-control desk and a glass manager's office. New roles: Sort Centre Manager, Sort Supervisor, Sort Operative, Pick & Pack Operative, on every shift's roster; a Sorting & Processing Manager in the management team; a Gateway sorting agent in the Brain.
+- **Workstations**: live PC screens at both gates, receiving, the planning office, sort control, the manager's office and every pack bench. Tap one to read its screen; the new PCs tab lists them all.
+- **Two processing centres**: Gateway Albany Processing Centre and Gateway Airport Processing Centre (Māngere), with bigger sorting halls and more pack benches.
+
 ## What's new in v1.10: Gateway v1.2, cold storage, 24/7 shifts and night
 - **Cold storage** at every Gateway site: chillers (2–8°C pharma, 2–5°C food), freezers (−20°C) and a chilled cross-dock lane, built as insulated rooms around their racks with strip-curtain doors, cold mist when a forklift goes through, rooftop units and live temperatures (alarm colours outside range). Reefer trucks are put away into the right cold room.
 - **Day, afternoon and night shifts** from a real roster: names, stations, staggered breaks, forklift / first-aid / cold-room licences. In 3D the crew clocks in from the car park, takes breaks in the staff room, hands over and goes home; only licensed operators drive forklifts, so the night shift runs fewer. Roster checks (supervisor, first aider, licensed drivers, gate and yard, cold-trained) flag a real gap.
