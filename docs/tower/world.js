@@ -189,6 +189,17 @@ export function createTower(canvas, T, hooks = {}) {
     const shaft = new THREE.Mesh(BOX, new THREE.MeshStandardMaterial({ color: "#bfe0f5", transparent: true, opacity: .22, roughness: .1, depthWrite: false })); shaft.scale.set(3.4, topY - 3, 3.4); shaft.position.set(TW / 2 + 2, (topY - 3) / 2, z); root.add(shaft); cols.push(shaft);
     const car = new THREE.Group(); box(car, 2.8, 2.9, 2.8, 0, 1.45, 0, new THREE.MeshStandardMaterial({ color: "#f2c14e", emissive: "#f2c14e", emissiveIntensity: .25, metalness: .3, roughness: .3 }), true, true); car.position.set(TW / 2 + 2, 0, z); root.add(car); cols.push(car);
     lifts.push({ car, y: pick(stops), to: pick(stops), wait: rnd(0, 3) }); }
+  // facade detail modelled in Blender (blender/shelly_tower_05_web_detail.py): window frames for every
+  // floor (they ride inside the floor, so they slide out and twist with it) and the aluminium fins
+  const aluM = new THREE.MeshStandardMaterial({ color: "#dfe5ec", metalness: .55, roughness: .32, flatShading: true });
+  loadGLB(new URL("model/shelly-tower-detail.glb", location.href).href).then(parts => {
+    for (const [name, geo] of parts) {
+      const me = new THREE.Mesh(geo, aluM); me.castShadow = shadows; me.name = name;
+      if (name === "Fins") { me.receiveShadow = shadows; root.add(me); cols.push(me); }
+      else { const x = FL[name.replace("Facade_", "")]; if (x) x.inner.add(me); }
+    }
+    lastM = -1;   // re-apply the current look so the fins follow it
+  }).catch(e => console.warn("tower detail model not loaded", e));
 
   /* ------------------------------------------------ 2050: the Shelly Business Centre */
   const FUT = new THREE.Group(); root.add(FUT);
@@ -534,4 +545,22 @@ export function createTower(canvas, T, hooks = {}) {
     advance(sec) { for (let i = 0; i < sec / .05; i++) step(.05); },
     _view(v) { anim = null; Object.assign(ov, v); },
   };
+}
+
+/* A tiny reader for the Blender export (.glb): mesh nodes with positions and indices only,
+   which is all the facade model needs, so the page doesn't need the full GLTF loader. */
+async function loadGLB(url) {
+  const buf = await (await fetch(url)).arrayBuffer(), dv = new DataView(buf);
+  if (dv.getUint32(0, true) !== 0x46546C67) throw new Error("not a GLB file");
+  const jl = dv.getUint32(12, true), J = JSON.parse(new TextDecoder().decode(new Uint8Array(buf, 20, jl)));
+  const bin = 20 + jl + 8;
+  const arr = i => { const a = J.accessors[i], v = J.bufferViews[a.bufferView], off = bin + (v.byteOffset || 0) + (a.byteOffset || 0),
+    n = a.count * { SCALAR: 1, VEC3: 3 }[a.type], T = { 5126: Float32Array, 5125: Uint32Array, 5123: Uint16Array, 5121: Uint8Array }[a.componentType];
+    return new T(buf.slice(off, off + n * T.BYTES_PER_ELEMENT)); };
+  return J.nodes.filter(n => n.mesh !== undefined).map(n => {
+    const p = J.meshes[n.mesh].primitives[0], g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(arr(p.attributes.POSITION), 3));
+    if (p.indices !== undefined) g.setIndex(new THREE.BufferAttribute(arr(p.indices), 1));
+    if (n.translation) g.translate(...n.translation);
+    g.computeBoundingSphere(); return [n.name, g]; });
 }
