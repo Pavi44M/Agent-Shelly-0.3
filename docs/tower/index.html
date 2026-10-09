@@ -29,6 +29,12 @@
 
 <section class="kpis" id="kpis" aria-label="The tower right now"></section>
 
+<section id="s-renders" aria-label="Shelly Tower rendered in Blender">
+  <div class="sec-h"><h2>Rendered in Blender</h2><span class="note">The same tower, modelled and lit in Blender · Auckland waterfront</span></div>
+  <figure class="hero"><img id="heroImg" src="img/render-today.jpg" width="1600" height="900" alt="Shelly Tower today on the Auckland waterfront, with the CBD and the Sky Tower behind, rendered in Blender"><figcaption id="heroCap"></figcaption></figure>
+  <div class="thumbs" id="thumbs" role="tablist" aria-label="Choose a render"></div>
+</section>
+
 <section id="s-tower" aria-label="Shelly Tower in 3D">
   <details class="about"><summary>What is this?</summary><p>Shelly Tower in 3D. Every coloured band is a floor: tap one (or pick it from the directory) and it slides out so you can see inside and who works there. Switch between <b>Today</b> and <b>2050</b> to see the Shelly Business Centre: the same floors in a twisting garden tower, linked by skyways to the buildings on both sides. Drag to turn, scroll or pinch to zoom.</p></details>
   <div class="tw-top">
@@ -138,6 +144,7 @@
     <p><b>Numbers.</b> <code>shelly/tower.py</code> builds people, occupancy, rent roll and flags (synthetic, seeded by week) into <code>docs/data/tower.js</code>. <code>python -m shelly tower</code> prints the summary.</p>
     <p><b>3D.</b> <code>docs/tower/world.js</code> (three.js): floors stacked on the podium, glass lifts, the plaza and the city; a tapped floor slides out with its desks and people. 2050 twists the tower, grows the vertical garden, raises the satellite towers and links the buildings on both sides with skyways and sky bridges, and adds the holographic world map, media screens, air taxis, flying cars and drones.</p>
     <p><b>Brain.</b> The eight Shelly OS agents (Workplace, Retail, Logistics, Trade, Mobility, Energy, Security, Concierge) and the leasing agent sit in the Shelly Brain; medium and high-impact decisions (an MFC order over the limit, a new lease) wait in the one approvals tray.</p>
+    <p><b>Blender.</b> The renders at the top were modelled, lit and rendered in Blender (EEVEE) from the same floor data; the scripts that build the model are kept with the .blend file, so the scene can be rebuilt and re-rendered when the tower changes.</p>
     <p><b>City.</b> The tower stands in a stylised massing model of Auckland city (CBD, Sky Tower, Albert Park, Victoria Park, the Viaduct and the harbour). It is a picture, not survey data. Tap 🏙 for the city view.</p>
   </div>
 </section>

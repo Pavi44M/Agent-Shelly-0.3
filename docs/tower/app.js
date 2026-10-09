@@ -149,3 +149,17 @@ $("#moneyTbl").innerHTML = `<thead><tr><th>Income stream</th><th>Who pays</th><t
 $("#phases").innerHTML = T.phases.map(p => `<div class="ph ${p.n === T.current_phase ? "cur" : p.n < T.current_phase ? "done" : ""}"><span class="tag">Phase ${p.n} · ${esc(p.years)}</span><b>${esc(p.name)}</b><p>${esc(p.text)}</p>${p.gate ? `<div class="gate">Gate · ${esc(p.gate)}</div>` : ""}</div>`).join("");
 $("#kpiTbl").innerHTML = `<thead><tr><th>Area</th><th>Success measure</th><th>Target</th><th>Now (phase ${T.current_phase})</th><th style="width:20%">Progress</th></tr></thead><tbody>` +
   T.kpis_targets.map(k => `<tr><td><b>${esc(k.area)}</b></td><td>${esc(k.kpi)}</td><td class="s">${esc(k.target)}</td><td>${esc(k.now)}</td><td><div class="bar ${k.pct >= 100 ? "g" : k.pct < 70 ? "a" : ""}"><i style="width:${Math.min(100, k.pct)}%"></i></div></td></tr>`).join("") + "</tbody>";
+
+/* ------------------------------------------------ Blender renders */
+const RENDERS = [
+  { id: "today", era: "now", title: "Today · golden hour", text: "Shelly Tower on the Wynyard Quarter waterfront: the coloured floor bands, the SHELLY crown, the podium with the Neighbourhood Store flagship, the CBD and the Sky Tower behind." },
+  { id: "dusk", era: "now", title: "Today · dusk", text: "Evening: every floor lit, the crown sign glowing and the spire light on." },
+  { id: "2050", era: "future", title: "2050 · Shelly Business Centre", text: "The twisting garden tower with its holographic rings, the satellite towers and skyways linking the buildings on both sides, garden domes and air taxis." },
+];
+$("#thumbs").innerHTML = RENDERS.map((r, i) => `<button type="button" role="tab" aria-selected="${i === 0}" data-r="${r.id}"><img src="img/render-${r.id}-sm.jpg" width="640" height="360" alt="" loading="lazy"><span>${esc(r.title)}</span></button>`).join("");
+function showRender(id) { const r = RENDERS.find(x => x.id === id) || RENDERS[0]; $("#heroImg").src = `img/render-${r.id}.jpg`; $("#heroImg").alt = `Shelly Tower, ${r.title}, rendered in Blender`;
+  $("#heroCap").innerHTML = `<b>${esc(r.title)}</b> ${esc(r.text)} <button type="button" class="mini" data-era3d="${r.era}">Open this look in 3D</button>`;
+  $("#thumbs").querySelectorAll("[data-r]").forEach(b => b.setAttribute("aria-selected", String(b.dataset.r === r.id))); }
+$("#thumbs").addEventListener("click", e => { const b = e.target.closest("[data-r]"); if (b) showRender(b.dataset.r); });
+$("#heroCap").addEventListener("click", e => { const b = e.target.closest("[data-era3d]"); if (b && tw) { tw.setEra(b.dataset.era3d); tw.home(); $("#s-tower").scrollIntoView({ behavior: "smooth", block: "start" }); } });
+showRender("today");

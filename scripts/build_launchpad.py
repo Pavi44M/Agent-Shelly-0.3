@@ -136,7 +136,7 @@ def main():
              "The Shelly Business Tower in Auckland city: one brain, Shelly OS, with eight agents runs every floor, the mall, the trade centre, "
              "the hotel and the micro-fulfilment centre, and every Shelly business has its floor. Today and 2050.",
              f"{tk['floors']}", f"floors · {tk['shelly_floors']} Shelly floors · {tk['tenants']} tenants · {tk['available']} to let",
-             "New · v" + tw["meta"]["module_version"], "new", f'<span class="shelves" aria-hidden="true">{bands}</span>', "wide")
+             "New · v" + tw["meta"]["module_version"], "new", '<img src="../tower/img/render-2050-sm.jpg" width="200" height="113" alt="" style="width:200px;height:auto;border-radius:10px;border:1px solid #1f2a38">', "wide")
     card("../index.html#s-packs", "Electronics · wholesale · warehousing · production", "Industry packs",
          "The same engine applied beyond retail: sell-through and markdowns, cost-to-serve and OTIF, ABC-XYZ slotting, OEE and scrap.",
          str(len(pack_titles) or 4), "industry packs on demo data", "Demo data")

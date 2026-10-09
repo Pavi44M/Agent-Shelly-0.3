@@ -7,6 +7,10 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v1.13: Shelly Tower rendered in Blender
+- Shelly Tower modelled, lit and rendered in **Blender** from the same floor data: the floor bands, aluminium fins, the SHELLY crown, the podium and Neighbourhood Store flagship, the roof garden, helipad, solar canopy and spire, glass lifts, and the Auckland setting (CBD, Sky Tower, parks, wharves, harbour).
+- Three renders at the top of the [Shelly Tower page](https://pavi44m.github.io/Agent-Shelly-0.3/tower/): today at golden hour, today at dusk, and the Shelly Business Centre in 2050 (twisting garden tower, holographic rings, satellite towers, skyways linking both sides, garden domes, air taxis). Each opens the same look in the live 3D view; the Launchpad card shows the 2050 render.
+
 ## What's new in v1.12: Shelly Tower (module v1.3), the Shelly Business Tower in Auckland city
 - **[Shelly Tower](https://pavi44m.github.io/Agent-Shelly-0.3/tower/)** in 3D, built from *Shelly Business Tower: Integrated Architecture*: a commerce operating system with a building around it, standing in a stylised model of Auckland city (CBD, Sky Tower, Albert Park, Victoria Park, the Viaduct and the Waitematā Harbour; a picture, not survey data).
 - **Shelly OS**: six layers (physical building, edge, data fabric and digital twin, Shelly OS, sector services, experiences and open API) with trust and governance down the side; the elevated capabilities (virtual power plant, simulation sandbox, commerce graph) and the new ones (agent mesh, decision ledger, predictive maintenance, building copilot, federated learning, edge plus cloud, self-learning loop).

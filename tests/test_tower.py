@@ -38,7 +38,7 @@ def test_page_and_data_are_built_and_synthetic():
     s = (ROOT / "docs/data/tower.js").read_text()
     d = json.loads(s[s.index("{"):s.rstrip().rstrip(";").rindex("}") + 1])
     assert d["meta"]["synthetic"] is True and d["meta"]["module_version"] == "1.3"
-    for f in ["world.js", "app.js", "boot.js", "tower.css"]:
+    for f in ["world.js", "app.js", "boot.js", "tower.css", "img/render-today.jpg", "img/render-dusk.jpg", "img/render-2050.jpg"]:
         assert (ROOT / "docs/tower" / f).exists()
     js = (ROOT / "docs/tower/world.js").read_text()
     for needle in ("function buildInterior", "function setEra", "skyFut", "sats", "flyers", "worldMap", "pods50", "air50", "SKY", "lowIM", "ddrones", "sbots"):
