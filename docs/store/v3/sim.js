@@ -86,7 +86,7 @@ export function startSim(ctx) {
   }
   function despawn(a) {
     scene.remove(a.p.g); const k = ctx.people.indexOf(a.p.hit); if (k >= 0) ctx.people.splice(k, 1);
-    a.p.g.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) { if (o.material.map) o.material.map.dispose(); o.material.dispose(); } });
+    a.p.g.traverse(o => { if (o.geometry && !o.geometry.userData.shared) o.geometry.dispose(); if (o.material && !o.material.userData.shared) { if (o.material.map) o.material.map.dispose(); o.material.dispose(); } });
     agents.splice(agents.indexOf(a), 1);
   }
   function say(a, text, tone = "say", secs = 3.2) {

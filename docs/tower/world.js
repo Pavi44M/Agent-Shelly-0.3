@@ -196,7 +196,7 @@ export function createTower(canvas, T, hooks = {}) {
     for (const [name, geo] of parts) {
       const me = new THREE.Mesh(geo, aluM); me.castShadow = shadows; me.name = name;
       if (name === "Fins") { me.receiveShadow = shadows; root.add(me); cols.push(me); }
-      else { const x = FL[name.replace("Facade_", "")]; if (x) x.inner.add(me); }
+      else { const x = FL[name.replace("Facade_", "")]; if (x) { x.inner.add(me); x.facade = me; } }
     }
     lastM = -1;   // re-apply the current look so the fins follow it
   }).catch(e => console.warn("tower detail model not loaded", e));
@@ -331,13 +331,15 @@ export function createTower(canvas, T, hooks = {}) {
     const f = x.f, g = new THREE.Group(); x.inner.add(g); g.position.y = .36;
     const w = x.w - 3, d = x.d - 3, desk = mat("#e9edf2"), chair = mat("#2b2f36"), col = f.colour;
     const tab = (px, pz, ww, dd) => box(g, ww, .72, dd, px, .36, pz, desk, false);
+    const seats = [], spots = [];   // where the team sits (x, z, facing) and stands to work
+    const seat = (px, pz, ry) => { box(g, .55, .45, .55, px, .225, pz, chair, false); box(g, .55, .55, .08, px - Math.sin(ry) * .27, .72, pz - Math.cos(ry) * .27, chair, false); seats.push([px, pz, ry]); };
     const free = (px, pz) => Math.abs(px) > 6.2 || Math.abs(pz) > 6.2;   // keep clear of the core
     if (f.kind === "available") {
       const sg = label("TO LET", `${f.area_m2.toLocaleString("en-NZ")} m² · $${f.rent_m2}/m²`, "#3fb87f"); sg.position.set(0, 4.5, d / 2); sg.scale.multiplyScalar(.75); g.add(sg);
       for (let i = 0; i < 4; i++) box(g, 1, .05, 6, -w / 2 + 4 + i * 6, .03, d / 2 - 4, mat("#3fb87f", { transparent: true, opacity: .5 }), false);
     } else if (f.kind === "core-tech" && /Data/.test(f.name)) {
       const rk = new THREE.MeshStandardMaterial({ color: "#1d2a38", emissive: "#2fb7ff", emissiveIntensity: .45, metalness: .5, roughness: .3 });
-      for (let r = 0; r < 5; r++) for (let k = 0; k < 9; k++) { const px = -w / 2 + 2 + k * (w - 4) / 8, pz = -d / 2 + 2.5 + r * (d - 5) / 4; if (free(px, pz)) box(g, 1.4, 2.2, .9, px, 1.1, pz, rk, false); }
+      for (let r = 0; r < 5; r++) for (let k = 0; k < 9; k++) { const px = -w / 2 + 2 + k * (w - 4) / 8, pz = -d / 2 + 2.5 + r * (d - 5) / 4; if (free(px, pz)) { box(g, 1.4, 2.2, .9, px, 1.1, pz, rk, false); if (k % 3 === 1) spots.push([px, pz + .9, Math.PI]); } }
     } else if (f.kind === "amenity" && /Food|Sky garden|Wellbeing/.test(f.name)) {
       for (let i = 0; i < 10; i++) { const px = rnd(-w / 2 + 2, w / 2 - 2), pz = rnd(-d / 2 + 2, d / 2 - 2); if (!free(px, pz)) continue; const t = new THREE.Mesh(new THREE.IcosahedronGeometry(.9, 1), mat("#4fae55")); t.position.set(px, 1.2, pz); g.add(t); tab(px + 1.5, pz, 1.2, 1.2); }
     } else if (f.kind === "podium" && f.level === "2") {
@@ -347,7 +349,7 @@ export function createTower(canvas, T, hooks = {}) {
         const ring = new THREE.Mesh(new THREE.TorusGeometry(1.8, .12, 6, 24), new THREE.MeshBasicMaterial({ color: "#ffd23f" })); ring.rotation.x = Math.PI / 2; ring.position.set(8 + i * 4.5, 1, 10); g.add(ring); }
     } else if (f.kind === "trade") {   // round deal tables, a live globe and the customs desk
       for (let i = 0; i < 6; i++) { const px = -w / 2 + 4 + (i % 3) * 7, pz = (i < 3 ? -1 : 1) * (d / 2 - 4); const t = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.4, .1, 20), mat("#e9edf2")); t.position.set(px, .76, pz); g.add(t);
-        box(g, .3, .72, .3, px, .36, pz, chair, false); for (let k = 0; k < 4; k++) box(g, .5, .85, .5, px + Math.cos(k * 1.57) * 2, .42, pz + Math.sin(k * 1.57) * 2, chair, false); }
+        box(g, .3, .72, .3, px, .36, pz, chair, false); for (let k = 0; k < 4; k++) { const cx = px + Math.cos(k * 1.57) * 1.9, cz = pz + Math.sin(k * 1.57) * 1.9; seat(cx, cz, Math.atan2(px - cx, pz - cz)); } }
       const globe = new THREE.Mesh(new THREE.SphereGeometry(2.2, 18, 12), new THREE.MeshBasicMaterial({ color: "#ff7ad9", wireframe: true, transparent: true, opacity: .7 })); globe.position.set(w / 2 - 5, 2.6, 0); g.add(globe); x.holo = globe;
       box(g, 6, 1.1, 1, w / 2 - 5, .55, d / 2 - 3, mat("#ff7ad9"), false);
     } else if (f.kind === "hospitality") {   // hotel rooms: beds, partitions, a lounge by the windows
@@ -375,27 +377,36 @@ export function createTower(canvas, T, hooks = {}) {
       const vw = textTex((c, cw, ch) => { c.fillStyle = "#0d2240"; c.fillRect(0, 0, cw, ch); c.fillStyle = "#6ff7ff"; c.font = "800 40px 'JetBrains Mono',monospace"; c.fillText("SHELLY OS · ALL FLOORS", 24, 52);
         for (let i = 0; i < 8; i++) { c.fillStyle = ["#63b6d8", "#1f8a5b", "#2f6fd6", "#ff7ad9", "#9a7bff", "#ffc466", "#e66767", "#7fd1a8"][i]; c.fillRect(24 + i * 120, 90, 100, 40 + Math.random() * 120); } }, 1024, 300);
       const wall = new THREE.Mesh(new THREE.PlaneGeometry(14, 4.1), new THREE.MeshBasicMaterial({ map: vw, toneMapped: false })); wall.position.set(0, 2.3, -d / 2 + .5); g.add(wall);
-      for (let r = 0; r < 3; r++) for (let k = 0; k < 5; k++) { const px = -8 + k * 4, pz = -d / 2 + 4 + r * 2.4; if (free(px, pz)) { tab(px, pz, 3, 1); box(g, 1, .5, .05, px, 1.05, pz - .3, mat("#1d2228"), false); } }
+      for (let r = 0; r < 3; r++) for (let k = 0; k < 5; k++) { const px = -8 + k * 4, pz = -d / 2 + 4 + r * 2.4; if (free(px, pz)) { tab(px, pz, 3, 1); box(g, 1, .5, .05, px, 1.05, pz - .3, mat("#1d2228"), false); seat(px - .7, pz + 1, Math.PI); seat(px + .7, pz + 1, Math.PI); } }
     } else if (/boardroom/i.test(f.name)) {
       box(g, 12, .78, 4, 0, .39, d / 2 - 4.5, mat("#6b4a2f"), false);
-      for (let i = 0; i < 12; i++) box(g, .55, .9, .55, -5.5 + (i % 6) * 2.2, .45, d / 2 - 4.5 + (i < 6 ? -2.6 : 2.6), chair, false);
+      for (let i = 0; i < 12; i++) seat(-5.5 + (i % 6) * 2.2, d / 2 - 4.5 + (i < 6 ? -2.5 : 2.5), i < 6 ? 0 : Math.PI);
       const holo = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 2, 24, 1, true), new THREE.MeshBasicMaterial({ color: "#6ff7ff", transparent: true, opacity: .35, side: THREE.DoubleSide })); holo.position.set(0, 1.9, d / 2 - 4.5); g.add(holo); x.holo = holo;
     } else {
       for (let r = 0; r < 4; r++) for (let k = 0; k < 6; k++) { const px = -w / 2 + 3 + k * (w - 6) / 5, pz = -d / 2 + 3 + r * (d - 6) / 3; if (!free(px, pz)) continue;
-        tab(px, pz, 2.6, 1.3); box(g, .7, .05, .45, px, .99, pz - .2, mat("#1d2228"), false); box(g, .55, .8, .55, px, .4, pz + 1, chair, false); }
+        tab(px, pz, 2.6, 1.3); box(g, .7, .05, .45, px, .99, pz - .2, mat("#1d2228"), false); seat(px, pz + 1.05, Math.PI); }
       box(g, 6, 2.6, 4.5, w / 2 - 3.5, 1.3, -d / 2 + 2.8, new THREE.MeshStandardMaterial({ color: "#bfe0f5", transparent: true, opacity: .35, roughness: .1, depthWrite: false }), false);
       box(g, 3.2, .74, 1.6, w / 2 - 3.5, .37, -d / 2 + 2.8, mat("#6b4a2f"), false);
+      for (const sx of [-1, 1]) seat(w / 2 - 3.5 + sx * .8, -d / 2 + 2.8 + 1.25, Math.PI);   // the meeting room
     }
     // the floor's colour on a feature wall + name label
     box(g, Math.min(10, w * .4), 2.6, .2, -w / 2 + 6, 1.3, -d / 2 + .4, mat(col), false);
     const n = Math.min(36, Math.round(f.here_now / (x.pod ? 2 : 1.4)));
-    const P = [];
-    for (let i = 0; i < n; i++) { const p = makePerson(THREE, { kind: "customer", seed: Math.random() }); p.g.scale.setScalar(.95); let px, pz; do { px = rnd(-w / 2 + 1.5, w / 2 - 1.5); pz = rnd(-d / 2 + 1.5, d / 2 - 1.5); } while (!free(px, pz));
-      p.g.position.set(px, 0, pz); p.g.rotation.y = rnd(0, TAU); g.add(p.g); P.push({ p, x: px, z: pz, tx: px, tz: pz, wait: rnd(0, 6), walk: Math.random() < .35 }); }
+    const P = [], visitors = x.pod || ["hospitality", "amenity"].includes(f.kind) || x.base;
+    const ROLES = ["Analyst", "Team member", "Advisor", "Engineer", "Team Lead", "Coordinator", "Manager"];
+    const places = [...seats.map(q => [...q, "sit"]), ...spots.map(q => [...q, "work"])].sort(() => Math.random() - .5);
+    for (let i = 0; i < n; i++) {
+      const pl = !visitors && i < Math.round(n * .75) ? places.shift() : null;
+      const p = visitors ? makePerson(THREE, { kind: "customer", seed: Math.random() })
+        : makePerson(THREE, { kind: "staff", role: pick(ROLES), shirt: Math.random() < .55 ? col : pick(["#f4f1ea", "#dfe6ee", "#334155", "#556070"]), seed: Math.random() });
+      p.g.scale.setScalar(.95);
+      let px, pz; if (pl) { [px, pz] = pl; } else do { px = rnd(-w / 2 + 1.5, w / 2 - 1.5); pz = rnd(-d / 2 + 1.5, d / 2 - 1.5); } while (!free(px, pz));
+      p.g.position.set(px, 0, pz); p.g.rotation.y = pl ? pl[2] : rnd(0, TAU); g.add(p.g);
+      P.push({ p, x: px, z: pz, tx: px, tz: pz, wait: rnd(0, 6), walk: !pl && Math.random() < .5, mode: pl ? pl[3] : "idle" }); }
     const lb = label(`L${f.level} · ${f.occupant}`, f.kind_label, col); lb.position.set(0, x.h + 3.5, 0); g.add(lb);
     x.interior = { g, P };
   }
-  function dropInterior(x) { if (!x.interior) return; x.inner.remove(x.interior.g); x.interior.g.traverse(o => { if (o.geometry && o.geometry !== BOX) o.geometry.dispose?.(); if (o.material && o.material.map && o.isSprite) o.material.map.dispose(); }); x.interior = null; x.holo = null; x.bots = null; }
+  function dropInterior(x) { if (!x.interior) return; x.inner.remove(x.interior.g); x.interior.g.traverse(o => { if (o.geometry && o.geometry !== BOX && !o.geometry.userData.shared) o.geometry.dispose?.(); if (o.material && o.material.map && o.isSprite) o.material.map.dispose(); }); x.interior = null; x.holo = null; x.bots = null; }
 
   /* ------------------------------------------------ camera: drag to orbit, wheel / pinch to zoom */
   const ov = { tx: 0, ty: topY * .42, tz: 0, dist: 300, theta: .62, phi: 1.2 };
@@ -481,11 +492,11 @@ export function createTower(canvas, T, hooks = {}) {
         if (x.open > .01 && !x.interior) buildInterior(x); if (x.open <= .001 && x.interior) dropInterior(x); }
       const o = ease(x.open); x.inner.position.z = o * (x.base ? 22 : x.pod ? 10 : 16);
       if (x.glass) x.glass.material.opacity = lerp(x.base ? .35 : .7, .1, o);
-      x.band.material.emissiveIntensity = (hov === x.f.level ? .9 : .12) + o * .6;
+      x.band.material.emissiveIntensity = (hov === x.f.level ? .9 : .12) + o * .6; if (x.facade) x.facade.visible = o < .25;
       if (x.interior) x.interior.P.forEach(a => { if (a.walk) { if (a.wait > 0) a.wait -= dt; else { const dx = a.tx - a.x, dz = a.tz - a.z, dd = Math.hypot(dx, dz);
           if (dd < .1) { a.wait = rnd(2, 6); a.tx = Math.max(-x.w / 2 + 2, Math.min(x.w / 2 - 2, a.x + rnd(-6, 6))); a.tz = Math.max(-x.d / 2 + 2, Math.min(x.d / 2 - 2, a.z + rnd(-4, 4))); if (Math.abs(a.tx) < 6.5 && Math.abs(a.tz) < 6.5) a.tx = 7 * Math.sign(a.tx || 1); }
           else { a.x += dx / dd * dt * 1.2; a.z += dz / dd * dt * 1.2; a.p.g.rotation.y = Math.atan2(dx, dz); } }
-          a.p.g.position.set(a.x, 0, a.z); pose(a.p, a.wait > 0 ? "idle" : "walk", S.real, still); } else pose(a.p, "idle", S.real, still); });
+          a.p.g.position.set(a.x, 0, a.z); pose(a.p, a.wait > 0 ? "idle" : "walk", S.real, still); } else pose(a.p, a.mode, S.real, still); });
       if (x.holo) x.holo.rotation.y += dt;
       if (x.bots) x.bots.forEach(b => { b.b.position.x += b.v * dt; if (Math.abs(b.b.position.x) > b.lim) { b.v *= -1; b.b.position.x = Math.sign(b.b.position.x) * b.lim; } }); });
     // lifts

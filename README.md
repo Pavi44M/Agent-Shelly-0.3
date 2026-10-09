@@ -7,6 +7,13 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v1.14: real-looking people, and Blender detail in the live tower
+
+- **People, rebuilt in Blender.** Everyone in the 3D worlds (Store Floor, Gateway, Shelly Tower) now has a body modelled in Blender (`blender/shelly_people_build.py` → `docs/kit/human-mesh.js`): smooth limbs with real hips, knees, ankles, shoulders, elbows and neck, a face (eyes, brows, mouth, nose, ears), four hair styles, two builds, trousers or skirts, short or long sleeves by role. Walking bends the knees, sitting puts thighs level and shins down, hands type at the desk. Gateway crews wear a proper hi-vis vest with reflective bands and a hard hat. All invented people, synthetic data only.
+- **People do their jobs in Shelly Tower.** Open a floor and the team works like Shelly HQ: seated at their desks, in the meeting room, round the deal tables, in the boardroom, at the Shelly OS desks, technicians at the data-centre racks; visitors walk the podium and amenity floors.
+- **Blender facade in the live 3D.** `blender/shelly_tower_05_web_detail.py` exports window frames for every floor and the aluminium fins (`docs/tower/model/shelly-tower-detail.glb`, 260 KB). Frames ride inside each floor, so they twist with it in 2050 and step aside when a floor slides out.
+- **Film rig.** `blender/shelly_tower_04_film.py` sets up a 30-second film in the .blend (flyover → floor tour → 2050), driven by one control object, ready to render.
+
 ## What's new in v1.13: Shelly Tower rendered in Blender
 - Shelly Tower modelled, lit and rendered in **Blender** from the same floor data: the floor bands, aluminium fins, the SHELLY crown, the podium and Neighbourhood Store flagship, the roof garden, helipad, solar canopy and spire, glass lifts, and the Auckland setting (CBD, Sky Tower, parks, wharves, harbour).
 - Three renders at the top of the [Shelly Tower page](https://pavi44m.github.io/Agent-Shelly-0.3/tower/): today at golden hour, today at dusk, and the Shelly Business Centre in 2050 (twisting garden tower, holographic rings, satellite towers, skyways linking both sides, garden domes, air taxis). Each opens the same look in the live 3D view; the Launchpad card shows the 2050 render.

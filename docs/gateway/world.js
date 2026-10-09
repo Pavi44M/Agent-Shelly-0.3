@@ -6,7 +6,7 @@
    forklifts. Day turns to night with the clock. Synthetic data from docs/data/gateway.js.
    Units: metres; the building front (docks) is at z = 0. */
 import * as THREE from "../kit/vendor/three.module.min.js";
-import { makePerson, pose, bubbleSprite, tagSprite } from "../store/v3/people.js";
+import { makePerson, pose, bubbleSprite, tagSprite, workwear } from "../store/v3/people.js";
 
 const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const touch = matchMedia("(pointer: coarse)").matches;
@@ -78,7 +78,7 @@ export function createWorld(canvas, G, hooks = {}) {
 
   /* ------------------------------------------------ build one site */
   function build(site) {
-    if (W) { scene.remove(W.root); W.lights.forEach(l => scene.remove(l)); W.root.traverse(o => { if (o.geometry && o.geometry !== BOX && o.geometry !== CYL && o.geometry !== EDGE) o.geometry.dispose(); }); }
+    if (W) { scene.remove(W.root); W.lights.forEach(l => scene.remove(l)); W.root.traverse(o => { if (o.geometry && o.geometry !== BOX && o.geometry !== CYL && o.geometry !== EDGE && !o.geometry.userData.shared) o.geometry.dispose(); }); }
     const root = new THREE.Group(); scene.add(root);
     const B = site.building, w = B.w, d = B.d, H = B.h, ND = site.docks;
     const yardD = 36, fz = yardD + 2.5, roadZ = fz + 20;   // a 20 m gate driveway: trucks wait off the road
@@ -816,11 +816,7 @@ export function createWorld(canvas, G, hooks = {}) {
   const SORT_BEH = new Set(["sortmgr", "sortsup", "sortop", "packer"]);
   function dress(p, role) {
     const vest = /Manager|Lead|Quality|Supervisor/.test(role) ? "#ffe066" : /Driver|Courier/.test(role) ? "#ff7a1a" : "#ff9f1c";
-    const v = new THREE.Mesh(new THREE.CapsuleGeometry(.178, .26, 4, 10), mat(vest, { roughness: .5, emissive: vest, emissiveIntensity: .05 })); v.position.y = 1.15; v.scale.set(1.02, .9, 1.04); p.body.add(v);
-    for (const y of [1.02, 1.18]) { const s = new THREE.Mesh(new THREE.TorusGeometry(.18, .013, 4, 18), mat("#e9eef3", { metalness: .6, roughness: .2, emissive: "#ffffff", emissiveIntensity: .15 })); s.rotation.x = Math.PI / 2; s.position.y = y; p.body.add(s); }
-    const hat = new THREE.Mesh(new THREE.SphereGeometry(.15, 14, 8, 0, TAU, 0, Math.PI / 2), mat(/Supervisor|Manager|Lead|Quality/.test(role) ? "#ffffff" : /Driver|Courier/.test(role) ? "#2f6fd6" : "#ffd23f", { roughness: .35 }));
-    hat.position.y = 1.58; p.body.add(hat); const brim = new THREE.Mesh(new THREE.CylinderGeometry(.18, .18, .02, 16), hat.material); brim.position.y = 1.585; p.body.add(brim);
-    if (/Quality|cold/.test(role)) { const jk = new THREE.Mesh(new THREE.CapsuleGeometry(.19, .3, 4, 10), mat("#2a4a8a")); jk.position.y = 1.13; p.body.add(jk); }
+    workwear(THREE, p, { vest, hat: /Supervisor|Manager|Lead|Quality/.test(role) ? "#ffffff" : /Driver|Courier/.test(role) ? "#2f6fd6" : "#ffd23f", jacket: /Quality|cold/.test(role) ? "#2a4a8a" : null });
   }
   let pid = 0;
   function person(role, name, x, z, beh, rid) {
