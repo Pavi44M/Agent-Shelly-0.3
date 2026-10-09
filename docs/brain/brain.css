@@ -137,14 +137,19 @@ footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--etch-2);displ
 #boot{position:fixed;inset:0;z-index:70;background:var(--void);display:grid;place-items:center;padding:24px;transition:opacity .6s ease,visibility .6s}
 #boot.done{opacity:0;visibility:hidden}
 .boot-in{width:min(560px,100%)}
-.boot-brain{display:block;width:100%;height:60px;margin-top:16px}
-.boot-brain circle{animation:pulse 1.4s ease-in-out infinite}
-.boot-brain line{stroke:#2a3a50}
+#boot{background:radial-gradient(ellipse at 50% 38%,#0f1b2e 0%,#070b12 62%)}
+#boot::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 36%,rgba(99,182,216,.10),transparent 45%);pointer-events:none}
+.boot-in{width:min(760px,100%);position:relative;text-align:left}
+.boot-cv{display:block;width:100%;aspect-ratio:16/9;max-height:52vh;margin:8px 0 0}
+.boot-pc{font-family:var(--mono);font-size:.5em;color:var(--accent);margin-left:8px;vertical-align:middle}
+.boot-bar{height:3px;background:#162233;border-radius:3px;overflow:hidden;margin:10px 0 0}
+.boot-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#63b6d8,#b69cf2,#7fd1a8,#f2c14e);box-shadow:0 0 12px #63b6d8;transition:width .25s ease}
+#boot.done .boot-cv{transform:scale(1.06);filter:brightness(1.6);transition:transform .6s ease,filter .6s ease}
 .boot-h{margin:10px 0 0;font-size:clamp(22px,4.6vw,32px);font-weight:300;color:var(--ink)}.boot-h b{font-weight:600}
-#bootLog{font-family:var(--mono);font-size:12.5px;line-height:1.9;color:var(--ink-2);white-space:pre-wrap;min-height:170px;margin:12px 0 0}
+#bootLog{font-family:var(--mono);font-size:12.5px;line-height:1.85;color:var(--ink-2);white-space:pre-wrap;min-height:150px;margin:12px 0 0}
 #bootLog .ok{color:var(--accent)}
 #skipBoot{font:11px var(--mono);background:none;border:1px solid var(--etch);color:var(--ink-3);border-radius:3px;padding:6px 12px;cursor:pointer}
-@media (prefers-reduced-motion:reduce){.map .wait-ring,.map .core-c,.boot-brain circle,.map .pulse-dot{animation:none}}
+@media (prefers-reduced-motion:reduce){.map .wait-ring,.map .core-c,.map .pulse-dot{animation:none}}
 @media (max-width:560px){.deps{grid-template-columns:1fr}.filters input{min-width:0;flex:1 1 100%}.ask-row{flex-direction:column}.ask-row button{padding:12px}}
 
 /* tabs + Shelly HQ (3D office) */

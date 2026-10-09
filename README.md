@@ -7,6 +7,10 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v1.18: Shelly Brain wakes up
+
+- **A new boot for the Brain page.** Hundreds of points of light fly in and settle into a brain (folded cerebrum, ridged cerebellum, brain stem), a web of synapses links them and impulses race across it; as the boot log runs, each of the eight departments ignites in its own colour round the brain and wires itself in, with a live percentage and a colour progress bar; at 100% a core spark flashes and a shockwave rolls out. Quick on repeat visits; still for reduced motion.
+
 ## What's new in v1.17: Shelly speaks, with live lip-sync and VFX
 
 - **Voice on every page.** Tap 🗣 Voice in Shelly's bubble and she reads her tips and the page guide aloud, using the device's speech voice (the same voice picked on the main page). The choice is remembered. Browsers only allow speech after your first tap or key, so the first message waits for that.

@@ -14,10 +14,7 @@
   /* ---------------- boot */
   (async function boot() {
     const box = $("#boot"), log = $("#bootLog"); if (!box) return;
-    const svg = $(".boot-brain"); let g = "";
-    for (let i = 0; i < 9; i++) { const x = 20 + i * 20, y = 30 + Math.sin(i) * 16; g += `<circle cx="${x}" cy="${y}" r="4" fill="${["#63b6d8", "#b69cf2", "#7fd1a8"][i % 3]}" style="animation-delay:${i * .12}s"/>`;
-      if (i) g += `<line x1="${x - 20}" y1="${30 + Math.sin(i - 1) * 16}" x2="${x}" y2="${y}"/>`; }
-    svg.innerHTML = g;
+    const V = brainBoot($(".boot-cv"), B.departments);   // the living brain (canvas): assembles, fires, ignites each department
     const sleep = ms => new Promise(r => setTimeout(r, ms));
     let skip = false, quick = false;
     try { quick = sessionStorage.getItem("brain.booted") === "1"; sessionStorage.setItem("brain.booted", "1"); } catch (e) { /* */ }
@@ -30,9 +27,11 @@
       `› autonomy · ${s.auto} run on their own · ${s.suggest} suggest · ${s.approve} need approval`,
       `› memory · ${s.pending} proposals in the approvals queue`,
       `› store data to ${B.store_asof} · Tōtara data to ${B.totara_asof}`];
-    for (const t of lines) { if (skip) break; log.insertAdjacentText("beforeend", t + "\n"); await sleep(quick ? 50 : 380); }
+    const pc = $(".boot-pc"), bar = $(".boot-bar i"), setP = v => { pc.textContent = Math.round(v * 100) + "%"; bar.style.width = (v * 100) + "%"; V.progress(v); };
+    for (let k = 0; k < lines.length; k++) { if (skip) break; log.insertAdjacentText("beforeend", lines[k] + "\n"); setP((k + 1) / (lines.length + 1)); await sleep(quick ? 60 : 520); }
+    setP(1); V.ignite();
     const ok = document.createElement("span"); ok.className = "ok"; ok.textContent = "✓ Brain awake."; log.appendChild(ok);
-    await sleep(skip || quick ? 80 : 450); box.classList.add("done"); setTimeout(() => box.remove(), 700);
+    await sleep(skip || quick ? 120 : 900); box.classList.add("done"); setTimeout(() => { V.stop(); box.remove(); }, 700);
   })();
 
   /* ---------------- stats + flow + core */
@@ -224,3 +223,92 @@
 
   window.ShellyBrain = { openAgent };
 })();
+
+/* ---------------- the boot brain: a brain drawn in light (canvas 2D, no libraries)
+   ~700 particles fly in and settle into a side view of a brain (cerebrum folded into gyri, cerebellum,
+   brain stem); neighbours link into a web and impulses race along it; as the boot log runs each
+   department ignites in its own colour round the brain and wires itself in; at 100% a core spark
+   flashes and a shockwave rolls out: Shelly Brain is awake. Reduced motion: drawn once, no movement. */
+function brainBoot(cv, deps) {
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches, x = cv.getContext("2d");
+  let W = 0, H = 0, dpr = 1, P = [], links = [], pulses = [], prog = 0, shown = 0, ign = 0, raf = 0, t0 = performance.now();
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  // brain silhouette (unit space: x -1..1 front→back, y -0.75..0.75)
+  const inCere = (u, v) => (u / 1) ** 2 + ((v + .05) / .66) ** 2 < 1 && v < .5 - .25 * u * u;
+  const inCereb = (u, v) => ((u - .62) / .3) ** 2 + ((v - .5) / .18) ** 2 < 1;
+  const inStem = (u, v) => Math.abs(u - .3 + (v - .55) * .3) < .09 && v > .42 && v < .82;
+  const inside = (u, v) => inCere(u, v) || inCereb(u, v) || inStem(u, v);
+  const N = innerWidth < 700 ? 420 : 720;
+  while (P.length < N) {
+    let u, v, k = Math.random();
+    if (k < .62) { const c = Math.floor(rnd(0, 9)); u = rnd(-1, 1); v = -.55 + c * .12 + Math.sin(u * 9 + c * 1.7) * .05 + rnd(-.012, .012); }   // gyri: folded ridges
+    else { u = rnd(-1, 1); v = rnd(-.75, .85); }
+    if (!inside(u, v)) continue;
+    const cereb = inCereb(u, v) && !inCere(u, v);
+    if (cereb && Math.random() < .5) v += Math.sin(u * 40) * .015;
+    P.push({ u, v, x: 0, y: 0, sx: rnd(-1.6, 1.6), sy: rnd(-1.4, 1.4), d: rnd(0, .35), r: rnd(.7, 1.7), hue: [196, 262, 150][Math.floor(rnd(0, 3))], tw: rnd(0, 6.3), cereb });
+  }
+  // a web: each particle to its two nearest neighbours
+  for (let i = 0; i < P.length; i++) { const a = P[i], best = [];
+    for (let j = 0; j < P.length; j++) if (j !== i) { const d = (a.u - P[j].u) ** 2 + (a.v - P[j].v) ** 2; if (best.length < 2 || d < best[1][0]) { best.push([d, j]); best.sort((p, q) => p[0] - q[0]); best.length = Math.min(2, best.length); } }
+    best.forEach(([d, j]) => { if (d < .02 && i < j) links.push([i, j]); }); }
+  const D = deps.map((d, i) => { const a = -Math.PI * .92 + i / (deps.length - 1) * Math.PI * 1.84; return { name: d.name, col: d.colour, a, on: 0 }; });
+  function size() { const r = cv.getBoundingClientRect(); dpr = Math.min(2, devicePixelRatio || 1); W = r.width; H = r.height; cv.width = W * dpr; cv.height = H * dpr; x.setTransform(dpr, 0, 0, dpr, 0, 0); }
+  size(); addEventListener("resize", size);
+  const ease = q => q < 0 ? 0 : q > 1 ? 1 : 1 - Math.pow(1 - q, 3);
+  function frame(now) {
+    const t = (now - t0) / 1000; shown += (prog - shown) * (still ? 1 : .08);
+    const S = Math.min(W * .24, H * .42), cx = W * .5, cy = H * .5;
+    x.clearRect(0, 0, W, H);
+    // a soft glow where the brain is forming
+    const gl = x.createRadialGradient(cx, cy, 0, cx, cy, S * 1.1); gl.addColorStop(0, `rgba(99,182,216,${.06 + .14 * shown})`); gl.addColorStop(1, "rgba(99,182,216,0)");
+    x.fillStyle = gl; x.fillRect(cx - S * 1.2, cy - S * 1.2, S * 2.4, S * 2.4);
+    const asm = still ? 1 : ease(t / 1.6);   // particles fly in and settle
+    P.forEach(p => { const k = ease((asm - p.d) / (1 - p.d)); p.x = cx + (p.sx * (1 - k) + p.u * k) * S; p.y = cy + (p.sy * (1 - k) + p.v * k) * S; });
+    // the brain drawn in light: outline, folded gyri, the ridged cerebellum and the stem (fade in as it assembles)
+    const X = u => cx + u * S, Y = v => cy + v * S, la = Math.max(0, (asm - .45) / .55) * (.55 + .45 * shown);
+    if (la > 0) {
+      const top = u => -.05 - .66 * Math.sqrt(Math.max(0, 1 - u * u)), bot = u => Math.min(.5 - .25 * u * u, -.05 + .66 * Math.sqrt(Math.max(0, 1 - u * u)));
+      x.save(); x.beginPath(); for (let k = 0; k <= 60; k++) { const u = -1 + k / 30; k ? x.lineTo(X(u), Y(top(u))) : x.moveTo(X(u), Y(top(u))); } for (let k = 60; k >= 0; k--) { const u = -1 + k / 30; x.lineTo(X(u), Y(bot(u))); } x.closePath();
+      const fill = x.createLinearGradient(X(-1), 0, X(1), 0); fill.addColorStop(0, `rgba(99,182,216,${.10 * la})`); fill.addColorStop(.5, `rgba(182,156,242,${.12 * la})`); fill.addColorStop(1, `rgba(127,209,168,${.10 * la})`);
+      x.fillStyle = fill; x.fill(); x.shadowColor = "#63b6d8"; x.shadowBlur = 16 * la; x.strokeStyle = `rgba(150,215,240,${.75 * la})`; x.lineWidth = 1.6; x.stroke(); x.shadowBlur = 0;
+      x.clip(); x.lineWidth = 1.1; x.strokeStyle = `rgba(170,200,255,${.32 * la})`;
+      for (let c = 0; c < 9; c++) { x.beginPath(); for (let k = 0; k <= 80; k++) { const u = -1 + k / 40, v = -.55 + c * .12 + Math.sin(u * 9 + c * 1.7) * .05 + (still ? 0 : Math.sin(t * 1.5 + c + u * 3) * .006); k ? x.lineTo(X(u), Y(v)) : x.moveTo(X(u), Y(v)); } x.stroke(); }
+      x.beginPath(); x.moveTo(X(-.15), Y(-.7)); x.bezierCurveTo(X(-.05), Y(-.3), X(.1), Y(-.1), X(.05), Y(.25)); x.lineWidth = 2; x.strokeStyle = `rgba(200,225,255,${.4 * la})`; x.stroke();   // central sulcus
+      x.restore();
+      x.save(); x.beginPath(); x.ellipse(X(.62), Y(.5), .3 * S, .18 * S, 0, 0, 7); x.fillStyle = `rgba(182,156,242,${.12 * la})`; x.fill(); x.strokeStyle = `rgba(190,170,250,${.7 * la})`; x.lineWidth = 1.4; x.stroke(); x.clip();
+      x.lineWidth = .8; for (let k = 0; k < 7; k++) { x.beginPath(); x.ellipse(X(.62), Y(.38 + k * .04), .3 * S, .05 * S, 0, 0, Math.PI); x.stroke(); } x.restore();
+      x.beginPath(); x.moveTo(X(.24), Y(.45)); x.quadraticCurveTo(X(.2), Y(.65), X(.27), Y(.85)); x.lineTo(X(.4), Y(.85)); x.quadraticCurveTo(X(.36), Y(.62), X(.4), Y(.5));
+      x.strokeStyle = `rgba(150,215,240,${.6 * la})`; x.lineWidth = 1.3; x.stroke(); x.fillStyle = `rgba(99,182,216,${.08 * la})`; x.fill();
+    }
+    // web
+    x.lineWidth = .7; x.strokeStyle = `rgba(120,200,235,${.16 + .2 * shown})`; x.beginPath();
+    links.forEach(([i, j]) => { x.moveTo(P[i].x, P[i].y); x.lineTo(P[j].x, P[j].y); }); x.stroke();
+    // department ring: each lights up as the boot moves on and wires into the brain
+    x.font = `600 ${Math.max(10, Math.min(13, W / 60))}px "Plus Jakarta Sans",system-ui`; x.textBaseline = "middle";
+    D.forEach((d, i) => { const want = shown * (D.length + .5) > i + .5 ? 1 : 0; d.on += (want - d.on) * (still ? 1 : .07);
+      const px = cx + Math.cos(d.a) * S * 1.36, py = cy + Math.sin(d.a) * S * 1.02;
+      if (d.on > .02) { const q = P[(i * 97) % P.length], g = x.createLinearGradient(px, py, q.x, q.y); g.addColorStop(0, d.col); g.addColorStop(1, "rgba(99,182,216,0)");
+        x.globalAlpha = d.on * .7; x.strokeStyle = g; x.lineWidth = 1.2; x.beginPath(); x.moveTo(px, py); x.quadraticCurveTo((px + cx) / 2, (py + cy) / 2 - 20, q.x, q.y); x.stroke(); x.globalAlpha = 1; }
+      x.fillStyle = d.on > .5 ? d.col : "#25344a"; x.shadowColor = d.col; x.shadowBlur = 18 * d.on;
+      x.beginPath(); x.arc(px, py, 4 + 2.5 * d.on + (still ? 0 : Math.sin(t * 4 + i) * d.on), 0, 7); x.fill(); x.shadowBlur = 0;
+      x.fillStyle = `rgba(234,240,246,${.25 + .7 * d.on})`; x.textAlign = Math.cos(d.a) < -.2 ? "right" : Math.cos(d.a) > .2 ? "left" : "center";
+      x.fillText(d.name, px + Math.cos(d.a) * 12, py + (Math.abs(Math.cos(d.a)) <= .2 ? Math.sign(Math.sin(d.a)) * 14 : 0)); });
+    // impulses racing along the web (more as the brain wakes)
+    if (!still && asm > .6) for (let k = 0; k < 1 + shown * 4; k++) if (Math.random() < .5) pulses.push({ l: links[Math.floor(Math.random() * links.length)], f: 0, v: rnd(1.5, 3.5), c: D[Math.floor(Math.random() * D.length)].col });
+    pulses = pulses.filter(q => (q.f += q.v / 60) < 1);
+    pulses.forEach(q => { const a = P[q.l[0]], b = P[q.l[1]], px = a.x + (b.x - a.x) * q.f, py = a.y + (b.y - a.y) * q.f;
+      x.fillStyle = q.c; x.shadowColor = q.c; x.shadowBlur = 10; x.beginPath(); x.arc(px, py, 1.6, 0, 7); x.fill(); }); x.shadowBlur = 0;
+    // the particles, twinkling, brighter as the boot completes
+    P.forEach(p => { const a = (.35 + .55 * shown) * (still ? 1 : .75 + .25 * Math.sin(t * 3 + p.tw));
+      x.fillStyle = `hsla(${p.hue},85%,${66 + 18 * shown}%,${Math.min(1, a + .2)})`; x.beginPath(); x.arc(p.x, p.y, p.r * (p.cereb ? .95 : 1.15), 0, 7); x.fill(); });
+    // ignition: a core spark, a flash and a shockwave
+    if (ign) { const k = still ? 1 : Math.min(1, (now - ign) / 900), r = S * (.1 + 1.6 * ease(k));
+      const g = x.createRadialGradient(cx, cy, 0, cx, cy, S * .5); g.addColorStop(0, `rgba(255,236,170,${.9 * (1 - k * .6)})`); g.addColorStop(1, "rgba(255,236,170,0)");
+      x.fillStyle = g; x.beginPath(); x.arc(cx, cy, S * .5, 0, 7); x.fill();
+      x.strokeStyle = `rgba(255,236,170,${.8 * (1 - k)})`; x.lineWidth = 3 * (1 - k) + .5; x.beginPath(); x.ellipse(cx, cy, r * 1.2, r * .8, 0, 0, 7); x.stroke(); }
+    if (!still) raf = requestAnimationFrame(frame);
+  }
+  raf = requestAnimationFrame(frame);
+  return { progress(v) { prog = v; if (still) requestAnimationFrame(frame); }, ignite() { ign = performance.now(); if (still) requestAnimationFrame(frame); }, stop() { cancelAnimationFrame(raf); } };
+}
