@@ -7,6 +7,12 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v1.16: Gateway, real vehicles and a real site
+
+- **Vehicles modelled in Blender** (`blender/shelly_vehicles_build.py` → `docs/kit/vehicle-mesh.js`, `docs/kit/vehicles.js`): cab-over truck cabs with windscreen, grille, bumper, mirrors, steps and fuel tank; vans; saloons, hatchbacks and SUVs; real wheels (tyre, rim, hub, nuts); a counterbalance forklift with overhead guard, mast and a lifting fork carriage; a reefer unit. Fleet paint, glass, chrome, black trim and rubber each have their own material.
+- **Trailers and box bodies** get aluminium corner posts and roof rails, side guards, rear doors with hinges, chassis and lamps.
+- **A real site**: asphalt yard and roads, grass verges, concrete footpaths and warehouse floor, profiled metal cladding on every wall, sectional dock doors, a sky dome that follows the time of day, Blender-built trees; the cartoon outlines are gone.
+
 ## What's new in v1.15: the Blender look and real people across the whole group
 
 - **Shelly HQ / Brain.** Every agent at every desk is now a person (the Blender-built body from v1.14) in their business colour, seated and typing when working, looking round when something waits for sign-off. Department heads wear long sleeves.

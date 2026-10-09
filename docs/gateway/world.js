@@ -7,6 +7,7 @@
    Units: metres; the building front (docks) is at z = 0. */
 import * as THREE from "../kit/vendor/three.module.min.js";
 import { RoomEnvironment } from "../kit/vendor/RoomEnvironment.js";
+import { vgeo, vmat, cab, van as makeVan, car as makeCar, forklift, wheel, reefer } from "../kit/vehicles.js";
 import { makePerson, pose, bubbleSprite, tagSprite, workwear } from "../store/v3/people.js";
 
 const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -37,6 +38,12 @@ export function createWorld(canvas, G, hooks = {}) {
   const DAY = new THREE.Color("#e6edf5"), NIGHT = new THREE.Color("#0a1322"), DUSK = new THREE.Color("#f2c9a0");
   const scene = new THREE.Scene(); scene.background = DAY.clone(); scene.fog = new THREE.Fog(DAY.clone(), 200, 460);
   const camera = new THREE.PerspectiveCamera(40, 1, .5, 900);
+  // a real sky: a gradient dome tinted by the time of day (deep blue overhead, pale at the horizon)
+  const skyTex = (() => { const c = document.createElement("canvas"); c.width = 4; c.height = 256; const x = c.getContext("2d"), g = x.createLinearGradient(0, 0, 0, 256);
+    g.addColorStop(0, "#5b8fd0"); g.addColorStop(.42, "#9cc0e6"); g.addColorStop(.5, "#e9f0f6"); g.addColorStop(1, "#e9f0f6"); x.fillStyle = g; x.fillRect(0, 0, 4, 256);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
+  const sky = new THREE.Mesh(new THREE.SphereGeometry(800, 32, 16), new THREE.MeshBasicMaterial({ map: skyTex, side: THREE.BackSide, fog: false, depthWrite: false }));
+  sky.renderOrder = -1; scene.add(sky);
   // image-based light (the Blender-style look): soft reflections on metal, glass, vehicles and racking
   { const pm = new THREE.PMREMGenerator(renderer); scene.environment = pm.fromScene(new RoomEnvironment(), .04).texture; scene.environmentIntensity = .45; pm.dispose(); }
   const hemi = new THREE.HemisphereLight(0xffffff, 0xc9d3dd, 1.5); scene.add(hemi);
@@ -48,8 +55,26 @@ export function createWorld(canvas, G, hooks = {}) {
   const BOX = new THREE.BoxGeometry(1, 1, 1), CYL = new THREE.CylinderGeometry(.5, .5, 1, 16), EDGE = new THREE.EdgesGeometry(BOX);
   const INK = new THREE.LineBasicMaterial({ color: "#1b2a40", transparent: true, opacity: .45 });
   const box = (parent, w, h, d, x, y, z, m, cast = true, edge = false) => { const me = new THREE.Mesh(BOX, m); me.scale.set(w, h, d); me.position.set(x, y, z); me.castShadow = cast && shadows; me.receiveShadow = shadows; parent.add(me);
-    if (edge) { const e = new THREE.LineSegments(EDGE, INK); e.scale.copy(me.scale); e.position.copy(me.position); parent.add(e); } return me; };
+    return me; };   // (the cartoon ink outlines are gone: the real look relies on light and shadow)
   const BLUE = "#245fd0", WALL = "#f6f8fb";
+  /* real surfaces: asphalt, grass, concrete, profiled metal cladding and sectional doors, drawn once as
+     canvas textures and tiled to the size of each surface */
+  const SURF = {};
+  function surface(kind) {
+    if (SURF[kind]) return SURF[kind];
+    const N = kind === "clad" || kind === "door" ? 128 : 256, c = document.createElement("canvas"); c.width = c.height = N; const x = c.getContext("2d");
+    const R = (a, b) => a + Math.random() * (b - a);
+    const speck = (cols, n, s0, s1) => { for (let i = 0; i < n; i++) { x.fillStyle = cols[i % cols.length]; const r = R(s0, s1); x.globalAlpha = R(.15, .5); x.fillRect(R(0, N), R(0, N), r, r); } x.globalAlpha = 1; };
+    const blot = (col, n, r0, r1, a) => { for (let i = 0; i < n; i++) { const cx = R(0, N), cy = R(0, N), r = R(r0, r1), g = x.createRadialGradient(cx, cy, 0, cx, cy, r); g.addColorStop(0, col); g.addColorStop(1, "rgba(0,0,0,0)"); x.globalAlpha = a; x.fillStyle = g; x.fillRect(cx - r, cy - r, 2 * r, 2 * r); } x.globalAlpha = 1; };
+    if (kind === "asphalt") { x.fillStyle = "#6d747c"; x.fillRect(0, 0, N, N); blot("#565d65", 14, 20, 60, .5); blot("#7e858c", 10, 15, 50, .35); speck(["#a3a9af", "#3f454c", "#8b9197"], 2600, 1, 2.4); }
+    else if (kind === "grass") { x.fillStyle = "#6e9a4b"; x.fillRect(0, 0, N, N); blot("#5b8a3c", 18, 20, 70, .55); blot("#86ad5c", 14, 15, 55, .45); speck(["#4f7d33", "#9cbf6a", "#7aa451"], 3000, 1, 2.2); }
+    else if (kind === "concrete") { x.fillStyle = "#c4c9ce"; x.fillRect(0, 0, N, N); blot("#b3b9bf", 10, 30, 80, .45); speck(["#9aa1a8", "#d8dce0"], 1800, 1, 2); x.strokeStyle = "rgba(90,98,106,.55)"; x.lineWidth = 2; x.strokeRect(1, 1, N - 2, N - 2); }
+    else if (kind === "clad") { x.fillStyle = "#eef1f5"; x.fillRect(0, 0, N, N); for (let i = 0; i < 4; i++) { const u = i * N / 4; x.fillStyle = "#d4dae2"; x.fillRect(u, 0, 5, N); x.fillStyle = "#ffffff"; x.fillRect(u + 5, 0, 3, N); x.fillStyle = "#c3cad3"; x.fillRect(u + 22, 0, 2, N); } blot("#dfe4ea", 4, 20, 60, .3); }
+    else if (kind === "door") { x.fillStyle = "#c9d0d8"; x.fillRect(0, 0, N, N); for (let i = 0; i < 4; i++) { const v = i * N / 4; x.fillStyle = "#9aa3ad"; x.fillRect(0, v, N, 3); x.fillStyle = "#e3e8ee"; x.fillRect(0, v + 3, N, 2); } x.fillStyle = "#b7c0c9"; for (let i = 0; i < 16; i++) x.fillRect(i * 8, 0, 1, N); }
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 8; return (SURF[kind] = t);
+  }
+  function surfM(kind, rx, ry, o = {}) { const t = surface(kind).clone(); t.needsUpdate = true; t.repeat.set(Math.max(1, rx), Math.max(1, ry)); return new THREE.MeshStandardMaterial(Object.assign({ map: t, roughness: kind === "asphalt" ? .88 : kind === "clad" ? .45 : .8, metalness: kind === "clad" || kind === "door" ? .25 : 0 }, o)); }
+  const clad = len => surfM("clad", len / 1.0, 1);
   // night-time materials that glow
   const GLOW = { lamp: new THREE.MeshStandardMaterial({ color: "#fff4d6", emissive: "#ffe2a8", emissiveIntensity: 0 }), panel: new THREE.MeshStandardMaterial({ color: "#f3f6fa", emissive: "#ffffff", emissiveIntensity: 0 }),
     window: new THREE.MeshStandardMaterial({ color: "#9fd3ea", emissive: "#ffd99a", emissiveIntensity: 0, transparent: true, opacity: .6 }), head: new THREE.MeshStandardMaterial({ color: "#fff6d8", emissive: "#fff2c0", emissiveIntensity: .4 }),
@@ -98,14 +123,14 @@ export function createWorld(canvas, G, hooks = {}) {
     const paint = (wd, dp, x, z, col = "#ffffff", y = .03) => box(root, wd, .05, dp, x, y, z, mat(col), false);
 
     // ground, concrete yard, road, gate aprons
-    const ground = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000), mat("#d5e2c9")); ground.rotation.x = -Math.PI / 2; ground.position.y = -.02; ground.receiveShadow = shadows; root.add(ground);
-    box(root, E.right - E.left, .04, fz - E.back, (E.left + E.right) / 2, 0, (fz + E.back) / 2, mat("#eceff3"), false);
-    box(root, 1000, .05, 12, 0, .01, roadZ + 2, mat("#4f5864"), false);
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000), surfM("grass", 125, 125)); ground.rotation.x = -Math.PI / 2; ground.position.y = -.02; ground.receiveShadow = shadows; root.add(ground);
+    box(root, E.right - E.left, .04, fz - E.back, (E.left + E.right) / 2, 0, (fz + E.back) / 2, surfM("asphalt", (E.right - E.left) / 7, (fz - E.back) / 7), false);
+    box(root, 1000, .05, 12, 0, .01, roadZ + 2, surfM("asphalt", 1000 / 7, 12 / 7, { color: "#9aa0a8" }), false);
     for (let x = -480; x < 480; x += 9) paint(4.5, .25, x, roadZ + 2);
     paint(1000, .22, 0, roadZ - 3.6, "#f4f4f4"); paint(1000, .22, 0, roadZ + 7.6, "#f4f4f4");
-    box(root, 1000, .02, 3, 0, .005, roadZ + 9.8, mat("#c9ced4"), false);
-    box(root, 10, .05, roadZ - 3.6 - fz + 1, E.gIn, .015, (fz + roadZ - 3.6) / 2, mat("#5f6873"), false);
-    box(root, 6, .05, roadZ - 3.6 - fz + 1, E.exitX, .015, (fz + roadZ - 3.6) / 2, mat("#5f6873"), false);
+    box(root, 1000, .02, 3, 0, .005, roadZ + 9.8, surfM("concrete", 1000 / 3, 1), false);
+    box(root, 10, .05, roadZ - 3.6 - fz + 1, E.gIn, .015, (fz + roadZ - 3.6) / 2, surfM("asphalt", 10 / 7, 3, { color: "#b9bec4" }), false);
+    box(root, 6, .05, roadZ - 3.6 - fz + 1, E.exitX, .015, (fz + roadZ - 3.6) / 2, surfM("asphalt", 1, 3, { color: "#b9bec4" }), false);
     // dock bays and bold numbers
     for (let i = 0; i < ND; i++) { const x = dockX(i); paint(.24, 16, x - 1.9, 8.5, "#ffcc1f"); paint(.24, 16, x + 1.9, 8.5, "#ffcc1f");
       const num = textTex((c, cw, ch) => { c.clearRect(0, 0, cw, ch); c.fillStyle = "#ffffff"; c.font = "900 150px 'Plus Jakarta Sans',system-ui"; c.textAlign = "center"; c.textBaseline = "middle"; c.fillText(String(i + 1).padStart(2, "0"), cw / 2, ch / 2); }, 256, 192);
@@ -139,10 +164,12 @@ export function createWorld(canvas, G, hooks = {}) {
     const trees = []; for (let x = E.left + 2; x < E.right; x += rnd(6, 10)) if (!inGap(x) && !inGap(x - 3) && !inGap(x + 3)) trees.push([x, fz + 1.6]);
     for (let z = E.back; z < fz; z += rnd(7, 11)) { trees.push([E.left - 2, z]); trees.push([E.right + 2, z]); }
     for (let i = 0; i < 18; i++) trees.push([rnd(-160, 160), roadZ + rnd(13, 44)]);
-    const tT = new THREE.InstancedMesh(new THREE.CylinderGeometry(.18, .26, 2, 6), mat("#7a5a3a"), trees.length);
-    const tC = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1.5, 1), mat("#5fb85d"), trees.length);
-    trees.forEach(([x, z], i) => { const s = rnd(.8, 1.3); tT.setMatrixAt(i, m4.compose(new THREE.Vector3(x, 1, z), new THREE.Quaternion(), new THREE.Vector3(s, s, s)));
-      tC.setMatrixAt(i, m4.compose(new THREE.Vector3(x, 2.4 * s + 1, z), new THREE.Quaternion(), new THREE.Vector3(s, s * 1.25, s))); tC.setColorAt(i, new THREE.Color().setHSL(.3 + rnd(-.03, .03), .5, rnd(.42, .55))); });
+    // trees modelled in Blender (trunk with branches, a clumped crown), two kinds, instanced
+    const tT = new THREE.InstancedMesh(vgeo(THREE, "treeTrunk"), vmat(THREE, "bark"), trees.length);
+    const tC = new THREE.InstancedMesh(vgeo(THREE, "treeCrownA"), new THREE.MeshStandardMaterial({ color: "#ffffff", roughness: .85 }), trees.length);
+    trees.forEach(([x, z], i) => { const s = rnd(.85, 1.35), q = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), rnd(0, 6.3));
+      tT.setMatrixAt(i, m4.compose(new THREE.Vector3(x, 0, z), q, new THREE.Vector3(s, s, s)));
+      tC.setMatrixAt(i, m4.compose(new THREE.Vector3(x, 0, z), q, new THREE.Vector3(s, s * rnd(.95, 1.15), s))); tC.setColorAt(i, new THREE.Color().setHSL(.29 + rnd(-.04, .04), .5, rnd(.2, .29))); });
     tT.castShadow = tC.castShadow = shadows; root.add(tT, tC);
 
     // staff car park (far left): cars follow how many people are on site
@@ -179,16 +206,16 @@ export function createWorld(canvas, G, hooks = {}) {
     const bw = new THREE.Group(); root.add(bw);
     const front = [], doorW = 3.2, doorH = 4.0; let cx = -w / 2;
     for (let i = 0; i < ND; i++) { const x = dockX(i); front.push([cx, x - doorW / 2]); cx = x + doorW / 2; } front.push([cx, w / 2]);
-    front.forEach(([a, b]) => { if (b - a > .05) box(bw, b - a, H, .3, (a + b) / 2, H / 2, 0, mat(WALL)); });
-    for (let i = 0; i < ND; i++) box(bw, doorW, H - doorH, .3, dockX(i), doorH + (H - doorH) / 2, 0, mat(WALL));
-    box(bw, .3, H, d, -w / 2, H / 2, -d / 2, mat(WALL)); box(bw, .3, H, d, w / 2, H / 2, -d / 2, mat(WALL)); box(bw, w, H, .3, 0, H / 2, -d, mat(WALL));
+    front.forEach(([a, b]) => { if (b - a > .05) box(bw, b - a, H, .3, (a + b) / 2, H / 2, 0, clad(b - a)); });
+    for (let i = 0; i < ND; i++) box(bw, doorW, H - doorH, .3, dockX(i), doorH + (H - doorH) / 2, 0, clad(doorW));
+    box(bw, .3, H, d, -w / 2, H / 2, -d / 2, clad(d)); box(bw, .3, H, d, w / 2, H / 2, -d / 2, clad(d)); box(bw, w, H, .3, 0, H / 2, -d, clad(w));
     const ribs = []; for (let x = -w / 2 + 2; x < w / 2; x += 2.5) { ribs.push([x, -d - .2, 0]); } for (let z = -d + 2; z < 0; z += 2.5) { ribs.push([-w / 2 - .2, z, 1]); ribs.push([w / 2 + .2, z, 1]); }
     const rIM = new THREE.InstancedMesh(BOX, mat("#dfe5ee"), ribs.length);
     ribs.forEach(([x, z, s], i) => rIM.setMatrixAt(i, m4.compose(new THREE.Vector3(x, H / 2, z), new THREE.Quaternion(), new THREE.Vector3(s ? .12 : .4, H - .8, s ? .4 : .12)))); root.add(rIM);
     box(bw, w + .5, .9, .55, 0, H - .2, .05, mat(BLUE), true, true); box(bw, .55, .9, d + .5, -w / 2 - .05, H - .2, -d / 2, mat(BLUE), true, true); box(bw, .55, .9, d + .5, w / 2 + .05, H - .2, -d / 2, mat(BLUE), true, true);
     box(bw, w + .5, .9, .55, 0, H - .2, -d - .05, mat(BLUE), true, true);
     box(bw, w + .4, .5, .45, 0, .25, .12, mat("#1b3f8a"), true, true);
-    const ol0 = new THREE.LineSegments(EDGE, INK); ol0.scale.set(w, H, d); ol0.position.set(0, H / 2, -d / 2); root.add(ol0);
+    
     const nt = textTex((x, cw, ch) => { x.fillStyle = BLUE; x.fillRect(0, 0, cw, ch); x.fillStyle = "#fff"; x.font = "900 76px 'Plus Jakarta Sans',system-ui"; x.textBaseline = "middle"; x.fillText("GATEWAY", 30, ch / 2); x.font = "700 42px 'Plus Jakarta Sans',system-ui"; x.fillText("· " + site.name.replace("Gateway ", ""), 390, ch / 2); }, 1024, 120);
     const nm = new THREE.Mesh(new THREE.PlaneGeometry(15, 1.75), new THREE.MeshBasicMaterial({ map: nt })); nm.position.set(-w / 2 + 9.5, H - .2, .34); bw.add(nm);
     const roofM = new THREE.MeshStandardMaterial({ color: "#f7f9fb", roughness: .8, transparent: true, opacity: 1 });
@@ -200,7 +227,7 @@ export function createWorld(canvas, G, hooks = {}) {
     W.roofM = roofM;
 
     // inside: floor, lane markings, light panels, office, charging bay, staging lanes
-    box(root, w - .4, .04, d - .4, 0, .03, -d / 2, mat("#d2d8df"), false);
+    box(root, w - .4, .04, d - .4, 0, .03, -d / 2, surfM("concrete", (w - .4) / 6, (d - .4) / 6, { roughness: .45 }), false);
     box(root, w - 1, .05, .16, 0, .06, -10.1, mat("#ffcc1f"), false); box(root, w - 1, .05, .16, 0, .06, -6.9, mat("#ffcc1f"), false);
     for (let x = -w / 2 + 4; x < w / 2 - 2; x += 8) for (let z = -6; z > -d + 2; z -= 7) { const p = new THREE.Mesh(BOX, GLOW.panel); p.scale.set(2.4, .08, .5); p.position.set(x, H - .45, z); root.add(p); }
     W.staging = [];
@@ -282,7 +309,7 @@ export function createWorld(canvas, G, hooks = {}) {
       const x = dockX(i), g = new THREE.Group(); g.position.set(x, 0, 0); root.add(g);
       box(g, doorW + .6, .45, .55, 0, doorH + .12, .2, mat(BLUE), true, true); box(g, .3, doorH, .55, -doorW / 2 - .14, doorH / 2, .2, mat(BLUE), true, true); box(g, .3, doorH, .55, doorW / 2 + .14, doorH / 2, .2, mat(BLUE), true, true);
       const door = new THREE.Group(); door.position.set(0, doorH, .05); g.add(door);
-      const panel = box(door, doorW, 1, .08, 0, -.5, 0, mat("#c3cbd6"), false);
+      const panel = box(door, doorW, 1, .08, 0, -.5, 0, surfM("door", 1, 1), false);
       for (const sx of [-1.1, 1.1]) box(g, .35, .6, .3, sx, 1.1, .45, mat("#1d2228"));
       const lamp = box(g, .32, .32, .14, doorW / 2 + .6, 2.6, .35, new THREE.MeshBasicMaterial({ color: "#3fb87f" }), false);
       const lb = label("Bay " + (i + 1)); lb.position.set(0, doorH + 1.5, .9); lb.scale.multiplyScalar(.62); g.add(lb);
@@ -292,16 +319,18 @@ export function createWorld(canvas, G, hooks = {}) {
 
     // road traffic: cars, vans and other companies' trucks passing both ways (they keep their distance and stop for trucks turning in)
     for (let i = 0; i < 10; i++) { const c = new THREE.Group(), big = i % 3 === 0, col = pick(["#d94a3d", "#3d7dd9", "#f4f6f8", "#2b2f36", "#e0a32e", "#2a9d8f", "#7a5cc4"]);
-      if (big) { box(c, 2.4, 3.2, 8, 0, 2.1, -1, mat(pick(["#f4f6f8", "#e8e2d4", "#d9e4ef"])), true, true); box(c, 2.4, 2.4, 2.2, 0, 1.6, 4, mat(col), true, true); }
-      else { box(c, 1.8, .7, 4.2, 0, .55, 0, mat(col, { metalness: .4, roughness: .35 }), true, true); box(c, 1.6, .55, 2.2, 0, 1.15, -.2, mat("#1d2a38", { metalness: .5, roughness: .2 })); }
-      const hl = new THREE.Mesh(BOX, GLOW.head); hl.scale.set(1.5, .15, .05); hl.position.set(0, .7, big ? 5.12 : 2.12); c.add(hl);
-      const tl = new THREE.Mesh(BOX, GLOW.tail); tl.scale.set(1.5, .15, .05); tl.position.set(0, .7, big ? -5.02 : -2.12); c.add(tl);
+      if (big) { const cb = cab(THREE, col, shadows); cb.position.z = 5.2; cb.scale.set(.96, .96, .96); c.add(cb);
+        const bx = box(c, 2.4, 2.9, 7.6, 0, .95 + 1.45, -.85, mat(pick(["#f4f6f8", "#e8e2d4", "#d9e4ef"]), { roughness: .45 }), true);
+        for (const z of [3.9, -2.6, -3.7]) for (const sx of [-1, 1]) { const w = wheel(THREE, "truck", sx < 0, shadows); w.position.set(sx * 1.02, .5, z); c.add(w); } }
+      else { const k = pick(["saloon", "hatch", "suv", "saloon", "hatch", "van"]); c.add(k === "van" ? makeVan(THREE, pick(["#f4f6f8", "#d9e4ef", col]), shadows) : makeCar(THREE, k, col, shadows)); }
+      for (const sx of [-.62, .62]) { const hl = new THREE.Mesh(BOX, GLOW.head); hl.scale.set(.32, .13, .04); hl.position.set(sx, big ? 1.05 : .74, big ? 5.25 : 2.21); c.add(hl); }
+      for (const sx of [-.7, .7]) { const tl = new THREE.Mesh(BOX, GLOW.tail); tl.scale.set(.26, .16, .04); tl.position.set(sx, big ? 1.1 : .8, big ? -4.67 : -2.22); c.add(tl); }
       const dir = i % 2 ? 1 : -1; root.add(c);
       W.traffic.push({ kind: "car", g: c, uid: 1e6 + i, dir, vmax: rnd(9, 14), v: 0, x: -260 + i * 52 + rnd(-8, 8), z: dir > 0 ? roadZ + 4.8 : roadZ - .8, h: dir > 0 ? Math.PI / 2 : -Math.PI / 2, L: big ? 10.4 : 4.4, Wd: big ? 2.5 : 1.9 }); }
 
     // ---------------- the sorting centre: induction from the warehouse, a loop sorter with a chute and roll cage per business, pack benches, a glass office
     {
-      const hl = E.hall, HH = 6.5, hw = hl.x1 - hl.x0, hd = hl.z1 - hl.z0, cx = (hl.x0 + hl.x1) / 2, sm = mat(WALL);
+      const hl = E.hall, HH = 6.5, hw = hl.x1 - hl.x0, hd = hl.z1 - hl.z0, cx = (hl.x0 + hl.x1) / 2, sm = clad(Math.max(hw, hd));
       box(root, hw, .04, hd, cx, .035, (hl.z0 + hl.z1) / 2, mat("#d6dce4"), false);
       box(root, hw, HH, .3, cx, HH / 2, hl.z0, sm, true, true); box(root, .3, HH, hd, hl.x0, HH / 2, (hl.z0 + hl.z1) / 2, sm, true, true);
       box(root, .3, HH, -8 - hl.z0, hl.x1, HH / 2, (hl.z0 - 8) / 2, sm, true, true); box(root, .3, HH, hl.z1 + 5, hl.x1, HH / 2, (hl.z1 - 5) / 2, sm, true, true);   // staff door at z −6.5
@@ -495,19 +524,28 @@ export function createWorld(canvas, G, hooks = {}) {
     const sideM = new THREE.MeshStandardMaterial({ map: side, roughness: .5 });
     const bodyM = mat(T.colour, { roughness: .4 });
     const bx = new THREE.Mesh(BOX, [sideM, sideM, bodyM, bodyM, bodyM, mat("#dfe5eb")]); bx.scale.set(Wd, H - .9, boxL); bx.position.set(0, .9 + (H - .9) / 2, -L / 2 + boxL / 2); bx.castShadow = shadows; body.add(bx);
-    const be = new THREE.LineSegments(EDGE, INK); be.scale.copy(bx.scale); be.position.copy(bx.position); body.add(be);
-    box(body, Wd + .02, .2, boxL, 0, .95, -L / 2 + boxL / 2, mat(T.stripe));
-    if (T.reefer && !van) box(body, 1.6, .9, .5, 0, H - .6, -L / 2 + boxL + .25, mat("#c9d2dc"), true, true);
+    const be = new THREE.LineSegments(EDGE, INK); be.scale.copy(bx.scale); be.position.copy(bx.position); be.visible = false; body.add(be);
+    const stripeB = box(body, Wd + .02, .2, boxL, 0, .95, -L / 2 + boxL / 2, mat(T.stripe));
+    // trailer / box body trims: aluminium corner posts and roof rail, side guards, rear doors and lamps
+    const bz0 = -L / 2 + boxL / 2, alu = vmat(THREE, "alloy"), blk = vmat(THREE, "black");
+    if (!van) {
+      for (const sx of [-1, 1]) for (const ez of [-1, 1]) box(body, .09, H - .9, .09, sx * (Wd / 2 + .01), .9 + (H - .9) / 2, bz0 + ez * (boxL / 2 + .01), alu);
+      for (const sx of [-1, 1]) box(body, .08, .08, boxL, sx * (Wd / 2 + .01), H - .02, bz0, alu);
+      for (const sx of [-1, 1]) { box(body, .05, .08, boxL * .55, sx * (Wd / 2 - .05), .62, bz0 - boxL * .05, blk); box(body, .05, .08, boxL * .55, sx * (Wd / 2 - .05), .38, bz0 - boxL * .05, blk); }
+      box(body, .04, H - 1.1, .03, 0, .9 + (H - .9) / 2, -L / 2 - .02, alu);
+      for (const sx of [-.55, .55]) for (const y of [1.4, H - .55]) box(body, .12, .06, .05, sx, y, -L / 2 - .03, vmat(THREE, "chrome"));
+      box(body, Wd - .2, .12, .14, 0, .55, -L / 2 + .05, blk);
+      box(body, .3, .25, boxL + (semi ? .6 : .3), 0, .62, -L / 2 + (boxL + .3) / 2, vmat(THREE, "steel"));   // chassis under the body
+      if (T.reefer) { const rf = reefer(THREE); rf.position.set(0, H - 1.1, -L / 2 + boxL + .25); body.add(rf); }
+      const cb = cab(THREE, T.colour, shadows); cb.position.z = L / 2; body.add(cb);
+    } else { const v = makeVan(THREE, T.colour, shadows); v.scale.set(Wd / 2, H / 2.55, L / 5.7); body.add(v); bx.visible = be.visible = stripeB.visible = false;
+      for (const sx of [-1, 1]) { const d = new THREE.Mesh(new THREE.PlaneGeometry(3.2, .8), new THREE.MeshStandardMaterial({ map: side, roughness: .4, transparent: true, opacity: .97 })); d.position.set(sx * 1.012, 1.55, -.55); d.rotation.y = sx * Math.PI / 2; body.add(d); } }
+    for (const sx of [-.82, .82]) { const hl = new THREE.Mesh(BOX, GLOW.head); hl.scale.set(.3, .16, .04); hl.position.set(sx * (van ? .85 : 1), van ? .95 : 1.05, L / 2 + .06); body.add(hl);
+      const tl = new THREE.Mesh(BOX, GLOW.tail); tl.scale.set(.2, .28, .04); tl.position.set(sx * (van ? .9 : 1), van ? 1.1 : .78, -L / 2 - .04); body.add(tl); }
     const cz = L / 2 - cabL / 2;
-    box(body, Wd, van ? 1.8 : 2.4, cabL, 0, .9 + (van ? .9 : 1.2), cz, bodyM, true, true);
-    box(body, Wd - .1, .9, .05, 0, van ? 2.2 : 2.6, L / 2 + .01, mat("#1d2a38", { metalness: .5, roughness: .15 }));
-    for (const sx of [1, -1]) box(body, .05, .7, 1, sx * (Wd / 2 + .01), van ? 2.2 : 2.6, cz + .3, mat("#1d2a38", { metalness: .5, roughness: .15 }));
-    box(body, Wd + .1, .3, .2, 0, .75, L / 2 + .05, mat("#2b2f36"));
-    for (const sx of [-.8, .8]) { const hl = new THREE.Mesh(BOX, GLOW.head); hl.scale.set(.32, .2, .05); hl.position.set(sx, 1.1, L / 2 + .13); body.add(hl);
-      const tl = new THREE.Mesh(BOX, GLOW.tail); tl.scale.set(.25, .2, .05); tl.position.set(sx, 1.05, -L / 2 - .03); body.add(tl); }
-    const wz = [cz - .2, -L / 2 + 1.4, ...(semi || boxL > 6 ? [-L / 2 + 2.6] : [])], wheels = [];
-    for (const z of wz) for (const sx of [-Wd / 2 + .1, Wd / 2 - .1]) { const wh = new THREE.Group(); wh.position.set(sx, .48, z); body.add(wh); const tyre = new THREE.Mesh(CYL, mat("#1d2228")); tyre.scale.set(.95, .35, .95); tyre.rotation.z = Math.PI / 2; wh.add(tyre);
-      const hub = new THREE.Mesh(BOX, mat("#c9d2dc")); hub.scale.set(.37, .5, .14); wh.add(hub); wheels.push(wh); }
+    const wz = van ? [L / 2 - .95, -L / 2 + 1.05] : [cz - .35, -L / 2 + 1.4, ...(semi || boxL > 6 ? [-L / 2 + 2.6] : [])], wheels = [];
+    for (const z of wz) for (const sx of [-1, 1]) { const wh = new THREE.Group(); wh.position.set(sx * (Wd / 2 - (van ? .1 : .2)), van ? .37 : .5, z); body.add(wh);
+      const w = wheel(THREE, van ? "car" : "truck", sx < 0, shadows); if (van) w.scale.multiplyScalar(1.12); wh.add(w); wheels.push(wh); }
     const cargo = []; const nP = Math.min(T.pallets, van ? 2 : 8);
     for (let k = 0; k < nP; k++) { const p = makePallet(pick(cargoCols())); p.scale.setScalar(.85); p.position.set(k % 2 ? .55 : -.55, .95, -L / 2 + .8 + Math.floor(k / 2) * 1.05); p.visible = false; body.add(p); cargo.push(p); }
     const hit = new THREE.Mesh(BOX, new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false })); hit.scale.set(Wd + .4, H + .4, L + .4); hit.position.y = H / 2; g.add(hit);
@@ -746,17 +784,12 @@ export function createWorld(canvas, G, hooks = {}) {
 
   /* ------------------------------------------------ forklifts */
   function makeLift(f) {
-    const g = new THREE.Group(); const o = "#f5a623";
-    box(g, 1.2, .9, 1.9, 0, .7, -.2, mat(o), true, true); box(g, 1.25, .6, .5, 0, .85, -1.05, mat("#2b2f36"), true, true);
-    for (const [x, z] of [[-.55, .55], [.55, .55], [-.55, -.85], [.55, -.85]]) box(g, .07, 1.4, .07, x, 1.85, z, mat("#2b2f36"));
-    box(g, 1.2, .07, 1.5, 0, 2.55, -.15, mat("#2b2f36"));
-    box(g, .1, 2.6, .12, -.4, 1.3, .95, mat("#3a4048")); box(g, .1, 2.6, .12, .4, 1.3, .95, mat("#3a4048"));
-    const car = new THREE.Group(); car.position.set(0, .12, 1.05); g.add(car);
-    box(car, .9, .6, .08, 0, .3, 0, mat("#3a4048")); box(car, .12, .05, 1.1, -.3, 0, .55, mat("#5b636d")); box(car, .12, .05, 1.1, .3, 0, .55, mat("#5b636d"));
-    for (const [x, z] of [[-.55, .7], [.55, .7], [-.55, -.8], [.55, -.8]]) { const wh = new THREE.Mesh(CYL, mat("#1d2228")); wh.scale.set(.5, .25, .5); wh.rotation.z = Math.PI / 2; wh.position.set(x, .25, z); g.add(wh); }
-    const beacon = box(g, .16, .12, .16, 0, 2.66, -.6, new THREE.MeshBasicMaterial({ color: "#ffb020" }), false);
-    const hl = new THREE.Mesh(BOX, GLOW.head); hl.scale.set(.18, .12, .05); hl.position.set(.5, 2.4, .65); g.add(hl);
-    const drv = makePerson(THREE, { kind: "staff", role: "Forklift Operator", seed: Math.random() }); dress(drv, "Forklift Operator"); drv.g.position.set(0, .3, -.3); drv.g.scale.setScalar(.95); g.add(drv.g); pose(drv, "sit", 0, true);
+    // forklift modelled in Blender: counterbalance body, overhead guard, mast; the fork carriage lifts
+    const FL = forklift(THREE, "#f5a623", shadows), g = FL.g;
+    const car = FL.carriage; car.position.set(0, .12, .9); g.add(car);
+    const beacon = box(g, .16, .12, .16, 0, 2.3, -.6, new THREE.MeshBasicMaterial({ color: "#ffb020" }), false);
+    const hl = new THREE.Mesh(BOX, GLOW.head); hl.scale.set(.18, .12, .05); hl.position.set(.5, 2.15, .5); g.add(hl);
+    const drv = makePerson(THREE, { kind: "staff", role: "Forklift Operator", seed: Math.random() }); dress(drv, "Forklift Operator"); drv.g.position.set(0, .82, -.42); drv.g.scale.setScalar(.95); g.add(drv.g); pose(drv, "sit", 0, true);
     const load = makePallet(pick(["#c9a26b", "#d8b88a"])); load.position.set(0, .05, .5); load.visible = false; car.add(load);
     const hit = new THREE.Mesh(BOX, new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false })); hit.scale.set(1.6, 2.8, 3.2); hit.position.y = 1.4; hit.userData = { kind: "lift", id: f.id }; g.add(hit);
     return { f, g, car, load, beacon, drv, hit, x: 0, z: 0, h: 0, path: [], st: "idle", job: null, lift: 0, wantLift: 0, wait: 0, task: "Parked at the charger", op: null };
@@ -961,7 +994,7 @@ export function createWorld(canvas, G, hooks = {}) {
     const h = ((t % 86400) + 86400) % 86400 / 3600;
     const k = smooth(5.6, 7.4, h) * (1 - smooth(18.9, 20.6, h)), dusk = Math.max(0, 1 - Math.abs(h - 19.6) / 1.2) + Math.max(0, 1 - Math.abs(h - 6.4) / 1.1);
     S.dayK = k;
-    scene.background.copy(NIGHT).lerp(DAY, k).lerp(DUSK, Math.min(.35, dusk * .35) * (1 - Math.abs(k - .5) * 2 + .3)); scene.fog.color.copy(scene.background);
+    scene.background.copy(NIGHT).lerp(DAY, k).lerp(DUSK, Math.min(.35, dusk * .35) * (1 - Math.abs(k - .5) * 2 + .3)); scene.fog.color.copy(scene.background); sky.material.color.copy(tmp.set("#ffffff").lerp(NIGHT, 1 - k).lerp(DUSK, Math.min(.5, dusk * .5)));
     const a = (h - 6) / 13.6 * Math.PI; sun.position.set(-Math.cos(a) * 90, 30 + Math.sin(Math.max(0, a)) * 100, 70);
     sunCol.set("#ffffff").lerp(tmp.set("#ffb36b"), Math.min(1, dusk * .7)); sun.color.copy(sunCol); sun.intensity = .08 + 2.0 * k;
     hemi.intensity = .3 + .85 * k; hemi.color.set("#ffffff").lerp(tmp.set("#6d8ad0"), 1 - k); hemi.groundColor.set("#c9d3dd").lerp(tmp.set("#1b2433"), 1 - k);
@@ -1047,7 +1080,7 @@ export function createWorld(canvas, G, hooks = {}) {
     if (zoomTo != null) { ov.dist += (zoomTo - ov.dist) * Math.min(1, raw * 10); if (Math.abs(zoomTo - ov.dist) < .05) zoomTo = null; }
     if (!down && (vel.th || vel.ph)) { ov.theta += vel.th; ov.phi = Math.max(.25, Math.min(1.42, ov.phi + vel.ph)); vel.th *= .9; vel.ph *= .9; if (Math.abs(vel.th) + Math.abs(vel.ph) < 1e-4) vel.th = vel.ph = 0; }
     if (S.follow && S.sel) { const o = find(S.sel); if (o) { ov.tx += (o.x - ov.tx) * Math.min(1, raw * 3); ov.tz += (o.z - ov.tz) * Math.min(1, raw * 3); } }
-    const sp = Math.sin(ov.phi); camera.position.set(ov.tx + ov.dist * sp * Math.sin(ov.theta), ov.dist * Math.cos(ov.phi) + 1, ov.tz + ov.dist * sp * Math.cos(ov.theta)); camera.lookAt(ov.tx, 0, ov.tz);
+    const sp = Math.sin(ov.phi); camera.position.set(ov.tx + ov.dist * sp * Math.sin(ov.theta), ov.dist * Math.cos(ov.phi) + 1, ov.tz + ov.dist * sp * Math.cos(ov.theta)); camera.lookAt(ov.tx, 0, ov.tz); sky.position.copy(camera.position);
     if (W) { const hd = W.homeDist || 110, o = Math.max(0, Math.min(1, (ov.dist - hd * .55) / (hd * .3))); W.roofM.opacity = o; W.roof.visible = o > .02; W.roofM.depthWrite = o > .95; if (W.skyM) W.skyM.opacity = o; }
     lightFor(S.t);
     renderer.render(scene, camera);
