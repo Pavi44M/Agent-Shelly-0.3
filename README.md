@@ -7,6 +7,13 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v1.15: the Blender look and real people across the whole group
+
+- **Shelly HQ / Brain.** Every agent at every desk is now a person (the Blender-built body from v1.14) in their business colour, seated and typing when working, looking round when something waits for sign-off. Department heads wear long sleeves.
+- **Store Floor.** Filmic tone mapping, soft image-based light, PBR materials (glossy floor tiles, metal shelving, glass doors) and real shadows from the fixtures and the team.
+- **Gateway.** Image-based light for metal, glass, trucks and racking, following day and night.
+- Same people everywhere: Store Floor, Gateway, Shelly Tower and Shelly HQ all share `docs/kit/human-mesh.js`.
+
 ## What's new in v1.14: real-looking people, and Blender detail in the live tower
 
 - **People, rebuilt in Blender.** Everyone in the 3D worlds (Store Floor, Gateway, Shelly Tower) now has a body modelled in Blender (`blender/shelly_people_build.py` → `docs/kit/human-mesh.js`): smooth limbs with real hips, knees, ankles, shoulders, elbows and neck, a face (eyes, brows, mouth, nose, ears), four hair styles, two builds, trousers or skirts, short or long sleeves by role. Walking bends the knees, sitting puts thighs level and shins down, hands type at the desk. Gateway crews wear a proper hi-vis vest with reflective bands and a hard hat. All invented people, synthetic data only.

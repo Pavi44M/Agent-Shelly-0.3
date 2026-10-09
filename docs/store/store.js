@@ -5,6 +5,7 @@
    gaps on a shelf mean low stock cover. Tap a shelf for its products, reasons and the actions
    waiting for sign-off (approved through the shared approvals queue in shelly-kit.js). */
 import * as THREE from "../kit/vendor/three.module.min.js";
+import { RoomEnvironment } from "../kit/vendor/RoomEnvironment.js";
 
 const ST = window.SHELLY_STORE;
 const $ = s => document.querySelector(s);
@@ -189,20 +190,24 @@ function start3d() {
   const stage = $("#stage"), canvas = $("#c");
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance" });
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, touch ? 1.5 : 2));
+  // the Blender-style look: filmic tone mapping, soft image-based light from a studio room, real shadows
+  renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.12;
+  const shadows = !touch; renderer.shadowMap.enabled = shadows; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   const scene = new THREE.Scene();
+  { const pm = new THREE.PMREMGenerator(renderer); scene.environment = pm.fromScene(new RoomEnvironment(), .04).texture; scene.environmentIntensity = .55; pm.dispose(); }
   const camera = new THREE.PerspectiveCamera(62, 1, .05, 400); camera.rotation.order = "YXZ";
-  scene.add(new THREE.HemisphereLight(0xffffff, 0xb7ae9f, 1.9));
-  scene.add(new THREE.AmbientLight(0xffffff, .55));
-  const sun = new THREE.DirectionalLight(0xffffff, 1.2); sun.position.set(-8, 20, 12); scene.add(sun);
+  scene.add(new THREE.HemisphereLight(0xfff6ea, 0xb7ae9f, 1.25));
+  const sun = new THREE.DirectionalLight(0xfff1de, 1.9); sun.position.set(-8, 20, 12); scene.add(sun); scene.add(sun.target);
+  if (shadows) { sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); const sc = sun.shadow.camera; sc.left = -26; sc.right = 26; sc.top = 26; sc.bottom = -26; sc.near = 1; sc.far = 70; sun.shadow.bias = -.0005; sun.shadow.normalBias = .02; sun.shadow.radius = 3; }
 
   const MC = {};
-  const mat = (hex, o) => { const k = hex + (o ? JSON.stringify(o) : ""); return MC[k] || (MC[k] = new THREE.MeshLambertMaterial(Object.assign({ color: hex }, o || {}))); };
+  const mat = (hex, o) => { const k = hex + (o ? JSON.stringify(o) : ""); return MC[k] || (MC[k] = new THREE.MeshStandardMaterial(Object.assign({ color: hex, roughness: .62, metalness: 0 }, o || {}))); };
   const glow = hex => MC["b" + hex] || (MC["b" + hex] = new THREE.MeshBasicMaterial({ color: hex }));
-  const GLASS = new THREE.MeshLambertMaterial({ color: 0xcfe6ef, transparent: true, opacity: .2, depthWrite: false });
-  const FROST = new THREE.MeshLambertMaterial({ color: 0xdff2ff, transparent: true, opacity: .32, depthWrite: false });
+  const GLASS = new THREE.MeshStandardMaterial({ color: 0xcfe6ef, transparent: true, opacity: .2, depthWrite: false, roughness: .05, metalness: .2 });
+  const FROST = new THREE.MeshStandardMaterial({ color: 0xdff2ff, transparent: true, opacity: .32, depthWrite: false, roughness: .25 });
   const PICK = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false });
   const BOXG = new THREE.BoxGeometry(1, 1, 1);
-  const box = (g, w, h, d, x, y, z, m) => { const me = new THREE.Mesh(BOXG, m); me.scale.set(w, h, d); me.position.set(x, y, z); g.add(me); return me; };
+  const box = (g, w, h, d, x, y, z, m) => { const me = new THREE.Mesh(BOXG, m); me.scale.set(w, h, d); me.position.set(x, y, z); if (shadows && !m.transparent && m.isMeshStandardMaterial) { me.castShadow = h > .2; me.receiveShadow = true; } g.add(me); return me; };
 
   let seed = 20261003;
   const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
@@ -243,13 +248,13 @@ function start3d() {
         place("fruit", g, bx + .02 + s / 2 + (i + layer * .5) * s + (rnd() - .5) * .01, y + .05 + s * .45 + layer * s * .7, zb + dir * (.02 + s / 2 + (j + layer * .5) * s), s, s * .92, s, col);
     }
   }
-  const METAL = mat("#eceeed"), BACK = mat("#d6dcd8"), PLINTH = mat("#39423e"), BODY = mat("#2c3539");
+  const METAL = mat("#eceeed", { metalness: .45, roughness: .32 }), BACK = mat("#d6dcd8"), PLINTH = mat("#39423e"), BODY = mat("#2c3539");
   function bWall(g, f) {
     const L = f.L, D = f.Dp, H = f.H;
     box(g, L, H, .04, 0, H / 2, -D / 2 + .02, BACK);
     box(g, .04, H, D, -L / 2 + .02, H / 2, 0, METAL); box(g, .04, H, D, L / 2 - .02, H / 2, 0, METAL);
     box(g, L, .12, D, 0, .06, 0, PLINTH);
-    f.strip = box(g, L - .06, .16, .03, 0, H - .1, -D / 2 + .06, new THREE.MeshLambertMaterial({ color: f.colour }));
+    f.strip = box(g, L - .06, .16, .03, 0, H - .1, -D / 2 + .06, new THREE.MeshStandardMaterial({ color: f.colour }));
     const lv = H >= 1.7 ? 5 : 4, top = H - .3, step = (top - .12) / lv, zb = -D / 2 + .04;
     for (let i = 0; i < lv; i++) {
       const y = .12 + i * step, sd = f.kind === "fruit" ? (D - .06) * (1 - i * .16) : D - .06;
@@ -263,14 +268,14 @@ function start3d() {
     if (ec) { box(g, ec, H, D, -L / 2 + ec / 2, H / 2, 0, mat("#5a3d86")); box(g, ec, H, D, L / 2 - ec / 2, H / 2, 0, mat("#8fb7d6")); }
     const lv = 4, top = H - .18, step = (top - .12) / lv, sd = D / 2 - .05;
     for (let i = 0; i < lv; i++) { const y = .12 + i * step; for (const s of [1, -1]) { box(g, Lb - .02, .025, sd, 0, y, s * (.025 + sd / 2), METAL); fillShelf(g, f, -Lb / 2 + .03, Lb / 2 - .03, y + .0125, s * .025, sd, step - .04, s); } }
-    f.strip = box(g, Lb, .12, .08, 0, H + .06, 0, new THREE.MeshLambertMaterial({ color: f.colour }));
+    f.strip = box(g, Lb, .12, .08, 0, H + .06, 0, new THREE.MeshStandardMaterial({ color: f.colour }));
   }
   function bChiller(g, f, doors, frost) {
     const L = f.L, D = f.Dp, H = f.H;
     box(g, L, H, .04, 0, H / 2, -D / 2 + .02, glow(frost ? "#eaf6ff" : "#f3f7f8"));
     box(g, .05, H, D, -L / 2 + .025, H / 2, 0, BODY); box(g, .05, H, D, L / 2 - .025, H / 2, 0, BODY);
     box(g, L, .2, D, 0, .1, 0, BODY); box(g, L, .3, D, 0, H - .15, 0, BODY);
-    f.strip = box(g, L - .1, .13, .02, 0, H - .15, D / 2 + .012, new THREE.MeshLambertMaterial({ color: f.colour }));
+    f.strip = box(g, L - .1, .13, .02, 0, H - .15, D / 2 + .012, new THREE.MeshStandardMaterial({ color: f.colour }));
     const lv = doors ? 5 : 4, bottom = .22, top = H - .36, step = (top - bottom) / lv;
     for (let i = 0; i < lv; i++) {
       const y = bottom + i * step, sd = doors ? D - .16 : (D - .12) * (1 - i * .12);
@@ -342,7 +347,7 @@ function start3d() {
   tx.strokeStyle = "#d3cec4"; tx.lineWidth = 2; tx.strokeRect(0, 0, 128, 128);
   const tt = new THREE.CanvasTexture(tc); tt.colorSpace = THREE.SRGBColorSpace; tt.wrapS = tt.wrapT = THREE.RepeatWrapping; tt.repeat.set(1 / 1.2, 1 / 1.2); tt.anisotropy = 8;
   const shape = new THREE.Shape(POLY.map(([x, z]) => new THREE.Vector2(x, -z)));
-  const floor = new THREE.Mesh(new THREE.ShapeGeometry(shape), new THREE.MeshLambertMaterial({ map: tt })); floor.rotation.x = -Math.PI / 2; floor.position.y = .002; scene.add(floor);
+  const floor = new THREE.Mesh(new THREE.ShapeGeometry(shape), new THREE.MeshStandardMaterial({ map: tt, roughness: .38, metalness: 0 })); floor.rotation.x = -Math.PI / 2; floor.position.y = .002; floor.receiveShadow = shadows; scene.add(floor);
 
   /* walls: doorways (entrance, staff door) leave a walkable gap; colliders only on the solid parts */
   const WM = mat("#f1eee7");
@@ -406,7 +411,7 @@ function start3d() {
   const geos = { box: BOXG, bottle: new THREE.CylinderGeometry(.5, .5, 1, 10), fruit: new THREE.IcosahedronGeometry(.5, 1) };
   for (const k in INST) {
     const arr = INST[k]; if (!arr.length) continue;
-    const im = new THREE.InstancedMesh(geos[k], new THREE.MeshLambertMaterial({ color: 0xffffff }), arr.length);
+    const im = new THREE.InstancedMesh(geos[k], new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: k === "bottle" ? .25 : .55 }), arr.length); im.receiveShadow = shadows;
     arr.forEach(([m, c], i) => { im.setMatrixAt(i, m); im.setColorAt(i, c); });
     im.instanceMatrix.needsUpdate = true; if (im.instanceColor) im.instanceColor.needsUpdate = true; scene.add(im);
   }

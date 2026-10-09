@@ -6,6 +6,7 @@
    forklifts. Day turns to night with the clock. Synthetic data from docs/data/gateway.js.
    Units: metres; the building front (docks) is at z = 0. */
 import * as THREE from "../kit/vendor/three.module.min.js";
+import { RoomEnvironment } from "../kit/vendor/RoomEnvironment.js";
 import { makePerson, pose, bubbleSprite, tagSprite, workwear } from "../store/v3/people.js";
 
 const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -36,6 +37,8 @@ export function createWorld(canvas, G, hooks = {}) {
   const DAY = new THREE.Color("#e6edf5"), NIGHT = new THREE.Color("#0a1322"), DUSK = new THREE.Color("#f2c9a0");
   const scene = new THREE.Scene(); scene.background = DAY.clone(); scene.fog = new THREE.Fog(DAY.clone(), 200, 460);
   const camera = new THREE.PerspectiveCamera(40, 1, .5, 900);
+  // image-based light (the Blender-style look): soft reflections on metal, glass, vehicles and racking
+  { const pm = new THREE.PMREMGenerator(renderer); scene.environment = pm.fromScene(new RoomEnvironment(), .04).texture; scene.environmentIntensity = .45; pm.dispose(); }
   const hemi = new THREE.HemisphereLight(0xffffff, 0xc9d3dd, 1.5); scene.add(hemi);
   const sun = new THREE.DirectionalLight(0xffffff, 2.1); sun.position.set(-60, 110, 70); scene.add(sun);
   if (shadows) { sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); const c = sun.shadow.camera; c.left = -110; c.right = 110; c.top = 90; c.bottom = -90; c.near = 10; c.far = 340; sun.shadow.bias = -.0004; sun.shadow.normalBias = .02; }
@@ -961,8 +964,8 @@ export function createWorld(canvas, G, hooks = {}) {
     scene.background.copy(NIGHT).lerp(DAY, k).lerp(DUSK, Math.min(.35, dusk * .35) * (1 - Math.abs(k - .5) * 2 + .3)); scene.fog.color.copy(scene.background);
     const a = (h - 6) / 13.6 * Math.PI; sun.position.set(-Math.cos(a) * 90, 30 + Math.sin(Math.max(0, a)) * 100, 70);
     sunCol.set("#ffffff").lerp(tmp.set("#ffb36b"), Math.min(1, dusk * .7)); sun.color.copy(sunCol); sun.intensity = .08 + 2.0 * k;
-    hemi.intensity = .42 + 1.1 * k; hemi.color.set("#ffffff").lerp(tmp.set("#6d8ad0"), 1 - k); hemi.groundColor.set("#c9d3dd").lerp(tmp.set("#1b2433"), 1 - k);
-    const n = 1 - k; renderer.toneMappingExposure = 1.08;
+    hemi.intensity = .3 + .85 * k; hemi.color.set("#ffffff").lerp(tmp.set("#6d8ad0"), 1 - k); hemi.groundColor.set("#c9d3dd").lerp(tmp.set("#1b2433"), 1 - k);
+    const n = 1 - k; renderer.toneMappingExposure = 1.08; scene.environmentIntensity = .06 + .28 * k;
     GLOW.lamp.emissiveIntensity = 2.4 * n; GLOW.panel.emissiveIntensity = .6 + 1.4 * n; GLOW.window.emissiveIntensity = 1.6 * n; GLOW.head.emissiveIntensity = .4 + 3 * n; GLOW.tail.emissiveIntensity = .3 + 1.5 * n;
     if (W) W.lights.forEach((l, i) => { l.intensity = (i === W.lights.length - 1 ? 90 : 160) * n; });
   }

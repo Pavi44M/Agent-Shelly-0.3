@@ -7,6 +7,8 @@
    moves to the next signer. Panels (tasks, calendar, funds, opportunities) live in hq-panels.js. */
 import * as THREE from "../kit/vendor/three.module.min.js";
 import { S, DEP, AG, on, focus, deptStats, initPanels } from "./hq-panels.js";
+import { makePerson, pose } from "../store/v3/people.js";
+import { RoomEnvironment } from "../kit/vendor/RoomEnvironment.js";
 
 const B = window.SHELLY_BRAIN;
 const host = document.getElementById("hq");
@@ -67,8 +69,10 @@ function build() {
   renderer.shadowMap.enabled = window.innerWidth >= 900; renderer.shadowMap.type = THREE.PCFSoftShadowMap;   // decided once: toggling later breaks compiled materials
   host.prepend(renderer.domElement);
 
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.1;
   const scene = new THREE.Scene();
-  scene.add(new THREE.HemisphereLight(0xc8d8ff, 0x0b0f18, 1.05));
+  { const pm = new THREE.PMREMGenerator(renderer); scene.environment = pm.fromScene(new RoomEnvironment(), .04).texture; scene.environmentIntensity = .35; pm.dispose(); }
+  scene.add(new THREE.HemisphereLight(0xc8d8ff, 0x0b0f18, 0.9));
   const sun = new THREE.DirectionalLight(0xffffff, 1.6); sun.position.set(30, 50, 22); sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -60, right: 60, top: 60, bottom: -60, near: 1, far: 160 }); sun.shadow.bias = -0.0006;
   scene.add(sun);
@@ -130,19 +134,20 @@ function build() {
       box(1.0, 0.14, 0.95, M.chair, 0, 0.95, 0, chair); box(1.0, 1.0, 0.12, M.chair, 0, 1.5, 0.48, chair); box(0.12, 0.85, 0.12, M.leg, 0, 0.45, 0, chair);
       const ring = new THREE.Mesh(new THREE.RingGeometry(0.75, 1.05, 40), new THREE.MeshBasicMaterial({ color: 0x3fb87f, transparent: true, opacity: 0, depthWrite: false, toneMapped: false }));
       ring.rotation.x = -Math.PI / 2; ring.position.set(0, 0.02, 1.25); dg.add(ring);
-      const body = new THREE.Group(); body.position.set(0, 0, 1.15); dg.add(body);
-      const shirt = shirts[a.business] || shirts.group;
-      const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.38, 0.55, 6, 14), shirt); torso.position.y = 1.62; torso.castShadow = true; body.add(torso);
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.36, 20, 16), M.skin); head.position.y = 2.5; head.castShadow = true; body.add(head);
-      const arms = [];
-      for (const s of [-1, 1]) { const arm = new THREE.Mesh(new THREE.CapsuleGeometry(0.11, 0.6, 4, 8), shirt); arm.position.set(s * 0.42, 1.68, -0.38); arm.rotation.x = Math.PI / 2.4; arm.castShadow = true; body.add(arm); arms.push(arm); }
+      // the agent at work: a person (built in Blender, kit/human-mesh.js) seated at the desk, in the business colour
+      const B0 = B.businesses.find(b => b.id === a.business) || B.businesses.find(b => b.id === "group") || {};
+      const P = makePerson(THREE, { kind: "staff", role: a.id === d.head_agent ? "Head of department" : "Analyst", shirt: B0.colour || "#63b6d8", seed: rnd(k * 7 + i * 13) });
+      P.g.scale.setScalar(2); P.g.position.set(0, 0, 1.12); P.g.rotation.y = Math.PI; dg.add(P.g);
+      P.g.traverse(o => { if (o.isMesh) o.castShadow = true; });
+      pose(P, "sit", 0, true);
+      const arms = P.arms, head = P.head;
       const icon = new THREE.Sprite(new THREE.SpriteMaterial({ map: ICON.done, transparent: true, depthTest: false, toneMapped: false }));
       icon.scale.set(0.9, 0.9, 1); icon.position.set(0, 3.5, 1.15); icon.renderOrder = 5; dg.add(icon);
       if (a.id === d.head_agent) { const st = new THREE.Sprite(new THREE.SpriteMaterial({ map: ICON.star, transparent: true, depthTest: false, toneMapped: false }));
         st.scale.set(0.8, 0.8, 1); st.position.set(-1.1, 3.25, 1.15); st.renderOrder = 6; dg.add(st); }
       const hit = new THREE.Mesh(new THREE.BoxGeometry(3.4, 3.6, 3.4), new THREE.MeshBasicMaterial({ visible: false }));
       hit.position.set(0, 1.8, 0.5); hit.userData.agent = a.id; dg.add(hit); pick.push(hit);
-      desks[a.id] = { a, d, g: dg, scr, icon, arms, head, ring, phase: rnd(k + i * 9) * 6, pend: -1 };
+      desks[a.id] = { a, d, g: dg, scr, icon, arms, head, P, ring, phase: rnd(k + i * 9) * 6, pend: -1 };
     });
   });
 
@@ -295,8 +300,8 @@ function build() {
     if (!still) brain.rotation.y = t * 0.15;
     Object.values(desks).forEach(k => {
       const work = k.mode === "work" && !still;
-      k.arms.forEach((m, i) => { m.rotation.x = Math.PI / 2.4 + (work ? Math.sin(t * 14 + k.phase + i * 1.7) * 0.12 : 0); });
-      k.head.position.y = 2.5 + (still ? 0 : Math.sin(t * 1.3 + k.phase) * 0.03);
+      pose(k.P, "sit", t * (work ? 1.6 : .4), !work);
+      if (!still) k.P.neck.rotation.y = k.mode === "warn" ? Math.sin(t * 1.1 + k.phase) * .35 : 0;
       k.ring.material.opacity = k.mode === "work" ? 0.35 + (still ? 0 : 0.25 * Math.sin(t * 3 + k.phase)) : 0;
       if (k.icon.visible) { k.icon.position.y = 3.5 + (still ? 0 : Math.sin(t * 2.2 + k.phase) * 0.12); const s = k.mode === "warn" && !still ? 0.9 + 0.12 * Math.sin(t * 5 + k.phase) : 0.9; k.icon.scale.set(s, s, 1); }
     });
