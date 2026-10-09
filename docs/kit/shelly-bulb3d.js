@@ -18,7 +18,7 @@ function haloTex() {
 /* face, drawn in "glass units" (glass radius = 33, origin = glass centre) — same look as the 2D Shelly */
 const INK = "#24190d";
 function drawFace(g, s) {
-  const { t, lx, ly, blink, mood, sleepy, dizzy, talk, hungry, still } = s;
+  const { t, lx, ly, blink, mood, sleepy, dizzy, talk, hungry, still, m } = s;
   function eye(x, y, kind) {
     g.save(); g.translate(x, y); g.lineCap = "round"; g.strokeStyle = INK; g.fillStyle = INK; g.lineWidth = 2.6;
     if (kind === "happy") { g.beginPath(); g.arc(0, 2, 4.6, Math.PI * 1.1, Math.PI * 1.9); g.stroke(); }
@@ -46,7 +46,13 @@ function drawFace(g, s) {
   else if (hungry) { g.beginPath(); g.ellipse(0, 1, 6, 5, 0, 0, 7); g.fill(); }
   else if (mood === "gulp") { g.beginPath(); g.moveTo(-4, 0); g.lineTo(4, 0); g.stroke(); }
   else if (mood === "alert") { g.beginPath(); g.ellipse(0, 1, 2.6, 3, 0, 0, 7); g.fill(); }
-  else if (talk && !still) { g.beginPath(); g.ellipse(0, 1, 4, 1.2 + 2.6 * Math.abs(Math.sin(t * 13)), 0, 0, 7); g.fill(); }
+  else if (talk && !still) {   // live lip-sync: the shape comes from the word being spoken right now
+    const o = m ? m.open : Math.abs(Math.sin(t * 13)) * .7, rd = m ? m.round : 0, wd = m ? m.wide : .5;
+    const w = Math.max(1.3, 3.4 + wd * 1.8 - rd * 1.9), h = .45 + o * 4.6;
+    g.beginPath(); g.ellipse(0, 1 + o * .6, w, h, 0, 0, 7); g.fill();
+    if (o > .35) { g.fillStyle = "#ff8fa3"; g.beginPath(); g.ellipse(0, 1 + o * .6 + h * .45, w * .55, h * .35, 0, 0, 7); g.fill();   // tongue
+      g.fillStyle = "#fff"; g.fillRect(-w * .55, 1 + o * .6 - h + .2, w * 1.1, Math.min(1.1, h * .3)); }                        // top teeth
+  }
   else if (mood === "happy") { g.beginPath(); g.arc(0, -1, 6.2, 0.05 * Math.PI, 0.95 * Math.PI); g.closePath(); g.fill();
     g.fillStyle = "#ff8fa3"; g.beginPath(); g.ellipse(0, 3.2, 2.6, 1.4, 0, 0, 7); g.fill(); }
   else { g.beginPath(); g.arc(0, -2.5, 5, 0.18 * Math.PI, 0.82 * Math.PI); g.stroke(); }
@@ -122,6 +128,25 @@ export function mount(cv, wrap, btn, L) {
   core.scale.set(2.2, 2.2, 1); core.position.set(0, 0.0, 0); bulbG.add(core);
   const inner = new THREE.PointLight(0xffd27a, 4, 6, 1.6); inner.position.set(0, 0.0, 0.2); bulbG.add(inner);
 
+  /* VFX: light rays behind her, rings of sound when she speaks, motes of light drifting round the glass */
+  const raysTex = (() => { const c = document.createElement("canvas"); c.width = c.height = 256; const g = c.getContext("2d"); g.translate(128, 128);
+    for (let k = 0; k < 18; k++) { g.rotate(Math.PI * 2 / 18); const gr = g.createLinearGradient(0, 0, 128, 0); gr.addColorStop(0, "rgba(255,255,255,.55)"); gr.addColorStop(1, "rgba(255,255,255,0)");
+      g.fillStyle = gr; g.beginPath(); g.moveTo(0, 0); g.lineTo(128, -7 - (k % 3) * 3); g.lineTo(128, 7 + (k % 3) * 3); g.closePath(); g.fill(); }
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
+  const rays = new THREE.Sprite(new THREE.SpriteMaterial({ map: raysTex, color: WARM.clone(), transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false }));
+  rays.scale.set(4.4, 4.4, 1); rays.position.set(0, 0.15, -1.4); rig.add(rays);
+  const ringTex = (() => { const c = document.createElement("canvas"); c.width = c.height = 128; const g = c.getContext("2d"); g.strokeStyle = "#fff"; g.lineWidth = 5; g.shadowColor = "#fff"; g.shadowBlur = 10; g.beginPath(); g.arc(64, 64, 52, 0, 7); g.stroke();
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
+  const waves = [0, 1, 2].map(i => { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: ringTex, color: WARM.clone(), transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false }));
+    sp.position.set(0, 0.2, -0.6); rig.add(sp); return { sp, ph: i / 3 }; });
+  const NM = 26, mp = new Float32Array(NM * 3), motes = [];
+  for (let i = 0; i < NM; i++) motes.push({ a: Math.random() * 6.28, r: 1.25 + Math.random() * .7, y: -1 + Math.random() * 2.4, v: .2 + Math.random() * .35, s: Math.random() * 6.28 });
+  const mg = new THREE.BufferGeometry(); mg.setAttribute("position", new THREE.BufferAttribute(mp, 3));
+  const moteM = new THREE.PointsMaterial({ map: halo0(), color: WARM.clone(), size: .22, transparent: true, opacity: .0, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false });
+  const motesP = new THREE.Points(mg, moteM); rig.add(motesP);
+  function halo0() { return haloTex(); }
+  let energy = 0;
+
   /* state */
   let lx = 0, ly = 0, tx = 0, ty = 0, rx = 0, ry = 0, light = 0.8, blinkAt = 2200, blinkEnd = 0, last = 0;
   addEventListener("pointermove", e => { const r = btn.getBoundingClientRect();
@@ -146,7 +171,7 @@ export function mount(cv, wrap, btn, L) {
     const fps = probeN / ((now - probeStart) / 1000); probeStart = 0;
     if (fps >= 40) { stage = 2; return; }
     if (stage === 0) { stage = 1; quality = 0.75; size(); return; }
-    if (fps < 24) { stage = 3; cancelAnimationFrame(raf); wrap.classList.remove("sk-3d"); cv.hidden = true; renderer.dispose(); }
+    if (fps < 24 && !/[?&]bulb=3d/.test(location.search)) { stage = 3; cancelAnimationFrame(raf); wrap.classList.remove("sk-3d"); cv.hidden = true; renderer.dispose(); }
     else stage = 2;
   }
   function frame(now) {
@@ -160,7 +185,9 @@ export function mount(cv, wrap, btn, L) {
     // light level + colour = status
     let want = 0.8 + (still ? 0 : Math.sin(t * 2.2) * 0.05); col.copy(WARM);
     if (alert) { col.copy(AMBER); want = 0.72 + (still ? 0.1 : 0.25 * (0.5 + 0.5 * Math.sin(t * 4))); }
-    if (talk) want = Math.max(want, 1.0);
+    const V = window.ShellyVoice, M = V && V.speaking ? V.mouth() : null;
+    energy += ((M ? M.energy : talk ? .5 : 0) - energy) * Math.min(1, dt * 10);
+    if (talk) want = Math.max(want, 1.0) + (still ? 0 : energy * .55);
     if (mood === "happy") { col.copy(BRIGHT); want = 1.5; }
     if (hungry) { col.copy(GREEN); want = 1.05; }
     if (dizzy) want = still ? 0.6 : (Math.random() < 0.2 ? 0.15 : 1.0);
@@ -173,20 +200,28 @@ export function mount(cv, wrap, btn, L) {
     halo.material.color.copy(col); halo.material.opacity = 0.8 * Math.min(1.3, Lv);
     core.material.color.copy(col); core.material.opacity = 0.75 * Math.min(1.3, Lv);
     inner.color.copy(col); inner.intensity = 0.4 + 7 * Lv;
+    // VFX: rays breathe with the light, sound rings ripple out while she speaks, motes drift up round the glass
+    const e2 = still ? 0 : energy;
+    rays.material.color.copy(col); rays.material.opacity = Math.min(.55, .12 * Lv + e2 * .45); rays.material.rotation = still ? 0 : t * .15; rays.scale.setScalar(4.4 + e2 * 1.1);
+    waves.forEach(w => { const f = ((t * .9 + w.ph) % 1); w.sp.material.color.copy(col); w.sp.material.opacity = talk && !still ? (1 - f) * .55 * Math.min(1, .3 + e2) : Math.max(0, w.sp.material.opacity - dt * 2); w.sp.scale.setScalar(2.2 + f * 2.9); });
+    motes.forEach((q, i) => { q.a += dt * q.v * (1 + e2 * 2); q.y += dt * (.15 + e2 * .5); if (q.y > 1.6) q.y = -1.1;
+      mp[i * 3] = Math.cos(q.a) * q.r; mp[i * 3 + 1] = q.y + Math.sin(t * 2 + q.s) * .05; mp[i * 3 + 2] = Math.sin(q.a) * q.r * .6; });
+    mg.attributes.position.needsUpdate = true; moteM.color.copy(col); moteM.opacity = still ? 0 : Math.min(.9, (mood === "happy" ? .8 : .25) * Lv + e2 * .6); moteM.size = .16 + e2 * .14;
+    coilMat.color.multiplyScalar(1 + (still ? 0 : (Math.random() - .5) * .08 * Lv + e2 * .6));   // tungsten flicker, brighter as she speaks
     // turn toward the cursor (with a gentle idle sway)
     const gy = still ? 0.2 : lx * 0.45 + Math.sin(t * 0.6) * 0.08, gx = still ? 0.05 : ly * 0.22 + Math.sin(t * 0.45) * 0.03;
     ry += (gy - ry) * Math.min(1, dt * 5); rx += (gx - rx) * Math.min(1, dt * 5);
-    rig.rotation.set(rx, ry, dizzy && !still ? Math.sin(t * 11) * 0.12 : 0);
+    rig.rotation.set(rx + (M && !still ? M.open * .06 : 0), ry, dizzy && !still ? Math.sin(t * 11) * 0.12 : (M && !still ? Math.sin(t * 3.1) * .04 * energy : 0));
     // face
     if (!still && now > blinkAt) { blinkEnd = now + 130; blinkAt = now + 2600 + Math.random() * 3200; }
     // redraw the face only when it changes (animated faces redraw every frame)
-    const blink = now < blinkEnd ? 0.12 : 1, anim = !still && (dizzy || talk || sleepy);
+    const blink = now < blinkEnd ? 0.12 : 1, anim = !still && (dizzy || talk || sleepy || !!M);
     const key = [Math.round(lx * 40), Math.round(ly * 40), blink, mood, sleepy, dizzy, talk, hungry].join("|");
     if (anim || key !== faceKey) {
       faceKey = key;
       fg.setTransform(1, 0, 0, 1, 0, 0); fg.clearRect(0, 0, FW, FH);
       fg.setTransform(pxPerUnit, 0, 0, pxPerUnit, fcx, fcy);
-      drawFace(fg, { t, lx: lx * 0.6, ly: ly * 0.6, blink, mood, sleepy, dizzy, talk, hungry, still });
+      drawFace(fg, { t, lx: lx * 0.6, ly: ly * 0.6, blink, mood, sleepy, dizzy, talk: talk || !!M, hungry, still, m: M });
       faceTex.needsUpdate = true;
     }
     renderer.render(scene, cam);

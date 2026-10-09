@@ -152,6 +152,69 @@
     };
     return M[PAGE] || M.launchpad;
   }
+
+  /* ------------------------------------------------ voice + live lip-sync
+     Shelly reads her messages aloud (the device's speech voice, the same one picked on the main page)
+     and her mouth follows the words in real time: every word the speech engine starts (boundary
+     events) is broken into mouth shapes (open vowels, round O/U/W, closed M/B/P, teeth F/V...),
+     timed across the word. Without boundary events she lip-syncs from the text at the speaking rate. */
+  const VOICE = (() => {
+    const synth = window.speechSynthesis, PREF = ["Google UK English Male", "Microsoft Ryan Online", "Microsoft Ryan", "Microsoft George", "Microsoft Thomas Online", "Daniel"];
+    const st = { on: ls.get("shelly.kitVoice", false), speaking: false, tl: [], t0: 0, open: 0, round: 0, wide: 0, energy: 0, pending: null, gotBoundary: false };
+    let activated = false;
+    addEventListener("pointerdown", () => { activated = true; if (st.pending) { const p = st.pending; st.pending = null; speak(p); } }, { capture: true });
+    addEventListener("keydown", () => { activated = true; }, { capture: true });
+    function shape(ch) {   // [open, round, wide]
+      ch = ch.toLowerCase();
+      if ("ae".includes(ch)) return [.85, 0, 1]; if (ch === "i" || ch === "y") return [.55, 0, .9];
+      if ("ouw".includes(ch)) return [.7, 1, 0]; if ("mbp".includes(ch)) return [0, 0, .3];
+      if ("fv".includes(ch)) return [.22, 0, .6]; if ("lnt dszrh".includes(ch)) return [.35, 0, .5];
+      if (/[a-z0-9]/.test(ch)) return [.45, .1, .4]; return [.05, 0, .3];
+    }
+    function wordTimeline(word, t0, dur) {   // mouth keyframes across one word
+      const chars = [...word].filter(c => /[a-z0-9']/i.test(c)); if (!chars.length) return [];
+      const step = dur / chars.length; return chars.map((c, i) => ({ t: t0 + i * step, s: shape(c) })).concat([{ t: t0 + dur, s: [.08, 0, .3] }]);
+    }
+    function voice() {
+      if (!synth) return null; const all = synth.getVoices(), saved = ls.get("shelly.voice", "");
+      return (saved && all.find(v => v.name === saved)) || PREF.map(n => all.find(v => v.name.startsWith(n))).find(Boolean) ||
+        all.find(v => /^en-(NZ|GB|AU)/i.test(v.lang.replace("_", "-"))) || all.find(v => /^en/i.test(v.lang)) || null;
+    }
+    const clean = t => String(t).replace(/<[^>]+>/g, " ").replace(/&amp;/g, "&").replace(/&[a-z]+;/g, " ").replace(/[★❗⚠✦▶·→⌘🧠🔊🔈🗣]/g, " ").replace(/\$(\d)/g, "$1 dollars ").replace(/\s+/g, " ").trim();
+    function speak(html) {
+      if (!synth || !st.on) return;
+      const text = clean(html).slice(0, 600); if (!text) return;
+      if (!activated) { st.pending = html; return; }   // browsers only allow speech after the first tap or key
+      synth.cancel();
+      const u = new SpeechSynthesisUtterance(text), v = voice(), rate = ls.get("shelly.rate", 1.05);
+      if (v) { u.voice = v; u.lang = v.lang; } else u.lang = "en-NZ";
+      u.rate = rate; u.pitch = ls.get("shelly.pitch", 1.05);
+      const cps = 14.5 * rate;   // characters per second, for timing words
+      u.onstart = () => { st.speaking = true; st.t0 = performance.now() / 1000; st.gotBoundary = false; st.tl = [];
+        // a whole-sentence timeline from the text: replaced word by word as the engine reports boundaries
+        let t = st.t0; text.split(/(\s+)/).forEach(w => { const d = w.length / cps; if (/\S/.test(w)) st.tl.push(...wordTimeline(w, t, d)); else st.tl.push({ t, s: [.04, 0, .3] }); t += d; });
+        document.dispatchEvent(new CustomEvent("shelly:voice", { detail: { speaking: true } })); };
+      u.onboundary = e => { if (e.name && e.name !== "word") return; const now = performance.now() / 1000;
+        const m = text.slice(e.charIndex).match(/^[^\s]+/); if (!m) return; const w = m[0], d = Math.max(.12, w.length / cps);
+        if (!st.gotBoundary) { st.gotBoundary = true; }
+        st.tl = st.tl.filter(k => k.t < now).concat(wordTimeline(w, now, d), [{ t: now + d + .02, s: [.04, 0, .3] }]); };
+      u.onend = u.onerror = () => { st.speaking = false; st.tl = []; document.dispatchEvent(new CustomEvent("shelly:voice", { detail: { speaking: false } })); };
+      synth.speak(u);
+    }
+    function stop() { if (synth) synth.cancel(); st.speaking = false; st.tl = []; st.pending = null; }
+    function mouth() {   // smoothed mouth shape right now (called every frame by the bulb)
+      const now = performance.now() / 1000; let tgt = [0, 0, .3];
+      if (st.speaking && st.tl.length) { let k = st.tl.length - 1; while (k > 0 && st.tl[k].t > now) k--; tgt = st.tl[k].t <= now ? st.tl[k].s : [0, 0, .3];
+        const nx = st.tl[k + 1]; if (nx && nx.t > now) { const f = Math.min(1, (now - st.tl[k].t) / Math.max(.01, nx.t - st.tl[k].t)); if (f > .6) tgt = tgt.map((v, i) => v + (nx.s[i] - v) * (f - .6) / .4); } }
+      const a = .35; st.open += (tgt[0] - st.open) * a; st.round += (tgt[1] - st.round) * a; st.wide += (tgt[2] - st.wide) * a;
+      st.energy += ((st.speaking ? .35 + st.open : 0) - st.energy) * .15;
+      return { open: st.open, round: st.round, wide: st.wide, energy: st.energy, speaking: st.speaking };
+    }
+    function setOn(v) { st.on = v; ls.set("shelly.kitVoice", v); if (!v) stop(); }
+    if (synth && synth.onvoiceschanged !== undefined) synth.onvoiceschanged = () => {};
+    return { speak, stop, mouth, setOn, get on() { return st.on; }, get speaking() { return st.speaking; }, available: !!synth };
+  })();
+  window.ShellyVoice = VOICE;
   let hidden = false; try { hidden = sessionStorage.getItem("shelly.kit.quiet") === "1"; } catch (e) { /* */ }
   function mascot() {
     const w = document.createElement("div");
@@ -181,12 +244,15 @@
       const list = messages(); i = (k ?? i) % list.length;
       msg.innerHTML = list[i];
       acts.innerHTML = (open().length ? `<button data-k="tray">Review approvals</button>` : "") +
-        (PAGE !== "brain" ? `<a href="${esc(BASE)}brain/">🧠 Brain</a>` : `<a href="${esc(BASE)}launchpad/">⌘ Launchpad</a>`) + `<button data-k="next">Next tip</button>${G ? G.acts() : ""}<button data-k="snd" aria-pressed="${L.soundOn()}">${L.soundOn() ? "🔊" : "🔈"} Sound</button>`;
-      w.classList.add("talk"); clearTimeout(timer); timer = setTimeout(() => w.classList.remove("talk"), 1600);
+        (PAGE !== "brain" ? `<a href="${esc(BASE)}brain/">🧠 Brain</a>` : `<a href="${esc(BASE)}launchpad/">⌘ Launchpad</a>`) + `<button data-k="next">Next tip</button>${G ? G.acts() : ""}<button data-k="snd" aria-pressed="${L.soundOn()}">${L.soundOn() ? "🔊" : "🔈"} Sound</button>${VOICE.available ? `<button data-k="voice" aria-pressed="${VOICE.on}">🗣 ${VOICE.on ? "Voice on" : "Voice"}</button>` : ""}`;
+      w.classList.add("talk"); clearTimeout(timer); timer = setTimeout(() => { if (!VOICE.speaking) w.classList.remove("talk"); }, 1600);
       L.react("talk");
     }
-    acts.addEventListener("click", e => { const b = e.target.closest("[data-k]"); if (!b) return; if (b.dataset.k === "tray") openTray(); else if (b.dataset.k === "snd") { L.toggleSound(); b.setAttribute("aria-pressed", String(L.soundOn())); b.textContent = (L.soundOn() ? "🔊" : "🔈") + " Sound"; } else say(i + 1); });
-    w.querySelector(".sk-x").onclick = () => { bubble.hidden = true; try { sessionStorage.setItem("shelly.kit.quiet", "1"); } catch (e) { /* */ } };
+    acts.addEventListener("click", e => { const b = e.target.closest("[data-k]"); if (!b) return; if (b.dataset.k === "tray") openTray(); else if (b.dataset.k === "snd") { L.toggleSound(); b.setAttribute("aria-pressed", String(L.soundOn())); b.textContent = (L.soundOn() ? "🔊" : "🔈") + " Sound"; } else if (b.dataset.k === "voice") { VOICE.setOn(!VOICE.on); b.setAttribute("aria-pressed", String(VOICE.on)); b.textContent = "🗣 " + (VOICE.on ? "Voice on" : "Voice"); if (VOICE.on) VOICE.speak(msg.innerHTML); } else say(i + 1); });
+    // whatever she says in the bubble (tips, the page guide), she says out loud when the voice is on
+    let lastSaid = ""; new MutationObserver(() => { const h = msg.innerHTML; if (h && h !== lastSaid && !bubble.hidden) { lastSaid = h; VOICE.speak(h); } }).observe(msg, { childList: true, subtree: true, characterData: true });
+    document.addEventListener("shelly:voice", e => { if (e.detail.speaking) { clearTimeout(timer); w.classList.add("talk"); } else timer = setTimeout(() => w.classList.remove("talk"), 250); });
+    w.querySelector(".sk-x").onclick = () => { VOICE.stop(); bubble.hidden = true; try { sessionStorage.setItem("shelly.kit.quiet", "1"); } catch (e) { /* */ } };
     let pendingClick = 0;
     w.querySelector(".sk-btn").onclick = () => {
       // squish now; act a moment later so a fast triple-click can make her dizzy instead
@@ -382,7 +448,7 @@
       else if (hungry) { g.beginPath(); g.ellipse(0, 1, 6, 5, 0, 0, 7); g.fill(); }
       else if (mood === "gulp") { g.beginPath(); g.moveTo(-4, 0); g.lineTo(4, 0); g.stroke(); }
       else if (mood === "alert") { g.beginPath(); g.ellipse(0, 1, 2.6, 3, 0, 0, 7); g.fill(); }
-      else if (talk && !still) { g.beginPath(); g.ellipse(0, 1, 4, 1.2 + 2.6 * Math.abs(Math.sin(t * 13)), 0, 0, 7); g.fill(); }
+      else if (talk && !still) { const V = window.ShellyVoice || VOICE, m = V.speaking ? V.mouth() : { open: Math.abs(Math.sin(t * 13)) * .7, round: 0, wide: .5 }; g.beginPath(); g.ellipse(0, 1, Math.max(1.2, 3.2 + m.wide * 1.6 - m.round * 1.6), .5 + m.open * 4.2, 0, 0, 7); g.fill(); }
       else if (mood === "happy") { g.beginPath(); g.arc(0, -1, 6.2, 0.05 * Math.PI, 0.95 * Math.PI); g.closePath(); g.fill();
         g.fillStyle = "#ff8fa3"; g.beginPath(); g.ellipse(0, 3.2, 2.6, 1.4, 0, 0, 7); g.fill(); }
       else { g.beginPath(); g.arc(0, -2.5, 5, 0.18 * Math.PI, 0.82 * Math.PI); g.stroke(); }

@@ -7,6 +7,12 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v1.17: Shelly speaks, with live lip-sync and VFX
+
+- **Voice on every page.** Tap 🗣 Voice in Shelly's bubble and she reads her tips and the page guide aloud, using the device's speech voice (the same voice picked on the main page). The choice is remembered. Browsers only allow speech after your first tap or key, so the first message waits for that.
+- **Real-time lip-sync.** Her mouth follows the words as they are spoken: each word the speech engine starts is turned into mouth shapes (open vowels with teeth and tongue, round O/U/W, closed M/B/P, F/V), timed across the word; she nods with the words. Works on the 3D bulb and the 2D fallback.
+- **VFX.** Light rays turn behind her, rings of sound ripple out while she speaks, motes of light drift round the glass, and the tungsten coil flickers and brightens with her voice.
+
 ## What's new in v1.16: Gateway, real vehicles and a real site
 
 - **Vehicles modelled in Blender** (`blender/shelly_vehicles_build.py` → `docs/kit/vehicle-mesh.js`, `docs/kit/vehicles.js`): cab-over truck cabs with windscreen, grille, bumper, mirrors, steps and fuel tank; vans; saloons, hatchbacks and SUVs; real wheels (tyre, rim, hub, nuts); a counterbalance forklift with overhead guard, mast and a lifting fork carriage; a reefer unit. Fleet paint, glass, chrome, black trim and rubber each have their own material.
