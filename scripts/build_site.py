@@ -77,6 +77,9 @@ runpy_brain.run_path(str(ROOT / "scripts" / "build_store.py"), run_name="__main_
 # Gateway Warehousing & Transport: the 3PL business, live in 3D (docs/gateway/)
 runpy_brain.run_path(str(ROOT / "scripts" / "build_gateway.py"), run_name="__main__")
 
+# Shelly Tower: the group head office and business complex, in 3D (docs/tower/)
+runpy_brain.run_path(str(ROOT / "scripts" / "build_tower.py"), run_name="__main__")
+
 # Launchpad: refresh the figures on docs/launchpad/ (retail numbers change every week)
 import runpy  # noqa: E402
 runpy.run_path(str(ROOT / "scripts" / "build_launchpad.py"), run_name="__main__")

@@ -2,7 +2,7 @@
 
     switch_html(base="../", active="medical")   ->  <nav> ... </nav>
 
-active: retail | medical | gateway | launchpad | brain | store. The approvals badge is filled in by docs/kit/shelly-kit.js.
+active: retail | medical | gateway | tower | launchpad | brain | store. The approvals badge is filled in by docs/kit/shelly-kit.js.
 """
 STORE = ("Neighbourhood store", "Retail · Shelly store agent", "🛒", "")
 MEDICAL = ("Tōtara Medical", "Supply Chain Command", "✚", "med")
@@ -22,6 +22,6 @@ def switch_html(base: str = "", active: str = "retail") -> str:
             f'<div class="biz-track">{opt(base or "./", *STORE, active == "retail")}'
             f'{opt(base + "supply-chain/", *MEDICAL, active == "medical")}'
             f'{opt(base + "gateway/", *GATEWAY, active == "gateway")}</div>'
-            f'<div class="biz-side">{side(base + "store/", "▦ Floor", "store")}{side(base + "brain/", "🧠 Brain", "brain")}{side(base + "launchpad/", "⌘ Launchpad", "launchpad")}'
+            f'<div class="biz-side">{side(base + "tower/", "🏙 Tower", "tower")}{side(base + "store/", "▦ Floor", "store")}{side(base + "brain/", "🧠 Brain", "brain")}{side(base + "launchpad/", "⌘ Launchpad", "launchpad")}'
             f'<button class="biz-ap" type="button" id="apBadge" hidden aria-haspopup="dialog">'
             f'<span aria-hidden="true">🔔</span> Approvals <b id="apCount">0</b></button></div></nav>')

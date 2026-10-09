@@ -16,6 +16,7 @@
     python -m shelly brain ask "which medical products will run out?"   which department agent takes it
     python -m shelly store [--web docs/data/shelly-data.js]   walk the store floor: every shelf, worst first
     python -m shelly gateway                           Gateway Warehousing & Transport: sites, clients, service and flags
+    python -m shelly tower                             Shelly Tower: every floor, tenants, floors to let and flags
     python -m shelly live path/to/pos_export.csv [--watch 60]   live POS feed for the Store Floor (docs/data/live.json, never published)
     python -m shelly report all [--data ...] [--pdf]   every report: Excel (dashboard, model, pivots, raw, lookups) + web page (+ PDF)
     python -m shelly report budget --months 6 --category Dairy --pdf --theme light,present
@@ -50,6 +51,7 @@ def main(argv=None):
     lv = sub.add_parser("live"); lv.add_argument("source"); lv.add_argument("--watch", type=int, default=0); lv.add_argument("--out")
     br = sub.add_parser("brain"); br.add_argument("action", nargs="?", default="org", choices=["org", "ask"]); br.add_argument("text", nargs="?")
     sub.add_parser("gateway")
+    sub.add_parser("tower")
     sf = sub.add_parser("store"); sf.add_argument("--web", default=str(ROOT / "docs/data/shelly-data.js"))
     rp = sub.add_parser("report"); rp.add_argument("which", nargs="?", default="all")
     rp.add_argument("--data", default="data/sample"); rp.add_argument("--asof"); rp.add_argument("--out", default="outputs/reports")
@@ -119,6 +121,9 @@ def main(argv=None):
         r = route(a.text)
         print(f"In scope → skill {r.skill} (match {r.score})" if r.in_scope else f"Out of scope ({r.kind}). {r.advice}")
 
+    elif a.cmd == "tower":
+        from .tower import build, text
+        print(text(build()))
     elif a.cmd == "gateway":
         from .gateway import build, text
         print(text(build()))

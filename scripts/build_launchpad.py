@@ -126,7 +126,17 @@ def main():
              "Five Auckland sites live in 3D, including two processing centres: two gates, marshalling lanes, a fleet park, docks, forklifts and "
              "a sorting centre at every site that sorts parcels for each business. Its own management team and every floor role.",
              f"{gk['otif']}%", f"on-time-in-full · {gk['trucks']} trucks · {gk['sorted_today']:,} parcels sorted a day · {len(gw['clients'])} clients",
-             "New · v" + gw["meta"]["module_version"], "new", f'<span class="shelves" aria-hidden="true">{trucks}</span>', "wide")
+             "v" + gw["meta"]["module_version"], "", f'<span class="shelves" aria-hidden="true">{trucks}</span>', "wide")
+    tw_p = ROOT / "docs/data/tower.js"
+    if tw_p.exists():
+        tw = js_data(tw_p, "SHELLY_TOWER")
+        tk = tw["kpis"]
+        bands = "".join(f'<i style="background:{f["colour"]}" title="{html.escape(f["name"])}"></i>' for f in tw["floors"] if f["kind"] in ("business", "core-business", "core-tech", "new"))
+        card("../tower/", "Group head office · business complex", "Shelly Tower",
+             "The Shelly Business Tower in Auckland city: one brain, Shelly OS, with eight agents runs every floor, the mall, the trade centre, "
+             "the hotel and the micro-fulfilment centre, and every Shelly business has its floor. Today and 2050.",
+             f"{tk['floors']}", f"floors · {tk['shelly_floors']} Shelly floors · {tk['tenants']} tenants · {tk['available']} to let",
+             "New · v" + tw["meta"]["module_version"], "new", f'<span class="shelves" aria-hidden="true">{bands}</span>', "wide")
     card("../index.html#s-packs", "Electronics · wholesale · warehousing · production", "Industry packs",
          "The same engine applied beyond retail: sell-through and markdowns, cost-to-serve and OTIF, ABC-XYZ slotting, OEE and scrap.",
          str(len(pack_titles) or 4), "industry packs on demo data", "Demo data")

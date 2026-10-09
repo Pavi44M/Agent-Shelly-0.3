@@ -1,0 +1,280 @@
+# Shelly Tower: the Shelly Business Tower, the group's head office and business complex (module v1.3).
+# Built from "Shelly Business Tower: Integrated Architecture" (Pavi, 9 Oct 2026): a commerce operating system with a
+# building around it. One brain (Shelly OS) with specialist agents runs every floor, shelf, robot, vehicle and tenant
+# system, and every Shelly business has its place: the business and technology cores at the top, each business on its
+# floors, the trade centre, hotel, mall, micro-fulfilment centre and mobility hub around them, and floors to let.
+# Everything here is fictional (synthetic demo data): the tower, tenants, people, rents and figures.
+tower:
+  name: Shelly Tower
+  long_name: Shelly Business Tower
+  short: Tower
+  module_version: "1.3"
+  address: Wynyard Quarter, Auckland waterfront (concept)
+  tagline: A commerce operating system with a building around it. One brain, Shelly OS, runs every floor, shelf, robot, vehicle and tenant, and every Shelly business has its place.
+  vision: "The Shelly Business Tower runs as one intelligent organism: every floor, shelf, robot, vehicle and tenant system feeds one brain, Shelly OS, which senses, predicts, decides and learns. An office booking, a shelf restock, a customs clearance and a drone departure are all events on the same platform."
+  positioning: "The Southern Hemisphere's reference site for AI-run mixed-use commerce, with Auckland as the gateway between Australasia, Asia and the Pacific."
+  height_m: 142
+  floor_m2: 1450          # lettable area of a typical office floor
+  opened: "2026"
+
+principles:
+  - {name: "One brain, many agents", text: "A central intelligence, Shelly OS, delegates to specialist AI agents for each sector, just as the Shelly Brain does for each business."}
+  - {name: Human-confirmed autonomy, text: "Shelly acts on routine decisions and asks a person before any high-impact one. Every decision lands in one approvals tray."}
+  - {name: Privacy by architecture, text: "Personal data is anonymised at the edge, so insight never needs identity."}
+  - {name: Net-positive by design, text: "The tower produces, stores and trades energy, not just consumes it."}
+  - {name: Open platform, text: "Tenants, suppliers and the city plug in through one API layer, and Shelly OS can be licensed to other buildings."}
+
+eras:
+  - id: now
+    name: Today
+    year: 2026
+    title: Shelly Tower · today
+    look: [Glass and steel tower on a four-storey podium, Rooftop sky garden and helipad, External glass lifts, Street-level Neighbourhood Store flagship, EV charging in the basement]
+  - id: future
+    name: "2050"
+    year: 2050
+    title: Shelly Business Centre · 2050
+    look: [Twisting bio-glass tower wrapped in a living vertical garden, Skyways and sky bridges linking it to the satellite towers and the buildings on both sides, Floating garden platforms under glass domes, A live holographic world map and rings that show every business, Air taxis, flying cars and drones between the towers, Media screens on the podium and the plaza]
+
+# The architecture: six layers with Shelly OS in the middle. Data flows up, decisions flow down; trust runs down the side of all of them.
+layers:
+  - {n: 6, name: Experiences & open API, text: "Tenant app, building copilot, kiosks, lobby screens, the tenant portal and one API layer for tenants, suppliers and the city.", items: [Tenant app, Building copilot, Tenant portal & API, Lobby and retail screens]}
+  - {n: 5, name: Sector services, text: "The sectors the tower runs: workplace, retail, FMCG and logistics, trade, mobility, energy, health, hospitality, innovation.", items: [Workplace, Retail mall, Fulfilment, Trade centre, Mobility, Energy]}
+  - {n: 4, name: Shelly OS, text: "The multi-agent brain: one orchestrator, the agent mesh, the human-in-the-loop decision ledger and the self-learning loop.", items: [Orchestrator, Agent mesh, Decision ledger, Self-learning loop], core: true}
+  - {n: 3, name: Data fabric & digital twin, text: "Every sensor, robot and tenant system writes to one data fabric; the live digital twin doubles as a simulation sandbox.", items: [Data fabric, Digital twin, Simulation sandbox, Commerce graph]}
+  - {n: 2, name: Edge & connectivity, text: "Edge servers in the building make time-critical decisions (access, robotics, safety); heavy analytics run in the cloud.", items: [Edge servers, Zero-trust network, Private 5G & IoT, Cloud]}
+  - {n: 1, name: Physical building, text: "Structure, façade, lifts, HVAC, sensors, shelves, robots, vehicles, drones, batteries and the solar glass.", items: [Sensors & cameras, Robots & lifts, Vehicles & drones, Solar, battery & HVAC]}
+trust_band: [Edge anonymisation, Consent ledger, Zero trust, Explainability, Life-safety boundary]
+
+# Shelly OS: what was defined, elevated, and the new capabilities
+os_elevated:
+  - {cap: Predictive operations and energy, original: "Adjusts lighting, HVAC and power from occupancy, weather and spot prices.", elevated: "Runs the tower as a virtual power plant: pre-cools floors when power is cheap, sells stored energy back at peak and joins grid demand-response events automatically."}
+  - {cap: Unified digital twin, original: "Real-time 3D view of structure, air, foot traffic and logistics.", elevated: "A simulation sandbox: test a new store layout, a fire evacuation, a 30% traffic surge or a supplier failure before it happens, then push the winning plan live."}
+  - {cap: Tenant cross-ecosystem engine, original: "Links retail stock, FMCG nodes, transit and tenant apps.", elevated: "A commerce graph that matches any demand in the tower to the nearest supply: an office lunch order is filled from the food hall, a retail stock-out from the basement MFC."}
+os_new:
+  - {name: Shelly agent mesh, text: "Specialist agents negotiate with each other through the orchestrator."}
+  - {name: Human-in-the-loop decision ledger, text: "Routine actions run on their own; anything over a cost, risk or customer-impact threshold goes to a named person for one-tap approval, with the reasoning logged."}
+  - {name: Predictive maintenance, text: "Vibration, current and thermal sensors on lifts, escalators, chillers and robots book the technician before the breakdown."}
+  - {name: Natural-language building copilot, text: "Managers ask in plain words (why was level 12 warm yesterday?) and get the answer with the chart and the evidence."}
+  - {name: Federated learning, text: "Tenants' models learn from each other's patterns without any tenant's raw data leaving its own environment."}
+  - {name: Edge plus cloud, text: "Access, robotics and safety decide on edge servers in the building, so the tower keeps working if the internet drops."}
+  - {name: Self-learning loop, text: "Every forecast is scored against what happened; drifting models are retrained or rolled back automatically."}
+
+# The agent mesh: the tower's specialist agents (they also sit in the Shelly Brain)
+mesh:
+  - {id: tower-workplace, name: Workplace, icon: "▦", colour: "#63b6d8", does: "Desks, rooms, hybrid-work forecasts, meeting intelligence and the flex-space marketplace."}
+  - {id: tower-retail, name: Retail, icon: "🛒", colour: "#1f8a5b", does: "Mall footfall, dynamic pricing with guardrails, retail media and pop-up pods."}
+  - {id: tower-logistics, name: Logistics, icon: "⛟", colour: "#2f6fd6", does: "The basement micro-fulfilment centre, dock and goods-lift slots, cold chain and traceability (run with Gateway)."}
+  - {id: tower-trade, name: Trade, icon: "⇄", colour: "#ff7ad9", does: "Trade matchmaking, digital trade documents, customs pre-clearance and settlement (with Tōtara Medical's import team)."}
+  - {id: tower-mobility, name: Mobility, icon: "✈", colour: "#9a7bff", does: "EV charging and valet, kerb bookings, transit sync, drones and the rooftop vertiport."}
+  - {id: tower-energy, name: Energy, icon: "⚡", colour: "#ffc466", does: "Solar, the battery microgrid, vehicle-to-grid, demand response and the carbon dashboard (Shelly Energy)."}
+  - {id: tower-security, name: Security, icon: "⛨", colour: "#e66767", does: "Zero-trust access, cyber-physical alerts, privacy and consent, seismic and safety monitoring."}
+  - {id: tower-concierge, name: Concierge, icon: "◎", colour: "#7fd1a8", does: "Visitors, wayfinding, the hotel, translation and the building copilot for everyone in the tower."}
+negotiations:
+  - {from: Mobility, to: Energy, text: "6pm exit surge predicted on B2: hold EV charging until 7pm so the lifts and chillers keep their power.", result: agreed}
+  - {from: Retail, to: Logistics, text: "Bananas will sell out in the mall by 3pm: pull two crates from the basement MFC now.", result: done}
+  - {from: Workplace, to: Energy, text: "Thursday attendance forecast 41%: consolidate tenants onto fewer floors and power down levels 9 and 12.", result: agreed}
+  - {from: Trade, to: Concierge, text: "Singapore delegation lands 10:40: book the time-zone deal room, an interpreter and two hotel rooms.", result: done}
+  - {from: Logistics, to: Mobility, text: "Three trucks booked for 7:00 to 7:20: switch the kerb to delivery bays until 7:30.", result: agreed}
+decision_tiers:
+  - {tier: Low, rule: "Shelly acts alone, logs the reason", examples: "Pre-cool a floor, reorder within limits, call a shuttle"}
+  - {tier: Medium, rule: "Shelly asks a named person, one tap", examples: "Large supplier order, sell stored energy, a price change near its daily cap"}
+  - {tier: High, rule: "Shelly only advises; people decide", examples: "A new lease, a new business, anything touching safety or pay"}
+ledger:
+  - {agent: Energy, tier: Low, action: "Pre-cooled levels 21 to 26 at 5:40 while power was 9c/kWh", outcome: "Saved $86 on the afternoon peak", status: done}
+  - {agent: Logistics, tier: Low, action: "Reordered 18 lines for the mall within approved limits", outcome: "No stock-outs on top sellers today", status: done}
+  - {agent: Retail, tier: Low, action: "Marked down 24 bread and dairy items 30% at 4pm (perishable AI)", outcome: "Sold 21; 3 routed to food rescue", status: done}
+  - {agent: Logistics, tier: Medium, action: "Supplier order for the MFC over the auto limit ($18,400)", outcome: "Waiting in the approvals tray", status: waiting, request: tw-mfc-restock}
+  - {agent: Energy, tier: Medium, action: "Sell 1.2 MWh of stored energy into the 6pm peak", outcome: "Approved by Finance · $310 earned", status: approved}
+  - {agent: Concierge, tier: Low, action: "Booked deal room 15B, interpreter and 2 hotel rooms for a Singapore delegation", outcome: "Confirmed", status: done}
+  - {agent: Security, tier: High, action: "Badge used on level 3 while the same login came from overseas", outcome: "Advised: account locked by the security lead", status: approved}
+  - {agent: Workplace, tier: High, action: "Lease half of level 12 to Ruru Accounting", outcome: "Waiting for Pavi", status: waiting, request: tw-lease-12}
+
+# The sectors, matched to Shelly's businesses. floors = where it lives in the tower.
+sectors:
+  - id: workplace
+    n: 1
+    name: Tech business centre and corporate offices
+    lead: Shelly Group · tenant floors
+    business: group
+    floors: ["31", "30", "29", "28", "27", "19", "13", "11", "10", "8", "7"]
+    text: "The office floors arrange themselves around the people coming in today, not a fixed floor plan."
+    caps: ["Invisible access: opt-in face entry, or a phone or watch credential for anyone who declines biometrics; lifts called before you reach the lobby", "AI-optimised workspaces pre-set to each person's light, temperature and noise; CO₂ and noise sensors adjust mid-meeting", "Zero-trust cyber-physical security: each tenant on its own network segment", "Hybrid-work forecasting: quiet days move people onto fewer floors and power the rest down", "Meeting intelligence: transcripts, translations and action items, recording only on consent", "Indoor wayfinding with step-free routes", "Service robots for cleaning, mail and coffee that ride the lifts off-peak", "Flex-space marketplace: unused space by the hour"]
+  - id: retail
+    n: 2
+    name: Smart retail and experiential mall
+    lead: Neighbourhood Store
+    business: store
+    floors: ["3", "2", "G"]
+    text: "Every visit becomes data that helps the store and the tenants sell better, without ever knowing who the shopper is."
+    caps: ["Dynamic pricing with guardrails: no surge on essentials, changes capped per day, unit pricing always shown", "Anonymous footfall and heatmaps from the edge: dwell, conversion and queues per zone, no faces stored", "Grab-and-go for app users, plus staffed and self-checkout so cash and card shoppers are never excluded", "Retail media network priced by real audience counts", "Demand sensing to the basement MFC and suppliers", "AR try-on mirrors, virtual showrooms and digital product passports", "Pop-up pods leased by the week", "Click-and-collect lockers and a returns robot", "Quiet hours and sensory-friendly routes"]
+  - id: fmcg
+    n: 3
+    name: FMCG, smart warehousing and logistics
+    lead: Gateway Warehousing & Transport
+    business: gateway
+    floors: ["B1", "B3", "22", "21"]
+    text: "The basement becomes a self-running fulfilment engine that serves the tower, the city and online orders from the same stock."
+    caps: ["Micro-fulfilment centre: robotic picking in minutes; dark-store mode at night for next-morning delivery", "Live inventory from RFID, shelf sensors and scanning drones; restock within approved limits, bigger orders go for approval", "Perishable AI: shelf life per batch and staged markdowns before spoilage", "AI demand forecasting by product, day and hour (weather, events, school holidays, footfall)", "Food-rescue routing for safe unsold food, logged for waste reporting", "Supplier portal for vendor-managed inventory", "Dock and goods-lift slots so trucks never queue on the street (Gateway's yard rules)", "End-to-end traceability: a recall isolated in minutes", "Cold-chain digital twin (Gateway and Tōtara's cold rooms)"]
+  - id: trade
+    n: 4
+    name: International trade centre and multi-tenant platform
+    lead: Tōtara Medical (imports) with Gateway
+    business: totara
+    floors: ["15", "14", "24", "23"]
+    text: "A business can find a partner, agree a deal, clear the paperwork and ship the goods without leaving the building."
+    caps: ["AI translation in every room, including Te Reo Māori and major Asia-Pacific languages", "Unified tenant portal: amenities, visitor passes, cross-brand loyalty and shared procurement", "Customs and cargo pre-clearance matched to NZ Customs and biosecurity requirements", "AI trade matchmaking that books the room and the interpreter", "Digital trade documents: bills of lading, certificates of origin, letters of credit", "Multi-currency settlement with exchange-rate exposure shown before signing", "Export readiness desk for local SMEs", "Time-zone deal rooms for Auckland, Singapore, Dubai and London", "Virtual trade showrooms for overseas buyers"]
+  - id: mobility
+    n: 5
+    name: Mobility, transport and drone logistics
+    lead: Gateway transport with Shelly Energy
+    business: gateway
+    floors: ["R", "B2", "G"]
+    text: "People, parcels and vehicles are one flow, so arrivals, departures and deliveries never fight for the same kerb or lift."
+    caps: ["Robotic EV chargers with vehicle-to-grid: parked cars feed the tower at peak and owners are paid", "Rooftop drone hub and vertiport, ready for air taxis within Civil Aviation Authority rules", "Live transit sync: shuttles called ahead of exit surges", "Autonomous valet parking", "Dynamic kerb: taxi rank, delivery bay or pick-up by time of day", "Sidewalk robots and cargo e-bikes from the MFC", "Active travel hub with bike parking, showers and repair", "One mobility pass billed to the employer"]
+  - id: health
+    n: 6
+    name: Health and wellbeing
+    lead: Rimu Health Clinic (tenant) with Tōtara Medical
+    business: totara
+    floors: ["6", "5"]
+    text: "A GP and allied-health clinic, telehealth pods and a gym, bookable through the tenant app."
+    caps: ["Wellbeing floors: clinic, telehealth pods, gym", "Healthy-building monitoring: air, light and noise per room, shown on lobby screens", "Opt-in wellbeing nudges, never tied to performance data", "Tōtara Medical pharmacy counter in the mall"]
+  - id: hospitality
+    n: 7
+    name: Hospitality and food hall
+    lead: Shelly Tower hotel & food hall
+    business: group
+    floors: ["17", "16", "4"]
+    text: "Serviced apartments and hotel floors for visiting trade delegations, and a food hall with kitchen robotics."
+    caps: ["Hotel and serviced apartments with app check-in and rooms pre-set to guest preferences", "Food hall with automated prep and a shared ghost kitchen for the hall and delivery", "Rooftop and event venues sharing the trade centre's translation, ticketing and catering"]
+  - id: innovation
+    n: 8
+    name: Innovation and skills lab
+    lead: Shelly Launchpad, Shelly Ventures & Shelly Academy
+    business: group
+    floors: ["27", "20"]
+    text: "Founders build on an anonymised tower data sandbox; Shelly Academy trains the people who run AI-run buildings."
+    caps: ["Startup incubator with an anonymised data sandbox", "Shelly Academy: data analytics, AI operations, robotics maintenance", "Living lab: tenants and universities trial new technology before it rolls out building-wide"]
+  - id: culture
+    n: 9
+    name: Culture and community
+    lead: Shelly Tower with mana whenua
+    business: group
+    floors: ["G", "18"]
+    text: "The tower adds to the street rather than sealing it off."
+    caps: ["Te Ao Māori design: bilingual wayfinding in English and Te Reo Māori, cultural narrative designed with mana whenua", "Public ground floor: open plaza, pop-up markets and community events"]
+
+# Floors from the top down. kind: core-business | core-tech | business | new | shared | trade | hospitality | tenant | available | amenity | podium | basement
+floors:
+  - {level: R, name: "Rooftop vertiport, drone hub & solar", kind: amenity, occupant: Shelly Mobility (Gateway + Shelly Energy), business: gateway, sector: mobility, people: 8, about: "Drone landing pads and parcel handling, a vertiport ready for air taxis within CAA rules, rooftop solar and the sky garden.", future: "Air-taxi and drone port with a glasshouse food garden."}
+  - {level: 31, name: Group boardroom, kind: core-business, occupant: Shelly Group HQ, business: group, sector: workplace, people: 14, page: ../brain/, about: "Pavi (Managing Director) and the board: strategy, new businesses and the high-impact decisions Shelly only advises on.", future: "Board room in the crown: every business on one holographic table."}
+  - {level: 30, name: Group management & finance, kind: core-business, occupant: Shelly Group HQ, business: group, sector: workplace, people: 46, page: ../brain/, about: "Management team, Finance, Sales and the Office Manager: the departments every business reports into and the people who approve Shelly's medium-tier decisions.", future: "Group control room: one live view of cash, people and risk across every business."}
+  - {level: 29, name: Shelly OS · AI operations centre, kind: core-tech, occupant: Shelly Brain, business: group, sector: workplace, people: 28, page: ../brain/, about: "The orchestrator, the agent mesh and the decision ledger: where Shelly runs every business and the building, and the people who supervise it.", future: "The Brain core: agents for every business and tenant, with people setting the rules."}
+  - {level: 28, name: Edge data centre & security operations, kind: core-tech, occupant: Shelly Brain, business: group, sector: workplace, people: 12, page: ../brain/, about: "Edge servers for access, robotics and safety, the data fabric and the zero-trust security desk; the tower keeps working if the internet drops.", future: "Liquid-cooled compute hall heated by and heating the tower."}
+  - {level: 27, name: Launchpad · innovation & living lab, kind: core-tech, occupant: Shelly Launchpad, business: group, sector: innovation, people: 34, page: ../launchpad/, about: "Product teams building Shelly modules and twins; tenants and universities trial new technology here first, on an anonymised data sandbox.", future: "Lab for the next generation of Shelly businesses."}
+  - {level: 26, name: Neighbourhood Store · head office, kind: business, occupant: Neighbourhood Store, business: store, sector: retail, people: 52, page: ../index.html, about: "Category, buying, pricing guardrails, store operations and e-commerce for the store network and the mall flagship.", future: "Store network HQ: every shelf in every store live."}
+  - {level: 25, name: Neighbourhood Store · retail media & store support, kind: business, occupant: Neighbourhood Store, business: store, sector: retail, people: 38, page: ../store/, about: "The retail media network, rostering, training and the Store Floor 3D planning team.", future: "Training studio with full-size virtual store aisles."}
+  - {level: 24, name: Tōtara Medical · supply chain command, kind: business, occupant: Tōtara Medical, business: totara, sector: trade, people: 44, page: ../supply-chain/, about: "Imports, stock, expiry and supplier control for medicines, consumables and equipment; the trade centre's import desk.", future: "Medical supply command for hospitals and clinics across the country."}
+  - {level: 23, name: Tōtara Medical · quality & regulatory, kind: business, occupant: Tōtara Medical, business: totara, sector: trade, people: 31, page: ../supply-chain/, about: "Medsafe and GDP compliance, batch release, recalls and customs paperwork for medical imports.", future: "Quality lab with live batch tracing."}
+  - {level: 22, name: Gateway · transport control tower, kind: business, occupant: Gateway Warehousing & Transport, business: gateway, sector: fmcg, people: 47, page: ../gateway/, about: "Dispatch, routes and live tracking of every truck; runs the tower's MFC, loading dock, kerb and drone deliveries.", future: "Autonomous fleet control: trucks, drones and air freight."}
+  - {level: 21, name: Gateway · management & client accounts, kind: business, occupant: Gateway Warehousing & Transport, business: gateway, sector: fmcg, people: 33, page: ../gateway/, about: "Gateway's management team, client accounts, cold-chain quality and the supplier collaboration portal.", future: "Client portal studio: every client sees its stock live."}
+  - {level: 20, name: Shelly Ventures & Shelly Academy, kind: new, occupant: Shelly Ventures, business: group, sector: innovation, people: 30, page: ../launchpad/, about: "The startup incubator and Shelly Academy (analytics, AI operations, robotics maintenance). Shelly Energy, which runs the tower's solar, battery and EV charging, started here.", future: "Ten new businesses a decade start on this floor."}
+  - {level: 19, name: Shared services, kind: shared, occupant: Shelly Group, business: group, sector: workplace, people: 40, about: "People & rostering, IT helpdesk, legal, privacy and facilities for every business and tenant.", future: "Shared services run mostly by agents, with people on the hard cases."}
+  - {level: 18, name: Sky lobby & conference centre, kind: amenity, occupant: Shelly Tower, sector: culture, people: 20, about: "Lift interchange, client lounge, bookable meeting suites and the rooftop-style event venue.", future: "Sky port lobby where the sky bridges arrive."}
+  - {level: 17, name: Hotel · delegation suites, kind: hospitality, occupant: Shelly Tower Hotel, business: group, sector: hospitality, people: 24, about: "Hotel rooms for visiting trade delegations: app check-in, rooms pre-set to guest preferences.", future: "Sky hotel on the bridge level."}
+  - {level: 16, name: Serviced apartments, kind: hospitality, occupant: Shelly Tower Hotel, business: group, sector: hospitality, people: 18, about: "Serviced apartments for longer stays, sharing the hotel's concierge and the food hall.", future: "Apartments with their own garden balconies."}
+  - {level: 15, name: International Trade Centre, kind: trade, occupant: Shelly Trade Centre, business: totara, sector: trade, people: 42, about: "Trade matchmaking, customs and cargo pre-clearance, digital trade documents, multi-currency settlement and the export readiness desk.", future: "The Pacific's trade floor: deals signed and shipped in a day."}
+  - {level: 14, name: Deal rooms & trade showrooms, kind: trade, occupant: Shelly Trade Centre, business: totara, sector: trade, people: 26, about: "Time-zone deal rooms (Auckland, Singapore, Dubai, London), live translation incl. Te Reo Māori, and virtual showrooms for overseas buyers.", future: "Holographic showrooms buyers walk through from anywhere."}
+  - {level: 13, name: Harbourline Insurance, kind: tenant, occupant: Harbourline Insurance, brand: "#3d7dd9", sector: workplace, people: 96, rent_m2: 640, lease_to: "2031-06", about: "Regional head office (fictional tenant). On the Shelly OS Pro plan."}
+  - {level: 12, name: Available · half floors, kind: available, occupant: Available to let, sector: workplace, people: 0, rent_m2: 590, available_from: "2026-11", about: "Can be split into two suites of about 700 m². Unused hours go on the flex-space marketplace."}
+  - {level: 11, name: Kōwhai Legal, kind: tenant, occupant: Kōwhai Legal, brand: "#e0a32e", sector: workplace, people: 72, rent_m2: 630, lease_to: "2030-03", about: "Commercial law firm (fictional tenant)."}
+  - {level: 10, name: Tūī Tech Labs, kind: tenant, occupant: Tūī Tech Labs, brand: "#d94a3d", sector: workplace, people: 110, rent_m2: 600, lease_to: "2030-08", about: "Software company (fictional tenant); a living-lab partner."}
+  - {level: 9, name: Flex space · available, kind: available, occupant: Flex-space marketplace, sector: workplace, people: 0, rent_m2: 560, available_from: "now", about: "Bookable by the hour for startups, visitors and events until a tenant takes the floor."}
+  - {level: 8, name: Pūriri Design Studio, kind: tenant, occupant: Pūriri Design Studio, brand: "#2a9d8f", sector: workplace, people: 58, rent_m2: 560, lease_to: "2029-11", about: "Architecture and interiors studio (fictional tenant)."}
+  - {level: 7, name: Mataī Capital Partners, kind: tenant, occupant: Mataī Capital Partners, brand: "#7a5cc4", sector: workplace, people: 44, rent_m2: 550, lease_to: "2032-01", about: "Investment firm (fictional tenant)."}
+  - {level: 6, name: Rimu Health Clinic, kind: tenant, occupant: Rimu Health Clinic, brand: "#3fb87f", sector: health, people: 38, rent_m2: 540, lease_to: "2033-04", about: "GP and allied-health clinic with telehealth pods (fictional tenant)."}
+  - {level: 5, name: Wellbeing floor, kind: amenity, occupant: Shelly Tower, sector: health, people: 18, about: "Gym, end-of-trip showers, quiet rooms and childcare; air, light and noise shown live in the lobby.", future: "Wellness park with a hanging garden pool."}
+  - {level: 4, name: Food hall & ghost kitchen, kind: amenity, occupant: Shelly Tower, sector: hospitality, people: 34, about: "Eight food stalls, automated prep stations and a shared ghost kitchen serving the hall and delivery orders.", future: "Farm-to-table hall fed by the tower's own gardens."}
+  - {level: 3, name: Experiential mall · upper, kind: podium, occupant: Pop-up pods · AR showrooms · retail media, business: store, sector: retail, people: 22, page: ../store/, about: "Pop-up pods leased by the week, AR try-on mirrors, virtual showrooms and the retail media screens.", future: "Mall where every product tells its own story."}
+  - {level: 2, name: Experiential mall · Neighbourhood Store flagship, kind: podium, occupant: Neighbourhood Store flagship · café · Tōtara pharmacy, business: store, sector: retail, people: 26, page: ../store/, about: "Grab-and-go plus staffed and self-checkout, electronic shelf labels, click-and-collect lockers and the Tōtara Medical pharmacy counter.", future: "Store with no checkouts: walk in, pick, walk out."}
+  - {level: G, name: Public ground floor & plaza, kind: podium, occupant: Shelly Tower, sector: culture, people: 16, about: "Open plaza, pop-up markets, community events, smart lockers at every entrance and bilingual wayfinding in English and Te Reo Māori.", future: "Open lobby that runs into the waterfront park."}
+  - {level: B1, name: Micro-fulfilment centre (MFC), kind: basement, occupant: Gateway Warehousing & Transport, business: gateway, sector: fmcg, people: 14, page: ../gateway/, about: "Robotic storage and retrieval picking tenant and online orders in minutes; dark-store mode at night; cold-chain twin and food-rescue routing.", future: "Fully robotic store feeding the tower by goods lift and the city by robot."}
+  - {level: B2, name: "Parking, EV charging & valet", kind: basement, occupant: Shelly Energy, business: group, sector: mobility, people: 4, about: "Autonomous valet parking, 60 robotic EV chargers with vehicle-to-grid, bike and active-travel hub.", future: "Autonomous vehicle depot and battery bank."}
+  - {level: B3, name: "Loading dock, battery microgrid & plant", kind: basement, occupant: Gateway + Shelly Energy, business: gateway, sector: fmcg, people: 6, page: ../gateway/, about: "Booked dock and goods-lift slots, the battery microgrid that can island the tower, rainwater and greywater plant.", future: "Underground freight line to the Gateway processing centres."}
+
+kinds:
+  core-business: {label: Business core, colour: "#f2c14e"}
+  core-tech: {label: Technology core, colour: "#63b6d8"}
+  business: {label: Shelly business, colour: "#2f6fd6"}
+  new: {label: New business, colour: "#c38bff"}
+  shared: {label: Shared services, colour: "#7fd1a8"}
+  tenant: {label: Leased to a tenant, colour: "#9aa7b6"}
+  available: {label: Available to let, colour: "#3fb87f"}
+  amenity: {label: Tower amenity, colour: "#ffb066"}
+  podium: {label: Podium, colour: "#e8692f"}
+  basement: {label: Basement, colour: "#5b6b80"}
+  trade: {label: International trade centre, colour: "#ff7ad9"}
+  hospitality: {label: Hotel & apartments, colour: "#ffd27a"}
+
+leasing:
+  agent: Shelly Tower leasing agent
+  terms: "Net rent per m² per year plus operating costs; 6-year terms typical; fit-out allowance for whole-floor leases. Every lease includes Shelly OS (tiered plans)."
+  enquiries:
+    - {floor: 12, from: Ruru Accounting, status: offer, note: "Offer for half the floor, 6 years at $585/m²."}
+    - {floor: 12, from: Kererū Energy, status: viewing, note: "Viewing booked; wants the other half from February."}
+    - {floor: 9, from: Tākaro Games Studio, status: new, note: "Using flex space twice a week; asked about the whole floor."}
+
+sustainability:
+  - {name: On-site generation, text: "Solar glass in the façade and rooftop panels, sized around the drone and vertiport pads."}
+  - {name: Battery and microgrid, text: "On-site storage plus EV fleet batteries run critical systems in island mode during a grid outage."}
+  - {name: Energy trading, text: "Shelly buys when spot prices are low, sells stored energy at peak and joins demand-response programmes."}
+  - {name: Water, text: "Rainwater harvesting and greywater reuse for cooling, toilets and landscaping; leak detection on every riser."}
+  - {name: AI waste sorting, text: "Vision-guided bins and a sorting line separate organics, recycling and landfill, with contamination reported per tenant."}
+  - {name: Carbon dashboard, text: "Every tenant sees its energy, water, waste and transport emissions live, ready for climate reporting."}
+  - {name: Embodied carbon, text: "Low-carbon concrete and timber where possible, tracked in the digital twin from construction on."}
+  - {name: Certification target, text: "A top Green Star and NABERSNZ rating, set as a design requirement."}
+
+trust:
+  privacy: ["Edge anonymisation: video becomes anonymous counts and paths on site; raw footage of faces never goes to the cloud", "Consent ledger: every opt-in recorded and withdrawn in one tap", "Built to the NZ Privacy Act 2020 and the Privacy Commissioner's biometric rules, with a privacy impact assessment for every new feature", "Māori data sovereignty in line with Te Mana Raraunga principles"]
+  governance: ["Decision tiers: acts alone on low impact, asks a person on medium, only advises on high", "Explainability: every pricing, access or staffing decision traces to its data and rule", "Regular bias and fairness audits of pricing, access and security models", "Life-safety boundary: fire, evacuation and structural systems keep their certified controls; Shelly informs but never overrides"]
+  resilience: ["Zero trust everywhere: building systems, tenant networks and guest Wi-Fi separated; every device proves its identity", "Seismic resilience: base isolation and structural-health sensors; the twin assesses damage within minutes of an earthquake", "Graceful degradation: if Shelly OS or the cloud fails, every system falls back to safe local control"]
+
+# Business model: synthetic first-year run rate (NZD a year) for each income stream
+revenue:
+  - {stream: Space leasing, who: "Office, retail and hospitality tenants", how: "Base rent, plus flex space and pop-up pods by the hour or week", year: rent}
+  - {stream: Shelly OS subscription, who: Tenants, how: "Tiered plans for analytics, AI agents, integrations and the copilot", year: 420000}
+  - {stream: Insights as a service, who: Tenants and brands, how: "Aggregated, anonymised footfall, demand and market reports", year: 180000}
+  - {stream: Retail media network, who: Brands and advertisers, how: "Screen and app ad space priced by real audience counts", year: 360000}
+  - {stream: Fulfilment as a service, who: Retailers and online sellers, how: "MFC picking, storage, lockers and last-mile delivery per order (Gateway)", year: 1150000}
+  - {stream: Energy services, who: Grid operators and tenants, how: "Demand response, stored-energy sales and EV charging (Shelly Energy)", year: 240000}
+  - {stream: Trade services, who: Importers and exporters, how: "Matchmaking, documents, settlement and deal-room bookings", year: 310000}
+  - {stream: Hotel & food hall, who: Visitors and delegations, how: "Rooms, apartments, food hall stalls and the ghost kitchen", year: 2100000}
+  - {stream: Mobility and vertiport fees, who: "Commuters, operators, carriers", how: "Parking, valet, kerb bookings, drone and air-taxi landing fees", year: 520000}
+  - {stream: Platform licensing, who: Other building owners, how: "Shelly OS licensed to other towers, malls and logistics parks", year: 0}
+
+# Delivery in four phases, each unlocked by a gate (years indicative)
+phases:
+  - {n: 1, name: Foundations, years: "2026–2027", text: "Building systems, sensors, edge servers, data fabric, digital twin; offices, mall, MFC and parking open.", gate: "Twin matches the real building; privacy impact assessments signed off"}
+  - {n: 2, name: Shelly OS live, years: "2027–2029", text: "Orchestrator, agent mesh and decision ledger running every floor; trade centre, hotel and food hall open.", gate: "100% of decisions logged with a reason; tenants opt in"}
+  - {n: 3, name: Commerce graph, years: "2029–2032", text: "Energy trading and V2G, retail media, fulfilment as a service, drone hub and federated learning.", gate: "Energy and waste targets met for a full year"}
+  - {n: 4, name: Platform, years: "2032–2050", text: "Shelly OS licensed to other buildings; the Shelly Business Centre (2050 look) built out.", gate: null}
+current_phase: 1
+
+kpis_targets:
+  - {area: Energy, kpi: Energy use per m² vs a conventional building, target: "40% lower", now: "22% lower", pct: 55}
+  - {area: Energy, kpi: Share of energy generated or stored on site, target: "30% or more", now: "18%", pct: 60}
+  - {area: Retail, kpi: Stock-out rate on top-selling lines, target: "Under 2%", now: "2.6%", pct: 77}
+  - {area: FMCG, kpi: Fresh food waste sent to landfill, target: "Near zero", now: "11 kg a week", pct: 70}
+  - {area: Logistics, kpi: Order-to-pick time in the MFC, target: "Under 15 minutes", now: "18 minutes", pct: 83}
+  - {area: Workplace, kpi: Desk and room utilisation, target: "Over 75%", now: "64%", pct: 85}
+  - {area: Mobility, kpi: Average truck wait at the dock, target: "Under 5 minutes", now: "6 minutes", pct: 83}
+  - {area: Trust, kpi: Opt-in rate for personalised services, target: "Tracked and published", now: "38% (published)", pct: 100}
+  - {area: Trust, kpi: Decisions with a logged explanation, target: "100%", now: "100%", pct: 100}
+  - {area: Platform, kpi: Other buildings licensing Shelly OS, target: "First licence by phase 4", now: "Phase 1", pct: 10}
+
+roadmap:
+  - {v: "1.4", title: Building copilot, text: "Ask the tower in plain words (why was level 12 warm yesterday?) and get the chart and the evidence."}
+  - {v: "1.5", title: Live building twin, text: "Energy, lifts, air quality, occupancy and the MFC from the tower's own systems on every floor, with the simulation sandbox."}
+  - {v: "1.6", title: Tenant portal & leasing, text: "Tenants book flex space, meeting suites, pop-up pods and deal rooms; enquirers book viewings online."}
+  - {v: "2.0", title: Shelly Business Centre, text: "The 2050 plan: satellite towers, skyways, garden platforms and the sky port, one floor at a time."}

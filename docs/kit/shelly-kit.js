@@ -147,6 +147,7 @@
       brain: [`This is my brain: every department and agent, and what each may do on its own. ${ask}`, "Tap an agent to see its skills, data, schedule, rules and who it reports to."],
       floor: [`${greeting()}! This is the shop floor. Red shelves need something today. ${ask}`, "Tap any shelf for its numbers, or switch to 🚶 Walk and use the joystick to walk the aisles."],
       gateway: [`${greeting()}! Welcome to Gateway Warehousing & Transport. ${ask}`, "Pick a site, then tap any truck, forklift, person or dock. Zoom in and the roof lifts so you can see the racks."],
+      tower: [`${greeting()}! Welcome to Shelly Tower in Auckland city: one brain, Shelly OS, and a floor for every business. ${ask}`, "Tap any floor to slide it out and look inside, or switch to 2050 to see the Shelly Business Centre."],
       report: [ask, "Print for white paper, Dark for the Shelly look, Present for one section per screen."],
     };
     return M[PAGE] || M.launchpad;
