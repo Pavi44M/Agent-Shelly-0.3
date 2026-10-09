@@ -141,6 +141,12 @@ footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--etch-2);displ
 #boot::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 36%,rgba(99,182,216,.10),transparent 45%);pointer-events:none}
 .boot-in{width:min(760px,100%);position:relative;text-align:left}
 .boot-cv{display:block;width:100%;aspect-ratio:16/9;max-height:52vh;margin:8px 0 0}
+#boot.b3 .boot-in{width:min(1100px,100%)}
+#boot.b3 .boot-cv{aspect-ratio:auto;height:min(62vh,640px);max-height:none;margin:0 0 -40px}
+.b3-lab{position:absolute;left:0;top:0;pointer-events:none;font:600 12px/1 "Plus Jakarta Sans",system-ui;color:#eaf0f6;letter-spacing:.02em;padding:5px 9px;border-radius:999px;
+  background:rgba(9,14,22,.55);border:1px solid color-mix(in srgb,var(--c) 60%,transparent);white-space:nowrap;transition:opacity .3s,box-shadow .3s;will-change:transform}
+.b3-lab.on{box-shadow:0 0 14px color-mix(in srgb,var(--c) 70%,transparent);border-color:var(--c)}
+.boot-in{position:relative}
 .boot-pc{font-family:var(--mono);font-size:.5em;color:var(--accent);margin-left:8px;vertical-align:middle}
 .boot-bar{height:3px;background:#162233;border-radius:3px;overflow:hidden;margin:10px 0 0}
 .boot-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#63b6d8,#b69cf2,#7fd1a8,#f2c14e);box-shadow:0 0 12px #63b6d8;transition:width .25s ease}

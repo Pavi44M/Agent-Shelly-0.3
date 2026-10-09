@@ -14,7 +14,11 @@
   /* ---------------- boot */
   (async function boot() {
     const box = $("#boot"), log = $("#bootLog"); if (!box) return;
-    const V = brainBoot($(".boot-cv"), B.departments);   // the living brain (canvas): assembles, fires, ignites each department
+    // the living brain: 3D (three.js, the brain sculpted in Blender) when WebGL2 is there, the 2D canvas brain otherwise
+    const cv = $(".boot-cv");
+    let V = null;
+    try { const m = await Promise.race([import("./boot3d.js"), new Promise((_, no) => setTimeout(() => no(new Error("slow")), 2500))]); V = m.brainBoot3D(cv, B.departments); } catch (e) { V = null; }
+    if (V) box.classList.add("b3"); else V = brainBoot(cv, B.departments);
     const sleep = ms => new Promise(r => setTimeout(r, ms));
     let skip = false, quick = false;
     try { quick = sessionStorage.getItem("brain.booted") === "1"; sessionStorage.setItem("brain.booted", "1"); } catch (e) { /* */ }

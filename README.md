@@ -7,6 +7,12 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v1.19: Shelly Brain boot in 3D, sculpted in Blender
+
+- **A brain you can look into.** The Brain is sculpted in Blender (`blender/shelly_brain_points.py`: two hemispheres folded into gyri and sulci by displacement textures, a ridged cerebellum, the brain stem) and sampled into ~20,000 points of light (`docs/brain/brain-points.js`).
+- **The boot, in three.js** (`docs/brain/boot3d.js`): the points fly in from deep space and assemble; synapse threads link them and impulses race through in department colours; a holographic scan sweeps the brain; the eight departments orbit in 3D, ignite one by one and fire beams in; the camera dollies in and follows your pointer or your phone's tilt for depth and parallax; star dust behind; at 100% the brain flares, a core spark bursts and shockwave rings roll out.
+- The 2D brain from v1.18 stays as the fallback when WebGL2 isn't available.
+
 ## What's new in v1.18: Shelly Brain wakes up
 
 - **A new boot for the Brain page.** Hundreds of points of light fly in and settle into a brain (folded cerebrum, ridged cerebellum, brain stem), a web of synapses links them and impulses race across it; as the boot log runs, each of the eight departments ignites in its own colour round the brain and wires itself in, with a live percentage and a colour progress bar; at 100% a core spark flashes and a shockwave rolls out. Quick on repeat visits; still for reduced motion.
