@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en-NZ">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Loss Prevention · Shelly Intelligence</title>
+<meta name="description" content="Shelly Intelligence · Loss Prevention: patterns about stock and places across Shelly's store, warehouses and tower. A person reviews every case, nobody is identified, faces are pixelated and the scope is locked to Shelly's own businesses. Synthetic data: no real people.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../vision/vision.css">
+<link rel="stylesheet" href="lp.css">
+<link rel="stylesheet" href="../switch.css">
+<link rel="stylesheet" href="../kit/shelly-kit.css">
+</head>
+<body>
+<nav class="biz" aria-label="Choose a business"><div class="biz-track"><a class="biz-opt " href="../"><span class="ic" aria-hidden="true">🛒</span><span class="tx"><b>Neighbourhood store</b><small>Retail · Shelly store agent</small></span></a><a class="biz-opt med" href="../supply-chain/"><span class="ic" aria-hidden="true">✚</span><span class="tx"><b>Tōtara Medical</b><small>Supply Chain Command</small></span></a><a class="biz-opt gw" href="../gateway/"><span class="ic" aria-hidden="true">⛟</span><span class="tx"><b>Gateway</b><small>Warehousing & Transport</small></span></a></div><div class="biz-side"><a class="biz-lp" href="../tower/">🏙 Tower</a><a class="biz-lp" href="../store/">▦ Floor</a><a class="biz-lp" href="../brain/">🧠 Brain</a><a class="biz-lp" href="../vision/">👁 Vision</a><a class="biz-lp" href="../lp/" aria-current="page">🛡 Loss</a><a class="biz-lp" href="../launchpad/">⌘ Launchpad</a><button class="biz-ap" type="button" id="apBadge" hidden aria-haspopup="dialog"><span aria-hidden="true">🔔</span> Approvals <b id="apCount">0</b></button></div></nav>
+<div class="wrap">
+<header>
+  <span class="tag">Shelly Intelligence · Shelly OS · Loss Prevention · module <span id="modv"></span> · synthetic data</span>
+  <h1>Protect the stock. <b>Never profile people.</b></h1>
+  <p class="sub">Loss prevention for every Shelly business: the store, Gateway's warehouses, Tōtara Medical and Shelly Tower. Shelly watches stock and places, lines events up into patterns, and asks a person to check. Nobody is identified, nobody gets a score, and the staff response is always safety first.</p>
+</header>
+
+<div class="lock" id="lock"></div>
+<section class="kpis" id="kpis" aria-label="This week across Shelly's sites"></section>
+
+<section id="s-store" aria-label="The high-risk aisle">
+  <div class="sec-h"><h2>The high-risk aisle · pattern, not a person</h2><span class="note">Synthetic camera · skeletons only, face points dropped · one of four shoppers completes the pattern</span></div>
+  <div class="live">
+    <div class="cam"><canvas id="aisle" width="1280" height="720" aria-label="Aisle camera with shelf bays and shoppers drawn as skeletons"></canvas>
+      <div class="cam-ui"><button type="button" id="play" aria-pressed="true">❚❚ Pause</button><button type="button" id="again">↺ Replay</button><span id="clock"></span></div></div>
+    <div class="side">
+      <div class="steps" id="steps"></div>
+      <div class="feed" id="feed" aria-live="polite"></div>
+    </div>
+  </div>
+  <div class="cast" id="cast"></div>
+</section>
+
+<section id="s-look" aria-label="Lookalikes">
+  <div class="sec-h"><h2>Why one gesture is never enough</h2><span class="note">7 synthetic days at the aisle · what innocent shoppers do that looks like concealing, and what Shelly did</span></div>
+  <div class="card"><div id="look"></div></div>
+</section>
+
+<section id="s-tune" aria-label="Tuning">
+  <div class="sec-h"><h2>Tuned safely · waiting for you</h2><span class="note">One setting at a time · kept only when held-out days agree and false alarms stay under budget</span></div>
+  <div class="grid2"><div class="card"><h3>Factory → tuned <small>held-out days, per day</small></h3><div id="tuneTop"></div></div>
+    <div class="card"><h3>Coaching log <small>every change tried</small></h3><div id="tuneLog"></div></div></div>
+</section>
+
+<section id="s-cases" aria-label="Every Shelly site">
+  <div class="sec-h"><h2>Every Shelly site · 7 days</h2><span class="note">Cases are checked by a person · a "false" case has an everyday explanation, and that is fine</span></div>
+  <div class="tabs" role="tablist" id="tabs"></div>
+  <span id="s-gateway"></span><span id="s-totara"></span><span id="s-group"></span>
+  <div id="site"></div>
+</section>
+
+<section id="s-pack" aria-label="Evidence pack">
+  <div class="sec-h"><h2>Evidence pack</h2><span class="note">For a case the Duty Manager confirms · it describes events, never a person</span></div>
+  <div class="card pack" id="pack"></div>
+</section>
+
+<section id="s-ladder" aria-label="What people do">
+  <div class="sec-h"><h2>What people do · Shelly suggests, people decide</h2><span class="note">NZ Police advice: observe, keep safe, call 111 in danger, report on 105</span></div>
+  <div class="grid2"><div class="card"><ol class="ladder" id="ladder"></ol></div><div class="card"><h3>Staff never</h3><ul class="never" id="never"></ul><h3 style="margin-top:14px">The sign at the door</h3><p class="sign" id="sign"></p></div></div>
+</section>
+
+<section id="s-law" aria-label="Law and privacy">
+  <div class="sec-h"><h2>Law and privacy, built in</h2><span class="note">NZ Privacy Act 2020 · Privacy Commissioner guidance on CCTV · Biometric Processing Privacy Code</span></div>
+  <div class="grid2"><div class="card"><h3>Checks that refuse to run</h3><ul class="priv" id="checks"></ul></div>
+    <div class="card"><h3>What Shelly will never build</h3><ul class="priv" id="nobuild"></ul></div></div>
+  <p class="note law" id="lawnote"></p>
+</section>
+<p class="foot" id="foot"></p>
+</div>
+<script src="../data/lp.js"></script>
+<script src="../data/approvals.js"></script>
+<script src="app.js"></script>
+<script src="../kit/shelly-kit.js" data-page="lp" data-base="../"></script>
+</body>
+</html>

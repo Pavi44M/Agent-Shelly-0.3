@@ -82,6 +82,8 @@ runpy_brain.run_path(str(ROOT / "scripts" / "build_tower.py"), run_name="__main_
 
 # Shelly Intelligence · Store Vision: camera people analytics + the Skill Lab (docs/vision/; the lab history is cached, rebuild with --lab)
 runpy_brain.run_path(str(ROOT / "scripts" / "build_vision.py"), run_name="__main__")
+# Shelly Intelligence · Loss Prevention: patterns about stock and places on every Shelly site (docs/lp/; tuning cached, rebuild with --tune)
+runpy_brain.run_path(str(ROOT / "scripts" / "build_lp.py"), run_name="__main__")
 
 # Launchpad: refresh the figures on docs/launchpad/ (retail numbers change every week)
 import runpy  # noqa: E402

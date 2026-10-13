@@ -7,6 +7,15 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v1.21: Shelly Intelligence · Loss Prevention, on every Shelly site
+
+- **Patterns about stock and places, never people** (`docs/lp/`, `shelly/lp/`, `modules/lp/lp.yaml`). Store: picked at a high-risk shelf (spirits, razors, formula, vapes) → concealed → left without a till transaction for that shelf. Two steps prompt a floor staff member to offer help; all three open a case for the Duty Manager. A single gesture (a phone into a pocket, arms crossed, an own shopping bag) never becomes a case. Also self-checkout mismatches, till exceptions and after-hours movement; Gateway docks with no booking, trucks with no manifest, cage access out of hours and count variances; Tōtara Medical's controlled-drugs cage and receipt shortfalls; Shelly Tower tailgates, restricted floors after hours and tagged laptops leaving.
+- **Concealment from the skeleton only** (`shelly/lp/pose.py`): 17 COCO body points with the face points dropped; a reach towards the shelf, then the same hand into the pocket region and held (or hidden). `python -m shelly lp pose --source aisle.mp4` runs YOLO11-pose on a real video and keeps no frames.
+- **Tuned safely**: from factory settings (44 false aisle cases a day) to tuned (0.25 a day, about 71% of losses caught) one setting at a time, kept only when held-out days agree and false alarms stay under the budget of 1 per camera per day. The tuned settings wait for Pavi (Brain approval, or `python -m shelly lp approve`).
+- **Law and privacy built in** (`shelly/lp/policy.py`): refuses to run with identity, face matching, biometrics, demographics, per-person scores, stored video, retention over 30 days, or any site outside Shelly's own businesses (scope locked; expansion needs Pavi, a privacy impact assessment and a legal check). Incident clips only, faces pixelated, originals sealed for NZ Police requests. A privacy impact checklist per site, the door sign and the staff rules (never detain, chase, touch, search or accuse).
+- **Evidence packs** with the steps, clip windows, value and blanks for the reviewer, police report number and trespass decision; **step 1 without a camera**: where the loss is by cause and place for each site.
+- **Four agents** in the Brain, team "Shelly Intelligence · Loss Prevention": Store, Warehouse (Gateway + Tōtara), Tower, and Cases & privacy. `python -m shelly lp demo | tune | approve | pia | pack`.
+
 ## What's new in v1.20: Shelly Intelligence · Store Vision, with a Skill Lab
 
 - **Store Vision** (`docs/vision/`, `shelly/vision/`, `modules/vision/vision.yaml`): the store camera turned into store numbers. Unique visitors (tracking, minimum life, identity switches re-linked), door IN/OUT across a line with a dead band and cooldown, zone visits and dwell with an exit grace, the checkout queue with wait and open-a-till prompts, staff-only area prompts with a grace period and opening hours, and a heatmap of **time spent** in seconds (a live map that fades and a day map that keeps). Outputs `summary.json`, `events.jsonl`, `hourly.csv` and the heat grid.

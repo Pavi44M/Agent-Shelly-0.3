@@ -40,7 +40,7 @@ def test_brain_knows_gateway_and_its_approvals():
     from shelly.brain.registry import AGENTS, BUSINESSES, ORG_REQUESTS, approval_chain
     assert any(b["id"] == "gateway" for b in BUSINESSES)
     gw = [a for a in AGENTS if a.business == "gateway"]
-    assert len(gw) >= 5 and all(a.team.startswith("Gateway") for a in gw)
+    assert len(gw) >= 5 and all(a.team.startswith(("Gateway", "Shelly Intelligence")) for a in gw)   # Shelly Intelligence teams serve every business
     reqs = {r["id"]: r for r in ORG_REQUESTS if r["id"].startswith("gw-")}
     assert set(reqs) == {d["id"] for d in build()["decisions"]}
     chain = approval_chain(reqs["gw-new-client"]["dept"], reqs["gw-new-client"]["area"], 0)

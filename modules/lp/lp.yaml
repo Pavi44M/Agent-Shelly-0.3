@@ -1,0 +1,91 @@
+# Shelly Intelligence · Loss Prevention (module v1.0)
+# Watch stock and places, not people. A case opens only when several events line up (a pattern),
+# a person always checks it, and nobody is ever identified by Shelly.
+module_version: "1.0"
+
+scope:                       # locked to Shelly's own businesses; opening it up needs Pavi + a privacy impact assessment + a legal check
+  internal_only: true
+  businesses: [store, gateway, totara, group]
+  expansion: locked
+  expansion_needs: ["Pavi approves in the Brain", "Privacy impact assessment for the new site", "Legal check of the site's own law"]
+
+privacy:                     # hard rules: policy.validate() refuses to run if any of these is changed
+  identity: none             # no names, no faces, no watchlists, no re-identification across visits
+  biometrics: false          # no face, gait or voice matching (keeps Shelly outside the Biometric Processing Privacy Code)
+  face_match: false
+  demographics: false        # never age, gender, ethnicity or "type of person"
+  per_person_score: false    # no threat meter over anyone's head: confidence belongs to an incident, not a person
+  pose: skeleton_only        # 17 body points, no face points kept (nose/eyes/ears dropped before analysis)
+  store_frames: false        # live video is analysed and dropped; only incident clips are kept
+  clip_pre_s: 10             # an incident clip: 10 s before the first step ...
+  clip_post_s: 10            # ... to 10 s after the last
+  faces_in_clips: pixelated   # everyone who views a case sees pixelated faces
+  original_clip: sealed_for_police   # the unpixelated original is encrypted and released only to NZ Police on a formal request (Privacy Act 2020, IPP 11 exception for the maintenance of the law)
+  retention_days: 30         # incident clips and cases deleted after 30 days, unless held for an open police case
+  signage: required
+  staff_notice: required     # workplace cameras: staff told in writing what is watched and why
+  access_requests: "Privacy Officer answers within 20 working days (Privacy Act 2020, IPP 6)"
+
+human_in_the_loop:
+  review_by: Duty Manager    # every case is checked by a trained person before anyone acts
+  never: [detain, chase, physical contact, bag search without consent, accuse, public naming, sharing clips on social media]
+  alert_budget_per_camera_day: 1.0   # if false alarms go above this, the rule is paused and retuned
+
+pose:                        # the concealment gesture, read from body points only (COCO 17; wrists 9/10, shoulders 5/6, hips 11/12)
+  min_conf: 0.35             # ignore points the model is unsure about
+  reach_out: 0.55            # a reach: wrist this far beyond the shoulder line (in torso widths), towards the shelf
+  pocket_box: 0.30           # the "pocket / jacket / bag" region: torso box grown by this share
+  hold_s: 0.6                # the hand stays there this long after a reach
+  window_s: 4.0              # and it happens within this many seconds of the reach
+
+sites:
+  store:
+    name: Neighbourhood Store
+    business: store
+    hours: [7, 22]
+    cameras: [{id: cam-aisle3, name: "Aisle 3 · health & spirits", pose: true}, {id: cam-door, name: "Front door"}, {id: cam-sco, name: "Self-checkout"}, {id: cam-stock, name: "Stockroom"}]
+    high_risk: {spirits: 45, razors: 28, formula: 38, vapes: 30}     # shelf zone: average item value $
+    rules:
+      unpaid_exit: {kind: pattern, steps: [pick, conceal, exit_unpaid], window_s: 900, assist_at: 2, review_at: 3}
+      sco_mismatch: {kind: system, source: self-checkout, assist_at: 1, review_at: 3}
+      till_exception: {kind: system, source: POS, what: "Refund or void with no customer at the till", review_at: 1, owner: Store Manager}
+      after_hours: {kind: place, zone: shop floor, review_at: 1, owner: Duty Manager}
+  gateway:
+    name: Gateway Warehousing & Transport
+    business: gateway
+    hours: [5, 23]
+    cameras: [{id: gw-dock, name: "Docks 1-12"}, {id: gw-gate, name: "Yard gate"}, {id: gw-cage, name: "High-value cage"}]
+    rules:
+      dock_unscheduled: {kind: system, source: dock booking, what: "Dock door opened with no booking", review_at: 1, owner: Warehouse Manager}
+      gate_no_manifest: {kind: system, source: yard gate + WMS, what: "Truck leaving with no matching manifest", review_at: 1, owner: Transport Manager}
+      cage_after_hours: {kind: place, zone: high-value cage, review_at: 1, owner: Warehouse Manager}
+      count_variance: {kind: system, source: cycle count, what: "Location count off by more than 2% and $200", review_at: 1, owner: Inventory Controller}
+  totara:
+    name: Tōtara Medical (at Gateway Cold Chain)
+    business: totara
+    hours: [6, 20]
+    cameras: [{id: tm-cd, name: "Controlled-drugs cage"}, {id: tm-recv, name: "Receiving"}]
+    rules:
+      cage_after_hours: {kind: place, zone: controlled-drugs cage, review_at: 1, owner: Responsible Pharmacist}
+      receipt_shortfall: {kind: system, source: ASN vs receipt, what: "Received less than the supplier shipped", review_at: 1, owner: Supply Planner}
+      count_variance: {kind: system, source: cycle count, what: "Controlled-drug count does not balance", review_at: 1, owner: Responsible Pharmacist}
+  group:
+    name: Shelly Tower
+    business: group
+    hours: [7, 19]
+    cameras: [{id: tw-lobby, name: "Lobby gates"}, {id: tw-l12, name: "Level 12 server room"}]
+    rules:
+      tailgate: {kind: pattern, steps: [badge, two_through], what: "Two people through a secure gate on one badge", assist_at: 1, review_at: 2, owner: Reception}
+      after_hours_floor: {kind: place, zone: restricted floor, review_at: 1, owner: Facilities Manager}
+      asset_exit: {kind: system, source: asset tags, what: "Tagged laptop leaving without a sign-out", review_at: 1, owner: IT Manager}
+
+ladder:                      # what people do, in order; Shelly suggests, people decide
+  - {step: Prevent, who: Store team, what: "Layout, locked cabinets and tags, staff on the floor, visible cameras and signs"}
+  - {step: Notice, who: Shelly, what: "A pattern lines up: Shelly saves the moment (faces pixelated) and asks a person"}
+  - {step: Assist, who: Floor staff, what: "Walk over, offer help: 'can I help you find anything?'. Most losses stop here"}
+  - {step: Review, who: Duty Manager, what: "Watch the clip. Not sure = not theft. Close it as 'no issue' and nothing is kept"}
+  - {step: Engage, who: Duty Manager, what: "Only if it is safe: a calm request to pay. Refused = let them go. Never chase, grab or block"}
+  - {step: Emergency, who: Anyone, what: "Violence or a weapon: step back, keep people safe, call 111"}
+  - {step: Report, who: Duty Manager, what: "Police report online (105) with the evidence pack; note the report number"}
+  - {step: Recover, who: Store Manager, what: "Ask police and the court for reparation; a trespass notice if the owner decides"}
+  - {step: Learn, who: Shelly, what: "Shrink numbers, layout and roster updated; the rule is retuned if it was a false alarm"}

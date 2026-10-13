@@ -146,6 +146,14 @@ def main():
              "Everyone anonymised; a Skill Lab tests every skill daily against a known truth and adds a new one.",
              f"{vd['visitors']}", f"visitors today · {round(100 - abs(vd['visitors'] - vd['truth']['people']) / max(1, vd['truth']['people']) * 100, 1)}% of the truth · {len(lab['skills'])} skills",
              "New · v" + vi["version"], "new", f'<span class="shelves" aria-hidden="true">{lv}</span>', "wide")
+    lp_p = ROOT / "docs/data/lp.js"
+    if lp_p.exists():
+        lp = js_data(lp_p, "SHELLY_LP"); W = [x["week"] for x in lp["sites"].values()]
+        card("../lp/", "Shelly Intelligence · Shelly OS", "Loss Prevention",
+             "Every Shelly site, one rule: watch stock and places, never people. Patterns (pick, conceal, unpaid exit; unbooked docks; tailgates) "
+             "become cases a person checks. No faces, no names, no scores; scope locked to Shelly's own businesses.",
+             f"{sum(w['true'] for w in W)}/{sum(w['losses'] for w in W)}", f"real losses flagged in 7 days · {lp['sites']['store']['week']['false_per_camera_day']} false aisle cases/camera/day · 0 people identified",
+             "New · v" + lp["version"], "new", "", "wide")
     card("../index.html#s-packs", "Electronics · wholesale · warehousing · production", "Industry packs",
          "The same engine applied beyond retail: sell-through and markdowns, cost-to-serve and OTIF, ABC-XYZ slotting, OEE and scrap.",
          str(len(pack_titles) or 4), "industry packs on demo data", "Demo data")

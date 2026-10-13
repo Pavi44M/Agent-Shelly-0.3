@@ -155,7 +155,7 @@
     <tr><td>Heat that only grows ("someone was here")</td><td>Seconds spent, live map fades, day map keeps, absolute scale</td></tr>
     <tr><td>Paths and settings hard-coded, a window and nothing saved</td><td>Config file, any source, CSV/JSON outputs, a web page and a CLI</td></tr>
     <tr><td>No way to know if it's right</td><td>A daily exam against the truth, levels, held-out tuning</td></tr>
-    <tr><td>"Suspicious behaviour" scoring of people</td><td>Only staff-only area prompts; no judging individuals</td></tr>
+    <tr><td>"Suspicious behaviour" scoring of people</td><td>No judging individuals: loss is handled as patterns about stock and places in <a href="../lp/">Loss Prevention</a>, with a person checking every case</td></tr>
     <tr><td>Raw video on screen</td><td>Anonymised first, frames never stored, retention purge</td></tr></table>`;
   $("#foot").textContent = `Shelly Intelligence · Store Vision v${V.version} · data built ${V.generated} · synthetic camera, no real people`;
 })();

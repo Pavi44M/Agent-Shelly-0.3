@@ -148,6 +148,8 @@
       floor: [`${greeting()}! This is the shop floor. Red shelves need something today. ${ask}`, "Tap any shelf for its numbers, or switch to 🚶 Walk and use the joystick to walk the aisles."],
       gateway: [`${greeting()}! Welcome to Gateway Warehousing & Transport. ${ask}`, "Pick a site, then tap any truck, forklift, person or dock. Zoom in and the roof lifts so you can see the racks."],
       tower: [`${greeting()}! Welcome to Shelly Tower in Auckland city: one brain, Shelly OS, and a floor for every business. ${ask}`, "Tap any floor to slide it out and look inside, or switch to 2050 to see the Shelly Business Centre."],
+      vision: [`${greeting()}! This is Store Vision: the store camera turned into numbers, everyone anonymised. ${ask}`, "Scroll to the Skill Lab to see how good each skill really is, tested every day."],
+      lp: [`${greeting()}! This is Loss Prevention. I watch stock and places, never people, and a person checks every case. ${ask}`, "Watch the aisle: only the shopper who picks, conceals AND leaves without paying becomes a case."],
       report: [ask, "Print for white paper, Dark for the Shelly look, Present for one section per screen."],
     };
     return M[PAGE] || M.launchpad;

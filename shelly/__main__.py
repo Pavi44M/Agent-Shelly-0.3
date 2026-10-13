@@ -19,6 +19,7 @@
     python -m shelly tower                             Shelly Tower: every floor, tenants, floors to let and flags
     python -m shelly vision run --source store.mp4 [--show] [--save-video]   Shelly Vision on a video, webcam (0) or CCTV stream
     python -m shelly vision demo | lab [--days 7] | approve vision.conversion | purge   synthetic day, Skill Lab, go-live, retention
+    python -m shelly lp demo [--days 7] | tune | approve | pia --site store | pose --source aisle.mp4   Loss Prevention (Shelly sites only)
     python -m shelly live path/to/pos_export.csv [--watch 60]   live POS feed for the Store Floor (docs/data/live.json, never published)
     python -m shelly report all [--data ...] [--pdf]   every report: Excel (dashboard, model, pivots, raw, lookups) + web page (+ PDF)
     python -m shelly report budget --months 6 --category Dairy --pdf --theme light,present
@@ -59,6 +60,9 @@ def main(argv=None):
     vi.add_argument("--source"); vi.add_argument("--config"); vi.add_argument("--out", default="outputs/vision"); vi.add_argument("--show", action="store_true")
     vi.add_argument("--save-video", action="store_true"); vi.add_argument("--model"); vi.add_argument("--stride", type=int); vi.add_argument("--start")
     vi.add_argument("--days", type=int, default=1); vi.add_argument("--note", default="")
+    lp = sub.add_parser("lp", help="Loss Prevention: patterns about stock and places, never people (Shelly's own sites only)")
+    lp.add_argument("action", choices=["demo", "tune", "approve", "pia", "pose", "pack"]); lp.add_argument("--days", type=int, default=7)
+    lp.add_argument("--site", default="store"); lp.add_argument("--source"); lp.add_argument("--model", default="yolo11n-pose.pt")
     sf = sub.add_parser("store"); sf.add_argument("--web", default=str(ROOT / "docs/data/shelly-data.js"))
     rp = sub.add_parser("report"); rp.add_argument("which", nargs="?", default="all")
     rp.add_argument("--data", default="data/sample"); rp.add_argument("--asof"); rp.add_argument("--out", default="outputs/reports")
@@ -144,6 +148,30 @@ def main(argv=None):
             st = L.approve(L.load(), a.target, a.action == "approve", a.note); L.save(st); print(f"{a.target}: {a.action}d")
         elif a.action == "purge":
             print(f"deleted {V.purge(a.out)} old event logs")
+    elif a.cmd == "lp":
+        from .lp import run as R, tune as TU, evidence as EV
+        cfg = R.load_cfg()
+        if a.action == "demo":
+            wk = R.week(cfg, a.days)
+            for site, w in wk.items():
+                t = sum(s["true"] for s in w["scores"]); L = sum(s["losses"] for s in w["scores"])
+                print(f"{cfg['sites'][site]['name']:<42} {len(w['cases']):>3} cases · {t}/{L} real losses flagged · {len(w['assists'])} assists")
+        elif a.action == "tune":
+            st = TU.run(cfg); TU.save(st)
+            for l in st["log"]: print(f"{l['name']:<32} {l['from']} -> {l['to']}  held-out gain {l['gain']:>7}  {'kept' if l['kept'] else 'not kept'} ({l['why']})")
+            print("held-out:", st["final"]["held"], "-> waiting for Pavi: python -m shelly lp approve")
+        elif a.action == "approve":
+            st = TU.load()
+            if not st: raise SystemExit("nothing to approve: run `python -m shelly lp tune` first")
+            st["status"] = "approved"; TU.save(st); print("tuned concealment settings are live")
+        elif a.action == "pia":
+            for r in EV.pia(cfg, a.site): print(f"{r['area']:<22} {r['status']:<17} {r['answer']}")
+        elif a.action == "pack":
+            wk = R.week(cfg, 1)[a.site]
+            if wk["cases"]: print(EV.pack_markdown(EV.pack(wk["cases"][0], cfg)))
+        elif a.action == "pose":
+            if not a.source: raise SystemExit("--source video.mp4 | 0 (webcam) is required")
+            ev = R.pose_video(a.source, cfg, a.model); print(f"{sum(1 for e in ev if e['kind'] == 'conceal')} concealment gestures (not cases: a case needs the whole pattern)")
     elif a.cmd == "tower":
         from .tower import build, text
         print(text(build()))

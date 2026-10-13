@@ -117,6 +117,18 @@ def main():
                                  "title": f"Store Vision: put the new skill '{p['name']}' live", "text": p["text"] + " Trained a week in suggest-only."})
         except Exception:
             pass
+    lpp = ROOT / "docs/data/lp.js"        # Loss Prevention: tuned settings wait for Pavi (policy decision)
+    if lpp.exists():
+        try:
+            t = lpp.read_text(encoding="utf-8"); tu = json.loads(t[t.index("{"):t.rstrip().rstrip(";").rindex("}") + 1])["tuning"]
+            if tu.get("status") == "waiting for Pavi":
+                a0, b0 = tu["start"]["held"], tu["final"]["held"]
+                reqs.append({"id": "lp-tuned", "agent": "lp-cases", "dept": "mgmt", "area": "Policy", "amount": 0,
+                             "title": "Loss Prevention: put the tuned aisle settings live",
+                             "text": f"On held-out days false cases go {a0['false_per_day']} → {b0['false_per_day']} a day and help prompts to innocent shoppers "
+                                     f"{a0['innocent_assists_per_day']} → {b0['innocent_assists_per_day']}, catching {round(b0['recall'] * 100)}% of losses. Until then the aisle runs on prompts only."})
+        except Exception:
+            pass
     for r in reqs:
         a = AGD[r["agent"]]
         items.append({"key": "o:" + r["id"], "source": "org", "id": r["id"], "business": a.business if a.business != "group" else "group",
