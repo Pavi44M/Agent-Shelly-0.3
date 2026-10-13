@@ -59,6 +59,17 @@ def test_mascot_assets():
     assert "./three.module.min.js" in (ROOT / "docs/kit/vendor/RoomEnvironment.js").read_text()
 
 
+def test_robot_head():
+    kit = (ROOT / "docs/kit/shelly-kit.js").read_text()
+    head = (ROOT / "docs/kit/shelly-head.js").read_text()
+    assert "kit/shelly-head.js" in kit and "bulb=(classic|3d)" in kit          # the head by default, the old bulb on request
+    assert "export function mount(" in head and "function flat(" in head        # 3D head with a 2D fallback
+    for m in ["idle", "thinking", "searching", "listening", "speaking", "working", "happy", "alert", "error", "sleeping"]:
+        assert f"{m}:" in head, m
+    assert "ShellyVoice" in head and "prefers-reduced-motion" in head and "window.ShellyHead" in head
+    assert "./vendor/three.module.min.js" in head and "http" not in head.split("*/", 1)[1].split("\n", 1)[0]
+
+
 def test_departments_and_heads():
     from shelly.brain.registry import DEPARTMENTS, AGENTS
     ids = {a.id: a for a in AGENTS}

@@ -7,6 +7,14 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v1.22: Shelly gets her own robot head
+
+- **A robot head on every page** (`docs/kit/shelly-head.js`): a rounded TV-style head in real 3D (three.js, vendored) with a rolled clear-coat shell, a recessed bezel with a teal gasket, four screws, knob ears, a back vent panel and an **LED-matrix face** (28 x 16 LEDs) that glows and blooms. Her old light bulb now sits on a springy antenna that whips when she moves, and still glows amber when approvals are waiting.
+- **Moods with their own face, colour and motion**: idle, thinking, searching, listening, speaking (live lip-sync from her voice), working, happy, alert, error, sleeping, dizzy, annoyed, hungry. A mood change plays a short glitch and the colour cross-fades. The head and eyes follow the pointer; a click makes her hop and spin; reduced motion keeps a still, friendly pose.
+- **Works everywhere**: a 2D head takes over when WebGL is missing or the device is slow. Pages can set her mood with `ShellyHead.set("thinking", 4000)`; `?bulb=classic` brings back the 3D bulb.
+- **Boot screens for Store Vision and Loss Prevention**: the camera's iris opens and the floor's zones light up; a shield gathers every Shelly site and the padlock closes on the locked scope. Real numbers in the log, quick on repeat visits, Skip to jump in.
+- The idea of LED-faced agent heads comes from robot-heads (MIT, fayazara); the design and all the code here are Shelly's own.
+
 ## What's new in v1.21: Shelly Intelligence · Loss Prevention, on every Shelly site
 
 - **Patterns about stock and places, never people** (`docs/lp/`, `shelly/lp/`, `modules/lp/lp.yaml`). Store: picked at a high-risk shelf (spirits, razors, formula, vapes) → concealed → left without a till transaction for that shelf. Two steps prompt a floor staff member to offer help; all three open a case for the Duty Manager. A single gesture (a phone into a pocket, arms crossed, an own shopping bag) never becomes a case. Also self-checkout mismatches, till exceptions and after-hours movement; Gateway docks with no booking, trucks with no manifest, cage access out of hours and count variances; Tōtara Medical's controlled-drugs cage and receipt shortfalls; Shelly Tower tailgates, restricted floors after hours and tagged laptops leaving.

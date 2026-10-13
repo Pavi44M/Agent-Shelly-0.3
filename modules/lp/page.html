@@ -14,6 +14,11 @@
 <link rel="stylesheet" href="../kit/shelly-kit.css">
 </head>
 <body>
+<div id="boot" aria-live="polite"><div class="boot-in">
+  <span class="tag">Shelly Intelligence · Loss Prevention</span>
+  <svg class="boot-sv" id="bootSv" viewBox="0 0 420 175" aria-hidden="true"></svg>
+  <h2 class="boot-h" id="bootH">Locking <b>the scope</b></h2>
+  <pre id="bootLog"></pre><button id="skipBoot" type="button">Skip</button></div></div>
 {{SWITCH}}
 <div class="wrap">
 <header>
@@ -77,6 +82,7 @@
 <script src="../data/lp.js"></script>
 <script src="../data/approvals.js"></script>
 <script src="app.js"></script>
+<script src="boot.js"></script>
 <script src="../kit/shelly-kit.js" data-page="lp" data-base="../"></script>
 </body>
 </html>

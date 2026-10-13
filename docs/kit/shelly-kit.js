@@ -230,9 +230,10 @@
     const bubble = w.querySelector(".sk-bubble"), msg = w.querySelector(".sk-msg"), acts = w.querySelector(".sk-acts");
     const L = life(w, btn0, bubble);
     try { bulb(cv, w, btn0, L); } catch (e) { cv.remove(); }
-    try {   // real 3D bulb when WebGL2 is available; the 2D bulb above stays as the fallback
-      const c3 = document.createElement("canvas"); c3.className = "sk-bulb sk-bulb3d"; c3.hidden = true; btn0.insertBefore(c3, btn0.firstChild);
-      import(new URL(BASE + "kit/shelly-bulb3d.js", location.href).href)
+    try {   // Shelly's robot head (kit/shelly-head.js: 3D, or 2D when WebGL is missing or slow); ?bulb=classic brings back the 3D bulb (kit/shelly-bulb3d.js)
+      const classic = /[?&]bulb=(classic|3d)/.test(location.search);
+      const c3 = document.createElement("canvas"); c3.className = "sk-bulb sk-bulb3d"; c3.hidden = true; c3.setAttribute("aria-hidden", "true"); btn0.insertBefore(c3, btn0.firstChild);
+      import(new URL(BASE + (classic ? "kit/shelly-bulb3d.js" : "kit/shelly-head.js"), location.href).href)
         .then(m => { if (m.mount(c3, w, btn0, L)) c3.hidden = false; else c3.remove(); })
         .catch(() => c3.remove());
     } catch (e) { /* 2D bulb */ }

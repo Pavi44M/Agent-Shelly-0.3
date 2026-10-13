@@ -149,3 +149,11 @@ def test_site_page_and_brain():
     assert {"vision-footfall", "vision-floor", "vision-queue", "vision-safety", "vision-lab"} <= ids
     from shelly.core.skills import load_all
     assert "vision.footfall" in load_all()
+
+
+def test_boot_screens():
+    for p in ("vision", "lp"):
+        html = (ROOT / f"docs/{p}/index.html").read_text()
+        assert 'id="boot"' in html and 'id="bootSv"' in html and 'src="boot.js"' in html and "skipBoot" in html
+        js = (ROOT / f"docs/{p}/boot.js").read_text()
+        assert 'classList.add("done")' in js and "prefers-reduced-motion" in js
