@@ -1,0 +1,42 @@
+# Shelly Vision · Store Vision (module v1.0): people analytics from a camera, done properly.
+# Coordinates are in camera pixels for the reference camera (1280 x 720, a high corner view of the
+# Neighbourhood Store floor). Draw your own lines and zones for a real camera (see the README section).
+module_version: "1.0"
+camera: {name: "Store floor · cam 1 (synthetic)", width: 1280, height: 720, fps: 10}
+
+detector:
+  model: yolo11n.pt          # any Ultralytics detection model; yolo11s.pt is more accurate, slower
+  tracker: bytetrack.yaml    # persistent IDs across frames (botsort.yaml also works)
+  conf: 0.35                 # ignore weak detections
+  classes: [0]               # 0 = person (COCO)
+  imgsz: 640
+  stride: 2                  # analyse every 2nd frame (time stays correct: stamps come from the video)
+
+tracking:
+  min_life_s: 0.8            # a track must live this long before it counts (filters flicker)
+  lost_after_s: 2.0          # forget a track after this long unseen
+  smooth: 0.45               # foot-point smoothing (0 = raw, 1 = frozen)
+
+counting:                    # IN / OUT across a line with a dead band, once per direction per track
+  lines:
+    - {id: door, name: "Front door", a: [470, 650], b: [820, 650], in_side: up, band_px: 14, cooldown_s: 4}
+
+zones:                       # polygons; kinds: dwell · queue · restricted
+  - {id: produce,  name: "Produce",          kind: dwell, min_dwell_s: 3, poly: [[120,250],[420,250],[420,470],[120,470]]}
+  - {id: chillers, name: "Chillers",         kind: dwell, min_dwell_s: 3, poly: [[900,120],[1220,120],[1220,330],[900,330]]}
+  - {id: grocery,  name: "Grocery aisles",   kind: dwell, min_dwell_s: 3, poly: [[440,140],[880,140],[880,430],[440,430]]}
+  - {id: cafe,     name: "Café",             kind: dwell, min_dwell_s: 5, poly: [[960,400],[1240,400],[1240,610],[960,610]]}
+  - {id: checkout, name: "Checkout queue",   kind: queue, service_s: 45, alert_len: 4, min_dwell_s: 8, poly: [[540,470],[860,470],[860,600],[540,600]]}
+  - {id: stock,    name: "Stockroom (staff only)", kind: restricted, grace_s: 3, hours: [7, 22], poly: [[60,40],[400,40],[400,210],[60,210]]}
+
+heatmap:
+  cell_px: 8                 # resolution of the heat grid
+  sigma_px: 22               # spread of each footprint
+  half_life_s: 600           # the LIVE map fades with a 10-minute half-life; the DAY map never fades
+  
+privacy:                     # privacy by design (NZ Privacy Act 2020 · Privacy Commissioner guidance on CCTV and biometrics)
+  anonymise: head            # head | body | off   - blur every person before anything is shown or saved
+  method: pixelate           # pixelate | blur
+  store_frames: false        # never keep frames or crops; only counts, times and an anonymous heat grid
+  no_identity: true          # track IDs are random per visit; no face recognition, no re-identification across days
+  retention_days: 30         # events older than this are deleted by `shelly vision purge`

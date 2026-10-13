@@ -17,6 +17,8 @@
     python -m shelly store [--web docs/data/shelly-data.js]   walk the store floor: every shelf, worst first
     python -m shelly gateway                           Gateway Warehousing & Transport: sites, clients, service and flags
     python -m shelly tower                             Shelly Tower: every floor, tenants, floors to let and flags
+    python -m shelly vision run --source store.mp4 [--show] [--save-video]   Shelly Vision on a video, webcam (0) or CCTV stream
+    python -m shelly vision demo | lab [--days 7] | approve vision.conversion | purge   synthetic day, Skill Lab, go-live, retention
     python -m shelly live path/to/pos_export.csv [--watch 60]   live POS feed for the Store Floor (docs/data/live.json, never published)
     python -m shelly report all [--data ...] [--pdf]   every report: Excel (dashboard, model, pivots, raw, lookups) + web page (+ PDF)
     python -m shelly report budget --months 6 --category Dairy --pdf --theme light,present
@@ -52,6 +54,11 @@ def main(argv=None):
     br = sub.add_parser("brain"); br.add_argument("action", nargs="?", default="org", choices=["org", "ask"]); br.add_argument("text", nargs="?")
     sub.add_parser("gateway")
     sub.add_parser("tower")
+    vi = sub.add_parser("vision", help="Shelly Vision: camera people analytics + the Skill Lab")
+    vi.add_argument("action", choices=["run", "demo", "lab", "approve", "reject", "purge"]); vi.add_argument("target", nargs="?")
+    vi.add_argument("--source"); vi.add_argument("--config"); vi.add_argument("--out", default="outputs/vision"); vi.add_argument("--show", action="store_true")
+    vi.add_argument("--save-video", action="store_true"); vi.add_argument("--model"); vi.add_argument("--stride", type=int); vi.add_argument("--start")
+    vi.add_argument("--days", type=int, default=1); vi.add_argument("--note", default="")
     sf = sub.add_parser("store"); sf.add_argument("--web", default=str(ROOT / "docs/data/shelly-data.js"))
     rp = sub.add_parser("report"); rp.add_argument("which", nargs="?", default="all")
     rp.add_argument("--data", default="data/sample"); rp.add_argument("--asof"); rp.add_argument("--out", default="outputs/reports")
@@ -121,6 +128,22 @@ def main(argv=None):
         r = route(a.text)
         print(f"In scope → skill {r.skill} (match {r.score})" if r.in_scope else f"Out of scope ({r.kind}). {r.advice}")
 
+    elif a.cmd == "vision":
+        from .vision import run as V, skilllab as L
+        if a.action == "run":
+            if not a.source: raise SystemExit("--source video.mp4 | 0 (webcam) | rtsp://... is required")
+            s = V.run_video(a.source, V.load_cfg(a.config), a.out, a.show, a.save_video, a.model, a.stride, a.start)
+            print(json.dumps({k: s[k] for k in ("visitors", "in", "out", "occupancy_peak")}, indent=1), f"-> {a.out}")
+        elif a.action == "demo":
+            s = V.demo(a.out + "/demo"); print(json.dumps({"seen": {k: s[k] for k in ("visitors", "in", "out")}, "truth": {k: s["truth"][k] for k in ("people", "in", "out")}}, indent=1))
+        elif a.action == "lab":
+            st = L.run(days=a.days); L.save(st)
+            for k, v in st["skills"].items(): print(f"{v['name']:<42} L{v['level']} {v['label']:<11} {v.get('score', '-'):>6}  {v['status']}")
+            print("waiting for you:", [p["name"] for p in st["proposals"] if p["status"] == "waiting"] or "nothing")
+        elif a.action in ("approve", "reject"):
+            st = L.approve(L.load(), a.target, a.action == "approve", a.note); L.save(st); print(f"{a.target}: {a.action}d")
+        elif a.action == "purge":
+            print(f"deleted {V.purge(a.out)} old event logs")
     elif a.cmd == "tower":
         from .tower import build, text
         print(text(build()))

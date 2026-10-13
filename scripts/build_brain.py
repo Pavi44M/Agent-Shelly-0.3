@@ -106,7 +106,18 @@ def main():
         v = float(m.group(1).replace(",", "")) * {"k": 1e3, "K": 1e3, "m": 1e6, "M": 1e6}.get(m.group(2) or "", 1)
         return round(v)
 
-    for r in ORG_REQUESTS:
+    reqs = list(ORG_REQUESTS)
+    vp = ROOT / "docs/data/vision.js"     # Skill Lab: a new vision skill asks to go live (Pavi decides)
+    if vp.exists():
+        try:
+            t = vp.read_text(encoding="utf-8"); lab = json.loads(t[t.index("{"):t.rstrip().rstrip(";").rindex("}") + 1])["lab"]
+            for p in lab.get("proposals", []):
+                if p.get("status") == "waiting":
+                    reqs.append({"id": "vision-" + p["skill"].split(".")[1], "agent": "vision-lab", "dept": "dev", "area": "Release", "amount": 0,
+                                 "title": f"Store Vision: put the new skill '{p['name']}' live", "text": p["text"] + " Trained a week in suggest-only."})
+        except Exception:
+            pass
+    for r in reqs:
         a = AGD[r["agent"]]
         items.append({"key": "o:" + r["id"], "source": "org", "id": r["id"], "business": a.business if a.business != "group" else "group",
                       "agent": r["agent"], "area": r["area"], "title": r["title"], "text": r["text"], "impact": None,

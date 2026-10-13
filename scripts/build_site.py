@@ -80,6 +80,9 @@ runpy_brain.run_path(str(ROOT / "scripts" / "build_gateway.py"), run_name="__mai
 # Shelly Tower: the group head office and business complex, in 3D (docs/tower/)
 runpy_brain.run_path(str(ROOT / "scripts" / "build_tower.py"), run_name="__main__")
 
+# Shelly Intelligence · Store Vision: camera people analytics + the Skill Lab (docs/vision/; the lab history is cached, rebuild with --lab)
+runpy_brain.run_path(str(ROOT / "scripts" / "build_vision.py"), run_name="__main__")
+
 # Launchpad: refresh the figures on docs/launchpad/ (retail numbers change every week)
 import runpy  # noqa: E402
 runpy.run_path(str(ROOT / "scripts" / "build_launchpad.py"), run_name="__main__")

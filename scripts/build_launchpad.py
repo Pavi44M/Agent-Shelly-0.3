@@ -137,6 +137,15 @@ def main():
              "the hotel and the micro-fulfilment centre, and every Shelly business has its floor. Today and 2050.",
              f"{tk['floors']}", f"floors · {tk['shelly_floors']} Shelly floors · {tk['tenants']} tenants · {tk['available']} to let",
              "New · v" + tw["meta"]["module_version"], "new", '<img src="../tower/img/render-2050-sm.jpg" width="200" height="113" alt="" style="width:200px;height:auto;border-radius:10px;border:1px solid #1f2a38">', "wide")
+    vi_p = ROOT / "docs/data/vision.js"
+    if vi_p.exists():
+        vi = js_data(vi_p, "SHELLY_VISION"); vd = vi["day"]; lab = vi["lab"]
+        lv = "".join(f'<i style="background:{["", "#ff6b6b", "#ffc466", "#63b6d8", "#7fd1a8", "#b69cf2"][v["level"]]};height:{8 + v["level"] * 7}px" title="{html.escape(v["name"])}: level {v["level"]}"></i>' for v in lab["skills"].values())
+        card("../vision/", "Shelly Intelligence · Shelly OS", "Store Vision",
+             "The store camera turned into numbers: unique visitors, door IN/OUT, zone dwell, the checkout queue, staff-only prompts and a time-spent heatmap. "
+             "Everyone anonymised; a Skill Lab tests every skill daily against a known truth and adds a new one.",
+             f"{vd['visitors']}", f"visitors today · {round(100 - abs(vd['visitors'] - vd['truth']['people']) / max(1, vd['truth']['people']) * 100, 1)}% of the truth · {len(lab['skills'])} skills",
+             "New · v" + vi["version"], "new", f'<span class="shelves" aria-hidden="true">{lv}</span>', "wide")
     card("../index.html#s-packs", "Electronics · wholesale · warehousing · production", "Industry packs",
          "The same engine applied beyond retail: sell-through and markdowns, cost-to-serve and OTIF, ABC-XYZ slotting, OEE and scrap.",
          str(len(pack_titles) or 4), "industry packs on demo data", "Demo data")

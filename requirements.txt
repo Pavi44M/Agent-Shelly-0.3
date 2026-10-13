@@ -11,3 +11,6 @@ tabulate>=0.9
 # sqlalchemy>=2.0
 # optional: direct PDF export (then: python -m playwright install chromium)
 # playwright>=1.40
+# optional: Store Vision on real video (python -m shelly vision run --source ...)
+# ultralytics>=8.3
+# opencv-python>=4.9

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en-NZ">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Store Vision · Shelly Intelligence</title>
+<meta name="description" content="Shelly Intelligence · Store Vision: unique visitors, door IN/OUT, zone dwell, checkout queue, staff-only alerts and a time-spent heatmap from a store camera, with privacy by design and a Skill Lab that tests every skill against a known truth each day. Synthetic camera: no real people.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="vision.css">
+<link rel="stylesheet" href="../switch.css">
+<link rel="stylesheet" href="../kit/shelly-kit.css">
+</head>
+<body>
+<nav class="biz" aria-label="Choose a business"><div class="biz-track"><a class="biz-opt " href="../"><span class="ic" aria-hidden="true">🛒</span><span class="tx"><b>Neighbourhood store</b><small>Retail · Shelly store agent</small></span></a><a class="biz-opt med" href="../supply-chain/"><span class="ic" aria-hidden="true">✚</span><span class="tx"><b>Tōtara Medical</b><small>Supply Chain Command</small></span></a><a class="biz-opt gw" href="../gateway/"><span class="ic" aria-hidden="true">⛟</span><span class="tx"><b>Gateway</b><small>Warehousing & Transport</small></span></a></div><div class="biz-side"><a class="biz-lp" href="../tower/">🏙 Tower</a><a class="biz-lp" href="../store/">▦ Floor</a><a class="biz-lp" href="../brain/">🧠 Brain</a><a class="biz-lp" href="../vision/" aria-current="page">👁 Vision</a><a class="biz-lp" href="../launchpad/">⌘ Launchpad</a><button class="biz-ap" type="button" id="apBadge" hidden aria-haspopup="dialog"><span aria-hidden="true">🔔</span> Approvals <b id="apCount">0</b></button></div></nav>
+<div class="wrap">
+<header>
+  <span class="tag">Shelly Intelligence · Shelly OS · Store Vision · module <span id="modv"></span> · synthetic camera</span>
+  <h1>See the store. <b>Count what matters.</b></h1>
+  <p class="sub">The Neighbourhood Store's camera turned into store numbers: unique visitors, the door IN/OUT, how long people spend in each zone, the checkout queue, staff-only areas and a map of where time is spent. Every person is anonymised first; only numbers are kept. A Skill Lab sets every skill an exam each day against a known truth, so you can see how good it really is.</p>
+</header>
+
+<section class="kpis" id="kpis" aria-label="Today in the store"></section>
+
+<section id="s-live" aria-label="Live view">
+  <div class="sec-h"><h2>Live view · 5 pm rush</h2><span class="note">Synthetic camera (simulated people) · everyone pixelated before display</span></div>
+  <div class="live">
+    <div class="cam"><canvas id="cam" width="1280" height="720" aria-label="Store camera with zones, the door line and tracked people"></canvas>
+      <div class="cam-ui"><button type="button" id="play" aria-pressed="true">❚❚ Pause</button><button type="button" id="heatBtn" aria-pressed="true">Heat</button><span id="clock"></span></div></div>
+    <div class="side" id="liveSide"></div>
+  </div>
+</section>
+
+<section id="s-day" aria-label="The day">
+  <div class="sec-h"><h2>The trading day</h2><span class="note">07:00–22:00 · counted by the engine, checked against what really happened</span></div>
+  <div class="grid2">
+    <div class="card"><h3>Visitors by hour <small>IN through the door · peak people inside</small></h3><svg id="hours" viewBox="0 0 640 240" role="img" aria-label="Visitors by hour"></svg></div>
+    <div class="card"><h3>Zones <small>visits · average dwell · share of time</small></h3><div id="zones"></div></div>
+  </div>
+  <div class="grid2">
+    <div class="card" id="s-heat"><h3>Where time is spent <small>seconds per spot, whole day (absolute scale)</small></h3><canvas id="heat" width="1280" height="720"></canvas><div class="legend" id="heatLeg"></div></div>
+    <div class="card"><h3>Prompts for the team <small>queue and staff-only area</small></h3><div id="alerts"></div></div>
+  </div>
+  <div class="card truth"><h3>Checked against the truth <small>the simulator knows what really happened</small></h3><div id="truth"></div></div>
+</section>
+
+<section id="s-lab" aria-label="Skill Lab">
+  <div class="sec-h"><h2>Skill Lab · Shelly Intelligence</h2><span class="note">A new exam every day · levels from results · tuning only when a held-out day agrees · a new skill a day</span></div>
+  <div class="lab-top" id="labTop"></div>
+  <div class="skills" id="skills"></div>
+  <div class="grid2">
+    <div class="card"><h3>Coaching log <small>every change, kept or not, with its numbers</small></h3><div id="changes"></div></div>
+    <div class="card"><h3>Curriculum <small>one new skill a day once its basics are Competent</small></h3><div id="curr"></div></div>
+  </div>
+</section>
+
+<section id="s-privacy" aria-label="Privacy by design">
+  <div class="sec-h"><h2>Privacy by design</h2><span class="note">NZ Privacy Act 2020 · Privacy Commissioner guidance on CCTV and biometrics</span></div>
+  <div class="card"><ul class="priv" id="priv"></ul></div>
+</section>
+
+<section id="s-how" aria-label="How it is built">
+  <div class="sec-h"><h2>How it's built</h2></div>
+  <div class="card how" id="how"></div>
+</section>
+<p class="foot" id="foot"></p>
+</div>
+<script src="../data/vision.js"></script>
+<script src="../data/approvals.js"></script>
+<script src="app.js"></script>
+<script src="../kit/shelly-kit.js" data-page="vision" data-base="../"></script>
+</body>
+</html>

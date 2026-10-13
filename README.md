@@ -7,6 +7,15 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v1.20: Shelly Intelligence · Store Vision, with a Skill Lab
+
+- **Store Vision** (`docs/vision/`, `shelly/vision/`, `modules/vision/vision.yaml`): the store camera turned into store numbers. Unique visitors (tracking, minimum life, identity switches re-linked), door IN/OUT across a line with a dead band and cooldown, zone visits and dwell with an exit grace, the checkout queue with wait and open-a-till prompts, staff-only area prompts with a grace period and opening hours, and a heatmap of **time spent** in seconds (a live map that fades and a day map that keeps). Outputs `summary.json`, `events.jsonl`, `hourly.csv` and the heat grid.
+- **Real video**: `python -m shelly vision run --source store.mp4 --show` runs YOLO + ByteTrack (Ultralytics, optional install) on a file, webcam or CCTV stream; zones scale to the camera.
+- **Privacy by design**: everyone pixelated before a frame is shown or saved, frames never stored, no face recognition or re-identification, events purged after 30 days; NZ Privacy Act 2020 notes on the page. The website uses a synthetic camera only.
+- **Checked against the truth**: a simulator with realistic camera noise (missed detections, identity switches, false positives, jitter) knows what really happened; a full synthetic day counts 637 of 637 visitors.
+- **Skill Lab (Shelly Intelligence)**: every vision skill sits an exam each day, scores 0-100 and levels 1 Learning → 5 Expert; exams get harder as she improves; a coach tunes a weak skill's own settings and keeps a change only if a held-out day improves and nothing else gets worse; a new skill is unlocked each day from a curriculum (conversion, staff vs shopper by movement, next-hour footfall, hot zone, rush warning), trains in suggest-only, and goes live when Pavi approves (the request lands in the approvals queue). `python -m shelly vision lab`.
+- **Five agents** in the Shelly Brain, team "Shelly Intelligence · Vision": Footfall and Floor (Sales), Queue (Office Manager), Safety & privacy (Management), Skill Lab coach (Developers). Vision skills are registered skills (`shelly/packs/vision.py`).
+
 ## What's new in v1.19: Shelly Brain boot in 3D, sculpted in Blender
 
 - **A brain you can look into.** The Brain is sculpted in Blender (`blender/shelly_brain_points.py`: two hemispheres folded into gyri and sulci by displacement textures, a ridged cerebellum, the brain stem) and sampled into ~20,000 points of light (`docs/brain/brain-points.js`).
