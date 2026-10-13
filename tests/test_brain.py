@@ -100,3 +100,15 @@ def test_hq_v2_assets():
     assert '"chain"' in ap and '"source":"org"' in ap
     assert (ROOT / "docs/brain/hq-panels.js").exists()
     assert 'id="hqLeft"' in (ROOT / "docs/brain/index.html").read_text()
+
+
+def test_kit_files_are_version_stamped():
+    """browsers keep an old saved copy of the mascot unless the address changes: every page asks for the kit
+    with ?v=<version>, and the kit asks for the head and guide with the same version"""
+    import re
+    from shelly import __version__
+    kit = (ROOT / "docs/kit/shelly-kit.js").read_text()
+    assert f'const KIT_V = "{__version__}"' in kit and '"?v=" + KIT_V' in kit and 'shelly-guide.js?v=" + KIT_V' in kit
+    for html in ROOT.glob("docs/**/*.html"):
+        for ref in re.findall(r'shelly-kit\.(?:js|css)[^"]*"', html.read_text()):
+            assert f"?v={__version__}" in ref, (html, ref)

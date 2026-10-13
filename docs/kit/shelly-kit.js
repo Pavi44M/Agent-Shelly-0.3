@@ -8,6 +8,7 @@
   const me = document.currentScript;
   const PAGE = (me && me.dataset.page) || "launchpad";
   const BASE = (me && me.dataset.base) || "";
+  const KIT_V = "1.22.2";   // bump with each release so browsers fetch the new mascot files instead of an old saved copy
   const AP = window.SHELLY_APPROVALS || { items: [], store_asof: "" };
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const ls = {
@@ -233,13 +234,13 @@
     try {   // Shelly's robot head (kit/shelly-head.js: 3D, or 2D when WebGL is missing or slow); ?bulb=classic brings back the 3D bulb (kit/shelly-bulb3d.js)
       const classic = /[?&]bulb=(classic|3d)/.test(location.search);
       const c3 = document.createElement("canvas"); c3.className = "sk-bulb sk-bulb3d"; c3.hidden = true; c3.setAttribute("aria-hidden", "true"); btn0.insertBefore(c3, btn0.firstChild);
-      import(new URL(BASE + (classic ? "kit/shelly-bulb3d.js" : "kit/shelly-head.js"), location.href).href)
+      import(new URL(BASE + (classic ? "kit/shelly-bulb3d.js" : "kit/shelly-head.js") + "?v=" + KIT_V, location.href).href)
         .then(m => { if (m.mount(c3, w, btn0, L)) c3.hidden = false; else c3.remove(); })
         .catch(() => c3.remove());
     } catch (e) { /* 2D bulb */ }
     let i = 0, timer = null, G = null;
     try {   // drag her anywhere, or let her guide you section by section (docs/kit/shelly-guide.js)
-      import(new URL(BASE + "kit/shelly-guide.js", location.href).href)
+      import(new URL(BASE + "kit/shelly-guide.js?v=" + KIT_V, location.href).href)
         .then(m => { G = m.start({ w, btn: btn0, bubble, msg, acts, L, esc, PAGE }); if (!bubble.hidden && msg.innerHTML) say(i); })
         .catch(() => { G = null; });
     } catch (e) { /* stays in the corner */ }

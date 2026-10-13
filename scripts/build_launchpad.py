@@ -200,7 +200,7 @@ def main():
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap">
 <link rel="stylesheet" href="launchpad.css">
 <link rel="stylesheet" href="../switch.css">
-<link rel="stylesheet" href="../kit/shelly-kit.css">
+<link rel="stylesheet" href="../kit/shelly-kit.css?v=1.22.2">
 </head>
 <body>
 {BOOT}
@@ -225,7 +225,7 @@ def main():
 </div>
 <script src="launchpad.js"></script>
 <script src="../data/approvals.js"></script>
-<script src="../kit/shelly-kit.js" data-page="launchpad" data-base="../"></script>
+<script src="../kit/shelly-kit.js?v=1.22.2" data-page="launchpad" data-base="../"></script>
 </body>
 </html>
 """)
