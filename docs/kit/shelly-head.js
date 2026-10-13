@@ -175,10 +175,16 @@ function glowTex() {
 /* ------------------------------------------------------------------ mount */
 export function mount(cv, wrap, btn, L) {
   const still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const S = { lx: 0, ly: 0, tx: 0, ty: 0, blinkAt: 1800, blinkEnd: 0, last: 0, spin: 0, spinV: 0, hop: 0, hopV: 0 };
+  const S = { lx: 0, ly: 0, tx: 0, ty: 0, blinkAt: 1800, blinkEnd: 0, last: 0, spin: 0, spinV: 0, spinTo: 0, hop: 0, hopV: 0, poke: 0, pokeV: 0, taps: 0, lastTap: 0 };
   addEventListener("pointermove", e => { const r = btn.getBoundingClientRect();
     S.tx = Math.max(-1, Math.min(1, (e.clientX - r.left - r.width / 2) / 260)); S.ty = Math.max(-1, Math.min(1, (e.clientY - r.top - r.height / 2) / 260)); }, { passive: true });
-  btn.addEventListener("pointerdown", () => { if (!still) { S.spinV = 15; S.hopV = 3.2; } });
+  // a tap is a poke: she blinks and rocks back a little (harder with each quick tap); only the 6th tap in a row makes her hop and spin
+  btn.addEventListener("pointerdown", () => {
+    if (still) return;
+    const now = performance.now(); if (now - S.lastTap > 800) S.taps = 0; S.taps++; S.lastTap = now; S.blinkEnd = now + 140;
+    if (S.taps >= 6) { S.taps = 0; S.spinTo += Math.PI * 2; S.hopV = 3.2; }
+    else { S.pokeV += 5 + S.taps * 1.6; S.hopV = Math.max(S.hopV, .35 + S.taps * .12); }
+  });
   const face = makeFace();
   const ok = webgl(cv, wrap, btn, L, S, face, still);
   if (ok) return true;
@@ -192,8 +198,8 @@ function step(S, now, still) {   // shared per-frame state: pointer, blink, hop 
   if (!still && now > S.blinkAt) { S.blinkEnd = now + 120; S.blinkAt = now + 2400 + Math.random() * 3400; }
   // hop (gravity) and one full spin, eased by a spring that settles on a whole turn
   S.hopV -= 14 * dt; S.hop = Math.max(0, S.hop + S.hopV * dt); if (S.hop === 0) S.hopV = Math.max(0, S.hopV);
-  const target = Math.round(S.spin / (Math.PI * 2)) * Math.PI * 2 + (S.spinV > 6 ? Math.PI * 2 : 0);
-  S.spinV += ((target - S.spin) * 30 - S.spinV * 7) * dt; S.spin += S.spinV * dt;
+  S.spinV += ((S.spinTo - S.spin) * 30 - S.spinV * 7) * dt; S.spin += S.spinV * dt;
+  S.pokeV += (-120 * S.poke - 9 * S.pokeV) * dt; S.poke += S.pokeV * dt;   // the poke springs back with a little wobble
   return { t, dt, blink: now < S.blinkEnd ? .1 : 1 };
 }
 
@@ -299,7 +305,7 @@ function webgl(cv, wrap, btn, L, S, face, still) {
     const [py, pp, pr, bob] = pose(mood, t, still);
     const gy = py + (still ? 0 : S.lx * .42), gx = pp + (still ? 0 : S.ly * .2);
     ry += (gy - ry) * Math.min(1, dt * 6); rx += (gx - rx) * Math.min(1, dt * 6); rz += (pr - rz) * Math.min(1, dt * 6); yb += (bob - yb) * Math.min(1, dt * 10);
-    rig.rotation.set(rx, ry + S.spin, rz); head.position.y = yb + S.hop * .35;
+    rig.rotation.set(rx - S.poke * .12, ry + S.spin, rz + S.poke * .03); head.position.y = yb + S.hop * .35;
     shadow.material.opacity = .45 - Math.min(.3, S.hop * .3);
     // antenna spring: driven by how fast the head turns and hops
     const cur = [rx, ry + S.spin, rz, head.position.y];
@@ -335,7 +341,7 @@ function flat(cv, wrap, btn, L, S, face, still) {
     const [py, , pr, bob] = pose(mood, t, still), fc = face.color();
     const k = cv.width / 150; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, cv.width, cv.width);
     const sx = Math.cos(py + S.spin);   // a spin squashes the head sideways
-    g.setTransform(k * sx, 0, 0, k, cv.width / 2 + (still ? 0 : S.lx * 4 * k), cv.width / 2 + (14 - (bob + S.hop * .35) * 40) * k); g.rotate(pr);
+    g.setTransform(k * sx, 0, 0, k, cv.width / 2 + (still ? 0 : S.lx * 4 * k), cv.width / 2 + (14 - (bob + S.hop * .35) * 40) * k); g.rotate(pr + S.poke * .04);
     // shadow
     g.fillStyle = "rgba(0,0,0,.35)"; g.beginPath(); g.ellipse(0, 42, 40, 6, 0, 0, 7); g.fill();
     // antenna spring
