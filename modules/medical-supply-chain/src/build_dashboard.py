@@ -49,8 +49,8 @@ def main():
             spec = importlib.util.spec_from_file_location("business_switch", sw)
             mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
             body = mod.switch_html("../", "medical") + body
-            links += '\n<link rel="stylesheet" href="../switch.css">\n<link rel="stylesheet" href="../kit/shelly-kit.css?v=1.22.2">'
-            kit = '<script src="../data/approvals.js"></script>\n<script src="../kit/shelly-kit.js?v=1.22.2" data-page="medical" data-base="../"></script>'
+            links += '\n<link rel="stylesheet" href="../switch.css">\n<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.0.0">'
+            kit = '<script src="../data/approvals.js"></script>\n<script src="../kit/shelly-kit.js?v=2.0.0" data-page="medical" data-base="../"></script>'
         css += "\n.back{display:inline-block;font-family:var(--mono);font-size:11px;color:var(--accent);text-decoration:none;margin-bottom:6px}.back:hover{text-decoration:underline}"
         (out / "sc.css").write_text(css)
         (out / "sc.js").write_text(js)

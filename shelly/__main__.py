@@ -20,6 +20,7 @@
     python -m shelly vision run --source store.mp4 [--show] [--save-video]   Shelly Vision on a video, webcam (0) or CCTV stream
     python -m shelly vision demo | lab [--days 7] | approve vision.conversion | purge   synthetic day, Skill Lab, go-live, retention
     python -m shelly lp demo [--days 7] | tune | approve | pia --site store | pose --source aisle.mp4   Loss Prevention (Shelly sites only)
+    python -m shelly os [run|tables|db]               Shelly OS: one data model + the event bus (db: save outputs/shelly.db)
     python -m shelly live path/to/pos_export.csv [--watch 60]   live POS feed for the Store Floor (docs/data/live.json, never published)
     python -m shelly report all [--data ...] [--pdf]   every report: Excel (dashboard, model, pivots, raw, lookups) + web page (+ PDF)
     python -m shelly report budget --months 6 --category Dairy --pdf --theme light,present
@@ -63,6 +64,8 @@ def main(argv=None):
     lp = sub.add_parser("lp", help="Loss Prevention: patterns about stock and places, never people (Shelly's own sites only)")
     lp.add_argument("action", choices=["demo", "tune", "approve", "pia", "pose", "pack"]); lp.add_argument("--days", type=int, default=7)
     lp.add_argument("--site", default="store"); lp.add_argument("--source"); lp.add_argument("--model", default="yolo11n-pose.pt")
+    os_ = sub.add_parser("os", help="Shelly OS: the shared data model and the event bus")
+    os_.add_argument("action", nargs="?", default="run", choices=["run", "tables", "db"]); os_.add_argument("--db", default=str(ROOT / "outputs/shelly.db"))
     sf = sub.add_parser("store"); sf.add_argument("--web", default=str(ROOT / "docs/data/shelly-data.js"))
     rp = sub.add_parser("report"); rp.add_argument("which", nargs="?", default="all")
     rp.add_argument("--data", default="data/sample"); rp.add_argument("--asof"); rp.add_argument("--out", default="outputs/reports")
@@ -148,6 +151,20 @@ def main(argv=None):
             st = L.approve(L.load(), a.target, a.action == "approve", a.note); L.save(st); print(f"{a.target}: {a.action}d")
         elif a.action == "purge":
             print(f"deleted {V.purge(a.out)} old event logs")
+    elif a.cmd == "os":
+        from .os.model import TABLES, build, counts
+        from .os.bus import run_day, summary
+        con = build(a.db if a.action == "db" else ":memory:")
+        if a.action == "tables":
+            n = counts(con)
+            for t, (what, _) in TABLES.items(): print(f"  {t:<12} {n[t]:>5}  {what}")
+        else:
+            bus = run_day(con); con.commit(); s_ = summary(bus)
+            print(f"Shelly OS: {s_['events']} events, {s_['actions']} actions ({s_['on_their_own']} on their own, {s_['waiting']} waiting, {s_['cross_business']} across businesses)")
+            for e in bus.events()[:12]:
+                print(f"  [{e['severity']:<4}] {e['type']:<30} {e['subject'][:60]}")
+            if a.action == "db": print(f"saved -> {a.db}")
+
     elif a.cmd == "lp":
         from .lp import run as R, tune as TU, evidence as EV
         cfg = R.load_cfg()

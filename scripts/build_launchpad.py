@@ -146,6 +146,14 @@ def main():
              "Everyone anonymised; a Skill Lab tests every skill daily against a known truth and adds a new one.",
              f"{vd['visitors']}", f"visitors today · {round(100 - abs(vd['visitors'] - vd['truth']['people']) / max(1, vd['truth']['people']) * 100, 1)}% of the truth · {len(lab['skills'])} skills",
              "New · v" + vi["version"], "new", f'<span class="shelves" aria-hidden="true">{lv}</span>', "wide")
+    os_p = ROOT / "docs/data/os.js"
+    if os_p.exists():
+        od = js_data(os_p, "SHELLY_OS"); osm = od["summary"]
+        card("../os/", "Shelly OS · v2.0 foundation", "Shelly OS",
+             "One data model every department reads, and an event bus that lets them talk: a store stock-out raises the order and books the Gateway delivery. "
+             "Routine actions run on their own; money, people and customers wait for a person.",
+             f"{osm['events']}", f"events today · {osm['actions']} agent actions · {osm['cross_business']} across businesses",
+             "New · v" + od["version"], "new", "", "wide")
     lp_p = ROOT / "docs/data/lp.js"
     if lp_p.exists():
         lp = js_data(lp_p, "SHELLY_LP"); W = [x["week"] for x in lp["sites"].values()]
@@ -200,7 +208,7 @@ def main():
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap">
 <link rel="stylesheet" href="launchpad.css">
 <link rel="stylesheet" href="../switch.css">
-<link rel="stylesheet" href="../kit/shelly-kit.css?v=1.22.2">
+<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.0.0">
 </head>
 <body>
 {BOOT}
@@ -225,7 +233,7 @@ def main():
 </div>
 <script src="launchpad.js"></script>
 <script src="../data/approvals.js"></script>
-<script src="../kit/shelly-kit.js?v=1.22.2" data-page="launchpad" data-base="../"></script>
+<script src="../kit/shelly-kit.js?v=2.0.0" data-page="launchpad" data-base="../"></script>
 </body>
 </html>
 """)

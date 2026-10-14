@@ -7,6 +7,15 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v2.0: the Shelly OS foundation
+
+- **One data model** (`shelly/os/model.py`): 13 SQLite tables with the same names and keys for all four businesses (businesses, departments, agents, sites, stock, sales, service, expiry, KPIs, flags, approvals, events, actions). It is built from the published synthetic data; real-data mode will fill the same tables on your own PC. `python -m shelly os tables`, or `python -m shelly os db` to save `outputs/shelly.db`.
+- **An event bus** (`shelly/os/bus.py`): detectors read the model and publish events (`store.stock.below_cover`, `totara.stock.gap`, `gateway.service.below_target` ...), subscribed agents react, and every action is checked against the agent's autonomy and the Brain's approval chain. Routine actions run on their own; money, people and customers wait for a person. **Departments talk to each other**: a store stock-out raises the order *and* books the Gateway delivery. `python -m shelly os run`.
+- **Shelly OS page** (`docs/os/`, "⚙ OS" on every page): today's events with each agent's action and who signs off, the cross-business handoffs, and the data model, with its own boot screen.
+- **One release command** (`scripts/release.py 2.0.1 -m "..."`): bumps the version everywhere (code, data, mascot kit, every `?v=` tag), rebuilds the pages, runs the tests, commits and writes the bundle to push.
+- **Phone layouts checked on every page**: a render test opens all 12 pages on a desktop and a phone (no script errors, no sideways scrolling) and saves screenshots; it runs on every release (`SHELLY_RENDER=1`). Fixed the Tower page scrolling sideways on phones.
+- Removed a stray example spreadsheet that slipped into v1.22.2.
+
 ## What's new in v1.22: Shelly gets her own robot head
 
 - **A robot head on every page** (`docs/kit/shelly-head.js`): a rounded TV-style head in real 3D (three.js, vendored) with a rolled clear-coat shell, a recessed bezel with a teal gasket, four screws, knob ears, a back vent panel and an **LED-matrix face** (28 x 16 LEDs) that glows and blooms. Her old light bulb now sits on a springy antenna that whips when she moves, and still glows amber when approvals are waiting.
