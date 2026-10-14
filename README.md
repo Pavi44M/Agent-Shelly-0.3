@@ -7,6 +7,15 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v2.4: Smarter Shelly
+
+- **Ask Shelly page** (`docs/ask/`, "💬 Ask" on every page; `shelly/mind/ask.py`). Ask a plain question about any of the four businesses, by typing or with the 🎙 microphone (the browser's own speech recognition, en-NZ), and get today's number with a link to where the full picture lives. Every answer is computed from the same data the pages show; typos and other words for the same thing are forgiven, and Shelly says plainly when she doesn't know.
+- **Cross-department huddles** (`shelly/mind/huddle.py`): agents from different departments agree one plan. Store replenishment checks the inventory budget left and rides on Gateway's existing store run; Tōtara's medicine gaps weigh air freight against the sales at risk and book a chilled dock; Gateway's late service moves pickers with their agreement first. One owner per step, conflicts resolved in a fixed order (safety and law, customers, then cost), one sign-off.
+- **Agent memory** (`shelly/mind/memory.py`): what each agent did before, what happened and the lesson it keeps, only from things Shelly really recorded (Skill Lab tunings, Loss Prevention rounds, forecast exams, supplier track records, budget variances, dock clashes, decisions).
+- **3-minute tour**: "▶ 3-min tour" on the Launchpad walks nine stops across the site, about 20 seconds each, with Next and Stop.
+- **Moods that follow the work**: Shelly looks thoughtful while you review approvals and while she works out an answer.
+- CLI: `python -m shelly mind ask "how is cash?" | huddles | memory`.
+
 ## What's new in v2.3: Group HQ, the Tower departments at work
 
 - **Group HQ page** (`docs/group/`, "🏛 Group" on every page; `shelly/group/hq.py`). **Finance**: the month-end close (business day, owner, status; the board pack waits for Pavi), P&L by business to EBITDA with **intercompany eliminations** (Gateway's warehousing for Tōtara and deliveries to the store come off both sides), the biggest variance in each business explained, and a **13-week cash-flow forecast** (store takings, Tōtara 30-day terms, Gateway billing on the 20th, tower rent on the 1st; fortnightly wages, imports as shipments land, GST) with its low point against a $600k buffer.

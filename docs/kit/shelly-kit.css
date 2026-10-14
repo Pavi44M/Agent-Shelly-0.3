@@ -95,3 +95,12 @@
 .sk-btn{cursor:grab}
 @media (max-width:560px){.sk-mascot.sk-placed .sk-bubble{max-width:calc(100vw - 92px)}}
 @media (max-width:600px){.sk-mascot.sk-placed .sk-bubble,.sk-mascot.sk-placed.sk-flip .sk-bubble,.sk-mascot.sk-placed.sk-low .sk-bubble{position:fixed;left:12px;right:12px;top:auto;bottom:max(14px,env(safe-area-inset-bottom));width:auto;max-width:none;border-radius:14px}}
+
+/* the 3-minute tour bar */
+.sk-tour{position:fixed;left:50%;bottom:max(14px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:70;display:flex;gap:10px;align-items:center;background:#141e2c;border:1px solid #3e3560;border-radius:99px;padding:6px 8px 6px 14px;box-shadow:0 8px 24px rgba(0,0,0,.4);font:500 12px "JetBrains Mono",ui-monospace,monospace;color:#eaf0f6}
+.sk-tour i{display:block;width:90px;height:4px;background:#1f2a38;border-radius:4px;overflow:hidden}.sk-tour u{display:block;height:100%;width:100%;background:#b69cf2;transform-origin:left;animation:sk-tourbar linear forwards}
+@keyframes sk-tourbar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.sk-tour button{background:#0f1622;border:1px solid #2a3a50;color:#eaf0f6;border-radius:99px;padding:4px 10px;font:inherit;cursor:pointer}
+@media (prefers-reduced-motion:reduce){.sk-tour u{animation:none;transform:none}}
+.sk-tourgo{margin-top:14px;background:#b69cf2;color:#120b22;border:0;border-radius:99px;padding:10px 18px;font:600 13px "JetBrains Mono",ui-monospace,monospace;cursor:pointer;box-shadow:0 0 0 0 rgba(182,156,242,.5);animation:sk-tg 2.4s ease-in-out 3}
+@keyframes sk-tg{50%{box-shadow:0 0 0 8px rgba(182,156,242,0)}}

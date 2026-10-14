@@ -20,6 +20,7 @@
     python -m shelly vision run --source store.mp4 [--show] [--save-video]   Shelly Vision on a video, webcam (0) or CCTV stream
     python -m shelly vision demo | lab [--days 7] | approve vision.conversion | purge   synthetic day, Skill Lab, go-live, retention
     python -m shelly lp demo [--days 7] | tune | approve | pia --site store | pose --source aisle.mp4   Loss Prevention (Shelly sites only)
+    python -m shelly mind ask "how did the store do?" | huddles | memory   Shelly's mind: answers, huddles, agent memory
     python -m shelly group [pnl|close|cash|people|procurement|board|limits|audit]   Group HQ
     python -m shelly ops [docks|labour|billing|suppliers|expiry|whatif|flows]   Gateway and Tōtara operations
     python -m shelly shift [brief|todo|close|sense|lab] [--day 2026-09-25]   Store Shift Pilot
@@ -67,6 +68,8 @@ def main(argv=None):
     lp = sub.add_parser("lp", help="Loss Prevention: patterns about stock and places, never people (Shelly's own sites only)")
     lp.add_argument("action", choices=["demo", "tune", "approve", "pia", "pose", "pack"]); lp.add_argument("--days", type=int, default=7)
     lp.add_argument("--site", default="store"); lp.add_argument("--source"); lp.add_argument("--model", default="yolo11n-pose.pt")
+    mi = sub.add_parser("mind", help="Shelly's mind: ask anything, cross-department huddles, agent memory")
+    mi.add_argument("action", nargs="?", default="huddles", choices=["ask", "huddles", "memory"]); mi.add_argument("question", nargs="?", default="")
     gp = sub.add_parser("group", help="Group HQ: finance close, P&L, cash, people, procurement, board pack, governance")
     gp.add_argument("action", nargs="?", default="board", choices=["pnl", "close", "cash", "people", "procurement", "board", "limits", "audit"])
     op = sub.add_parser("ops", help="Operations: Gateway docks, labour, billing; Tōtara suppliers, expiry, what-if; flows end to end")
@@ -161,6 +164,23 @@ def main(argv=None):
             st = L.approve(L.load(), a.target, a.action == "approve", a.note); L.save(st); print(f"{a.target}: {a.action}d")
         elif a.action == "purge":
             print(f"deleted {V.purge(a.out)} old event logs")
+    elif a.cmd == "mind":
+        from .packs.mind import _mind
+        d = _mind()
+        if a.action == "ask":
+            import re as _re
+            w = set(_re.findall(r"[a-zāēīōū0-9]+", a.question.lower())) - {"the", "a", "is", "are", "how", "what", "do", "did", "we", "i", "my", "our", "to", "of", "in", "much", "many"}
+            best = max(d["answers"], key=lambda x: len(w & set(_re.findall(r"[a-zāēīōū0-9]+", (x["q"] + " " + " ".join(x["keys"])).lower()))))
+            hits = len(w & set(_re.findall(r"[a-zāēīōū0-9]+", (best["q"] + " " + " ".join(best["keys"])).lower())))
+            print(f"  {best['q']}\n  {best['a']}\n  more: docs/{best['link'].lstrip('./')}" if hits else "  I don't know that one yet. Try: " + "; ".join(x["q"] for x in d["answers"][:4]))
+        elif a.action == "memory":
+            for x in d["memory"]: print(f"  {x['when']:<12} {x['agent']:<18} {x['outcome']:<10} {x['what'][:60]}\n{'':>16}lesson: {x['lesson']}")
+        else:
+            for h in d["huddles"]:
+                print(f"  {h['title']}  (from {h['from']})")
+                for st in h["steps"]: print(f"     {st['name']}: {st['part']}")
+                for c in h["conflicts"]: print(f"     conflict: {c}")
+                print(f"     plan: {h['plan']}\n     sign-off: {h['sign_off']}")
     elif a.cmd == "group":
         from .group import hq
         r = hq.run(); P = r["pnl"]

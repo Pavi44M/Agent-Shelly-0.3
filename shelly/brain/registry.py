@@ -588,7 +588,9 @@ for _a in AGENTS:
                   "totara-stock": ["ops.expiry"],
                   # v2.3 Group HQ
                   "fin-head": ["group.pnl", "group.close", "group.board"], "fin-cash": ["group.cash"], "hr-head": ["group.people"], "hr-leave": ["group.people"],
-                  "mgmt-head": ["group.board", "group.governance"], "group-governance": ["group.governance"], "fin-funds": ["group.procurement"]}.get(_a.id, [])
+                  "mgmt-head": ["group.board", "group.governance"], "group-governance": ["group.governance", "mind.huddle"], "fin-funds": ["group.procurement"],
+                  # v2.4 Shelly's mind
+                  "group-learning": ["mind.memory", "mind.ask"]}.get(_a.id, [])
 
 # where each existing agent now sits: department + its team (business unit)
 _HOME = {

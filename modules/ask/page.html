@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en-NZ">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Ask Shelly · huddles and memory</title>
+<meta name="description" content="Shelly v2.4: ask anything about the four businesses by typing or speaking, see the cross-department huddles where agents agree one plan you approve once, and what each agent remembers from last time. Synthetic data.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../vision/vision.css">
+<link rel="stylesheet" href="../ops/ops.css">
+<link rel="stylesheet" href="ask.css">
+<link rel="stylesheet" href="../switch.css">
+<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.4.0">
+</head>
+<body>
+<div id="boot" aria-live="polite"><div class="boot-in">
+  <span class="tag">Shelly · ask, huddles, memory</span>
+  <svg class="boot-sv" id="bootSv" viewBox="0 0 420 175" aria-hidden="true"></svg>
+  <h2 class="boot-h" id="bootH">Waking <b>Shelly's mind</b></h2>
+  <pre id="bootLog"></pre><button id="skipBoot" type="button">Skip</button></div></div>
+{{SWITCH}}
+<div class="wrap">
+<header>
+  <span class="tag">Shelly's mind · v<span id="ver"></span> · synthetic data</span>
+  <h1>Ask anything. <b>Agents that remember.</b></h1>
+  <p class="sub">Ask about any of the four businesses by typing or with the microphone; every answer is worked out from the same numbers the pages show. Below, the agents' huddles: departments that agree one plan you approve once, quoting what they learned last time.</p>
+</header>
+
+<section id="s-ask" aria-label="Ask Shelly">
+  <div class="card ask">
+    <form id="askF" autocomplete="off"><input id="q" type="text" placeholder="Ask me… e.g. why was Friday down?" aria-label="Your question" maxlength="200"><button type="button" id="mic" aria-label="Ask with your voice" aria-pressed="false">🎙</button><button type="submit">Ask</button></form>
+    <p class="micnote" id="micNote"></p>
+    <div id="ans" aria-live="polite"></div>
+    <div class="chips sugg" id="sugg"></div>
+  </div>
+</section>
+
+<section id="s-huddle" aria-label="Huddles">
+  <div class="sec-h"><h2>Huddles · one plan, approved once</h2><span class="note">Agents from different departments, today's events, the constraints, and what they remember</span></div>
+  <div id="huddles"></div>
+</section>
+
+<section id="s-memory" aria-label="Agent memory">
+  <div class="sec-h"><h2>What the agents remember</h2><span class="note">Only things Shelly really recorded: tunings, exams, decisions, track records, variances</span></div>
+  <div class="chips" id="memF" role="group" aria-label="Filter memories"></div>
+  <div class="mem" id="mem"></div>
+</section>
+
+<section id="s-tour" aria-label="Guided tour">
+  <div class="sec-h"><h2>The 3-minute tour</h2><span class="note">For a recruiter, an interviewer or a first look</span></div>
+  <div class="card tour"><p>Shelly walks you through nine stops in about three minutes, from the Launchpad to the store's shift, the event bus, operations, Group HQ and back here, saying what each one shows. Turn on 🗣 Voice to hear her.</p><button type="button" id="tourGo">▶ Start the 3-minute tour</button></div>
+</section>
+<p class="foot" id="foot"></p>
+</div>
+<script src="../data/mind.js"></script>
+<script src="../data/approvals.js"></script>
+<script src="app.js"></script>
+<script src="boot.js"></script>
+<script src="../kit/shelly-kit.js?v=2.4.0" data-page="ask" data-base="../"></script>
+</body>
+</html>

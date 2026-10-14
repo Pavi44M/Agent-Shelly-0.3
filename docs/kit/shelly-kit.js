@@ -8,7 +8,7 @@
   const me = document.currentScript;
   const PAGE = (me && me.dataset.page) || "launchpad";
   const BASE = (me && me.dataset.base) || "";
-  const KIT_V = "2.3.0";   // bump with each release so browsers fetch the new mascot files instead of an old saved copy
+  const KIT_V = "2.4.0";   // bump with each release so browsers fetch the new mascot files instead of an old saved copy
   const AP = window.SHELLY_APPROVALS || { items: [], store_asof: "" };
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const ls = {
@@ -244,6 +244,9 @@
         .catch(() => c3.remove());
     } catch (e) { /* 2D bulb */ }
     let i = 0, timer = null, G = null;
+    try {   // the 3-minute tour (kit/shelly-tour.js): runs only when started, page to page in this tab
+      import(new URL(BASE + "kit/shelly-tour.js?v=" + KIT_V, location.href).href).then(m => m.init({ BASE, msg, bubble })).catch(() => {});
+    } catch (e) { /* no tour */ }
     try {   // drag her anywhere, or let her guide you section by section (docs/kit/shelly-guide.js)
       import(new URL(BASE + "kit/shelly-guide.js?v=" + KIT_V, location.href).href)
         .then(m => { G = m.start({ w, btn: btn0, bubble, msg, acts, L, esc, PAGE }); if (!bubble.hidden && msg.innerHTML) say(i); })
@@ -251,13 +254,13 @@
     } catch (e) { /* stays in the corner */ }
     function say(k) {
       const list = messages(); i = (k ?? i) % list.length;
-      msg.innerHTML = list[i];
+      msg.innerHTML = window.SHELLY_TOUR_LINE || list[i];    // during the tour, the tour's line wins
       acts.innerHTML = (open().length ? `<button data-k="tray">Review approvals</button>` : "") +
-        (PAGE !== "brain" ? `<a href="${esc(BASE)}brain/">🧠 Brain</a>` : `<a href="${esc(BASE)}launchpad/">⌘ Launchpad</a>`) + `<button data-k="next">Next tip</button>${G ? G.acts() : ""}<button data-k="snd" aria-pressed="${L.soundOn()}">${L.soundOn() ? "🔊" : "🔈"} Sound</button>${VOICE.available ? `<button data-k="voice" aria-pressed="${VOICE.on}">🗣 ${VOICE.on ? "Voice on" : "Voice"}</button>` : ""}`;
+        (PAGE !== "brain" ? `<a href="${esc(BASE)}brain/">🧠 Brain</a>` : `<a href="${esc(BASE)}launchpad/">⌘ Launchpad</a>`) + (PAGE === "launchpad" ? `<button data-k="tour">▶ 3-min tour</button>` : "") + `<button data-k="next">Next tip</button>${G ? G.acts() : ""}<button data-k="snd" aria-pressed="${L.soundOn()}">${L.soundOn() ? "🔊" : "🔈"} Sound</button>${VOICE.available ? `<button data-k="voice" aria-pressed="${VOICE.on}">🗣 ${VOICE.on ? "Voice on" : "Voice"}</button>` : ""}`;
       w.classList.add("talk"); clearTimeout(timer); timer = setTimeout(() => { if (!VOICE.speaking) w.classList.remove("talk"); }, 1600);
       L.react("talk");
     }
-    acts.addEventListener("click", e => { const b = e.target.closest("[data-k]"); if (!b) return; if (b.dataset.k === "tray") openTray(); else if (b.dataset.k === "snd") { L.toggleSound(); b.setAttribute("aria-pressed", String(L.soundOn())); b.textContent = (L.soundOn() ? "🔊" : "🔈") + " Sound"; } else if (b.dataset.k === "voice") { VOICE.setOn(!VOICE.on); b.setAttribute("aria-pressed", String(VOICE.on)); b.textContent = "🗣 " + (VOICE.on ? "Voice on" : "Voice"); if (VOICE.on) VOICE.speak(msg.innerHTML); } else say(i + 1); });
+    acts.addEventListener("click", e => { const b = e.target.closest("[data-k]"); if (!b) return; if (b.dataset.k === "tray") openTray(); else if (b.dataset.k === "tour") { if (window.ShellyTour) window.ShellyTour.start(); } else if (b.dataset.k === "snd") { L.toggleSound(); b.setAttribute("aria-pressed", String(L.soundOn())); b.textContent = (L.soundOn() ? "🔊" : "🔈") + " Sound"; } else if (b.dataset.k === "voice") { VOICE.setOn(!VOICE.on); b.setAttribute("aria-pressed", String(VOICE.on)); b.textContent = "🗣 " + (VOICE.on ? "Voice on" : "Voice"); if (VOICE.on) VOICE.speak(msg.innerHTML); } else say(i + 1); });
     // whatever she says in the bubble (tips, the page guide), she says out loud when the voice is on
     let lastSaid = ""; new MutationObserver(() => { const h = msg.innerHTML; if (h && h !== lastSaid && !bubble.hidden) { lastSaid = h; VOICE.speak(h); } }).observe(msg, { childList: true, subtree: true, characterData: true });
     document.addEventListener("shelly:voice", e => { if (e.detail.speaking) { clearTimeout(timer); w.classList.add("talk"); } else timer = setTimeout(() => w.classList.remove("talk"), 250); });
@@ -273,10 +276,11 @@
       }, 300);
     };
     const boot = document.getElementById("boot");
+    let touring = false; try { touring = !!sessionStorage.getItem("shelly.tour"); } catch (e) { /* private mode */ }
     const start = () => { if (!bubble.hidden) say(0); };
     if (boot && !boot.classList.contains("done")) { w.style.visibility = "hidden";
-      const t = setInterval(() => { const b = document.getElementById("boot"); if (!b || b.classList.contains("done")) { clearInterval(t); w.style.visibility = ""; start(); if (G) G.begin(); } }, 250);
-    } else { start(); setTimeout(() => { if (G) G.begin(); }, 400); }
+      const t = setInterval(() => { const b = document.getElementById("boot"); if (!b || b.classList.contains("done")) { clearInterval(t); w.style.visibility = ""; start(); if (G && !touring) G.begin(); } }, 250);
+    } else { start(); setTimeout(() => { if (G && !touring) G.begin(); }, 400); }
   }
 
 
@@ -469,6 +473,8 @@
   }
 
   function refresh() { paintBadge(); renderTray(); }
+  // her mood follows the work: thinking while you review approvals
+  document.addEventListener("click", e => { if (e.target.closest && e.target.closest("#apBadge, [data-k='tray']")) dispatchEvent(new CustomEvent("shelly:mood", { detail: { mood: "thinking", ms: 4000 } })); }, true);
   window.addEventListener("shelly:approvals", refresh);
   window.addEventListener("storage", e => { if (e.key === SKEY || e.key === TKEY) refresh(); });
   window.ShellyKit = { openTray, open, answer, sign, stepOf, chainOf, stateOf, addItem, items: () => AP.items };

@@ -87,6 +87,7 @@ export function start(K) {
   /* ---------- speaking in the bubble */
   let pending = null;
   function show(html, buttons) {
+    if (window.SHELLY_TOUR_LINE) return;   // the 3-minute tour is talking
     bubble.hidden = false; msg.innerHTML = html;
     acts.innerHTML = buttons.map(([k, label, q]) => `<button type="button" data-g="${k}"${q ? ` data-q="${esc(q)}"` : ""}>${label}</button>`).join("");
     w.classList.add("talk"); clearTimeout(show.t); show.t = setTimeout(() => w.classList.remove("talk"), 1500);

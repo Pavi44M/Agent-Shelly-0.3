@@ -146,6 +146,14 @@ def main():
              "Everyone anonymised; a Skill Lab tests every skill daily against a known truth and adds a new one.",
              f"{vd['visitors']}", f"visitors today · {round(100 - abs(vd['visitors'] - vd['truth']['people']) / max(1, vd['truth']['people']) * 100, 1)}% of the truth · {len(lab['skills'])} skills",
              "New · v" + vi["version"], "new", f'<span class="shelves" aria-hidden="true">{lv}</span>', "wide")
+    mi_p = ROOT / "docs/data/mind.js"
+    if mi_p.exists():
+        md = js_data(mi_p, "SHELLY_MIND")
+        card("../ask/", "Shelly's mind · v2.4", "Ask Shelly",
+             "Ask anything about the four businesses, typed or spoken, and get today's number with a link to the full picture. Departments huddle to agree one plan "
+             "for one sign-off, and every agent remembers what happened last time. Press ▶ 3-min tour for the guided walk-through.",
+             f"{len(md['answers'])}", f"questions answered · {len(md['huddles'])} huddles · {len(md['memory'])} memories",
+             "New · v" + md["version"], "new", "", "wide")
     gp_p = ROOT / "docs/data/group.js"
     if gp_p.exists():
         gd = js_data(gp_p, "SHELLY_GROUP"); gpl = gd["pnl"]
@@ -232,7 +240,7 @@ def main():
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap">
 <link rel="stylesheet" href="launchpad.css">
 <link rel="stylesheet" href="../switch.css">
-<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.3.0">
+<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.4.0">
 </head>
 <body>
 {BOOT}
@@ -243,6 +251,7 @@ def main():
   <h1>Everything Shelly does, <b>one tap away.</b></h1>
   <p class="sub">Pick a workspace. Each one runs on the same engine: data in, skills do the analysis, and anything important waits for your confirmation.</p>
   <div class="who"><span>{len(skills)} skills</span><span>{len(packs)} packs</span><span>Retail data to {html.escape(m['asof_label'])}</span><span>Demo · synthetic data</span></div>
+  <button class="sk-tourgo" type="button" data-tour-start>▶ Take the 3-minute tour</button>
 </header>
 <main class="grid">
 {chr(10).join(cards)}
@@ -257,7 +266,7 @@ def main():
 </div>
 <script src="launchpad.js"></script>
 <script src="../data/approvals.js"></script>
-<script src="../kit/shelly-kit.js?v=2.3.0" data-page="launchpad" data-base="../"></script>
+<script src="../kit/shelly-kit.js?v=2.4.0" data-page="launchpad" data-base="../"></script>
 </body>
 </html>
 """)
