@@ -45,5 +45,11 @@
   /* ---- data model */
   $("#tables").innerHTML = D.tables.map(t => `<div class="tb ${t.name === "events" || t.name === "actions" ? "live" : ""}"><span class="n">${t.rows.toLocaleString("en-NZ")}</span><b>${esc(t.name)}</b>
     <p>${esc(t.what)}</p>${t.cols.map(c => `<code>${esc(c)}</code>`).join("")}</div>`).join("");
+  window.SHELLY_GUIDE = {
+    "s-bus": `${S.events} events today, ${S.actions} agent actions: ${S.on_their_own} ran on their own and ${S.waiting} wait for a person. Filter by business with the chips.`,
+    "s-cross": `${S.cross_business} times today one business acted for another, like a store stock-out booking a Gateway delivery.`,
+    "s-model": `${D.tables.length} tables, the same names and keys for all four businesses. Real data would fill the same tables, on your own PC only.`,
+    "s-how": "Sense, react, check, log: detectors publish events, agents react, the approval chain decides who signs, and everything is written back.",
+  };
   $("#foot").textContent = `Shelly OS v${D.version} · built ${D.generated} · synthetic data, no real people or businesses · real-data mode runs only on your own PC`;
 })();

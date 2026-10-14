@@ -20,6 +20,7 @@
     python -m shelly vision run --source store.mp4 [--show] [--save-video]   Shelly Vision on a video, webcam (0) or CCTV stream
     python -m shelly vision demo | lab [--days 7] | approve vision.conversion | purge   synthetic day, Skill Lab, go-live, retention
     python -m shelly lp demo [--days 7] | tune | approve | pia --site store | pose --source aisle.mp4   Loss Prevention (Shelly sites only)
+    python -m shelly ops [docks|labour|billing|suppliers|expiry|whatif|flows]   Gateway and Tōtara operations
     python -m shelly shift [brief|todo|close|sense|lab] [--day 2026-09-25]   Store Shift Pilot
     python -m shelly os [run|tables|db]               Shelly OS: one data model + the event bus (db: save outputs/shelly.db)
     python -m shelly live path/to/pos_export.csv [--watch 60]   live POS feed for the Store Floor (docs/data/live.json, never published)
@@ -65,6 +66,9 @@ def main(argv=None):
     lp = sub.add_parser("lp", help="Loss Prevention: patterns about stock and places, never people (Shelly's own sites only)")
     lp.add_argument("action", choices=["demo", "tune", "approve", "pia", "pose", "pack"]); lp.add_argument("--days", type=int, default=7)
     lp.add_argument("--site", default="store"); lp.add_argument("--source"); lp.add_argument("--model", default="yolo11n-pose.pt")
+    op = sub.add_parser("ops", help="Operations: Gateway docks, labour, billing; Tōtara suppliers, expiry, what-if; flows end to end")
+    op.add_argument("action", nargs="?", default="flows", choices=["docks", "labour", "billing", "suppliers", "expiry", "whatif", "flows"])
+    op.add_argument("--supplier"); op.add_argument("--delay", type=int, default=14)
     sh = sub.add_parser("shift", help="Store Shift Pilot: opening brief, to-do, closing report and handover")
     sh.add_argument("action", nargs="?", default="brief", choices=["brief", "todo", "close", "sense", "lab"]); sh.add_argument("--day", default="2026-09-25")
     os_ = sub.add_parser("os", help="Shelly OS: the shared data model and the event bus")
@@ -154,6 +158,34 @@ def main(argv=None):
             st = L.approve(L.load(), a.target, a.action == "approve", a.note); L.save(st); print(f"{a.target}: {a.action}d")
         elif a.action == "purge":
             print(f"deleted {V.purge(a.out)} old event logs")
+    elif a.cmd == "ops":
+        from .ops import gateway_ops as GO, totara_ops as TO, flow as FL
+        if a.action in ("docks", "labour", "billing", "flows"):
+            g = GO.run()
+            if a.action == "docks":
+                for d in g["docks"]:
+                    print(f"  {d['name']:<34} {len(d['jobs']):>3} trucks · {len(d['clashes'])} clashes · dock time {d['utilisation_pct']}%")
+                    for c in d["clashes"]: print(f"     {c['truck']} wanted {c['window']}, dock {c['dock']} at {c['start']}: {c['fix']}")
+            elif a.action == "labour":
+                for l in g["labour"]:
+                    for s_ in l["shifts"]: print(f"  {l['site']} {s_['shift']:<6} {s_['pallets']:>4} pallets  {s_['advice']}")
+            elif a.action == "billing":
+                for b in g["billing"]: print(f"  {b['name']:<28} ${b['total']:>10,.0f}  contract ${b['contract']:>8,}  {b['vs_contract_pct']:+.1f}%")
+            else:
+                for f in FL.run(g):
+                    print(f["title"])
+                    for s_ in f["steps"]: print(f"   - {s_['who']}: {s_['what']}" + (f"  [{s_['gate']}]" if s_["gate"] else ""))
+        else:
+            t = TO.run()
+            if a.action == "suppliers":
+                for s_ in t["scorecards"]: print(f"  {s_['grade']} {s_['score']:>5}  {s_['name']:<26} {s_['ask']}")
+            elif a.action == "expiry":
+                for e in t["expiry"]: print(f"  {e['name']:<30} {e['days_left']:>3} days  ${e['saved_value']:,} rescued, {e['left_qty']} left")
+            else:
+                sid = a.supplier or t["suppliers"][0]["id"]; r = t["what_if"][f"{sid}:{a.delay}"]
+                print(f"{r['supplier']} {a.delay} days late: ${r['revenue']:,} at stake")
+                for s_ in r["skus"]: print(f"  {s_['name']:<30} short {s_['days_short']} days  {s_['fix']}")
+
     elif a.cmd == "shift":
         from datetime import date as _d
         from .shift.pilot import build as _build

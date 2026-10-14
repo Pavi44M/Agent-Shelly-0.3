@@ -11,8 +11,8 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-PAGES = ["", "supply-chain/", "gateway/", "tower/", "store/", "brain/", "vision/", "lp/", "os/", "shift/", "launchpad/", "report.html", "digest.html"]
-BOOTED = "try{['gw.booted','vision.booted','lp.booted','os.booted','shift.booted'].forEach(k=>sessionStorage.setItem(k,'1'))}catch(e){}"
+PAGES = ["", "supply-chain/", "gateway/", "tower/", "store/", "brain/", "vision/", "lp/", "os/", "shift/", "ops/", "launchpad/", "report.html", "digest.html"]
+BOOTED = "try{['gw.booted','vision.booted','lp.booted','os.booted','shift.booted','ops.booted'].forEach(k=>sessionStorage.setItem(k,'1'))}catch(e){}"
 
 
 @pytest.fixture(scope="module")

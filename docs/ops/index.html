@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en-NZ">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Operations · Gateway and Tōtara</title>
+<meta name="description" content="Shelly operations v2.2: Gateway's dock scheduler, labour planner and client billing; Tōtara Medical's supplier scorecards, expiry rescue and what-if planner; and flows followed end to end across the store, Gateway and Tōtara. Synthetic data.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../vision/vision.css">
+<link rel="stylesheet" href="ops.css">
+<link rel="stylesheet" href="../switch.css">
+<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.2.0">
+</head>
+<body>
+<div id="boot" aria-live="polite"><div class="boot-in">
+  <span class="tag">Shelly · Operations · Gateway and Tōtara</span>
+  <svg class="boot-sv" id="bootSv" viewBox="0 0 420 175" aria-hidden="true"></svg>
+  <h2 class="boot-h" id="bootH">Opening <b>the docks</b></h2>
+  <pre id="bootLog"></pre><button id="skipBoot" type="button">Skip</button></div></div>
+<nav class="biz" aria-label="Choose a business"><div class="biz-track"><a class="biz-opt " href="../"><span class="ic" aria-hidden="true">🛒</span><span class="tx"><b>Neighbourhood store</b><small>Retail · Shelly store agent</small></span></a><a class="biz-opt med" href="../supply-chain/"><span class="ic" aria-hidden="true">✚</span><span class="tx"><b>Tōtara Medical</b><small>Supply Chain Command</small></span></a><a class="biz-opt gw" href="../gateway/"><span class="ic" aria-hidden="true">⛟</span><span class="tx"><b>Gateway</b><small>Warehousing & Transport</small></span></a></div><div class="biz-side"><a class="biz-lp" href="../tower/">🏙 Tower</a><a class="biz-lp" href="../store/">▦ Floor</a><a class="biz-lp" href="../shift/">⏱ Shift</a><a class="biz-lp" href="../ops/" aria-current="page">⛓ Ops</a><a class="biz-lp" href="../brain/">🧠 Brain</a><a class="biz-lp" href="../vision/">👁 Vision</a><a class="biz-lp" href="../lp/">🛡 Loss</a><a class="biz-lp" href="../os/">⚙ OS</a><a class="biz-lp" href="../launchpad/">⌘ Launchpad</a><button class="biz-ap" type="button" id="apBadge" hidden aria-haspopup="dialog"><span aria-hidden="true">🔔</span> Approvals <b id="apCount">0</b></button></div></nav>
+<div class="wrap">
+<header>
+  <span class="tag">Gateway Warehousing &amp; Transport · Tōtara Medical · Operations · v<span id="ver"></span> · synthetic data</span>
+  <h1>Every truck a slot. <b>Every batch a home.</b></h1>
+  <p class="sub">Gateway books every truck into a dock, sizes each shift from the day's pallets and bills each client for what they really used. Tōtara scores its suppliers, finds a home for short-dated stock before it expires and asks "what if a supplier is late?". And two flows are followed end to end, from the store or Tōtara through Gateway.</p>
+</header>
+
+<section class="kpis" id="kpis" aria-label="Operations at a glance"></section>
+
+<section id="s-flow" aria-label="Flows end to end">
+  <div class="sec-h"><h2>Followed end to end</h2><span class="note">One event, every department that touches it, and who signs off</span></div>
+  <div class="grid2" id="flows"></div>
+</section>
+
+<section id="s-docks" aria-label="Dock scheduler">
+  <div class="sec-h"><h2>Gateway · dock scheduler</h2><span class="note">Cold loads only on chilled docks · a wait over 30 minutes is a clash</span></div>
+  <div class="chips" id="siteTabs" role="group" aria-label="Choose a site"></div>
+  <div class="card"><h3 id="dockH"></h3><div class="gantt-wrap"><svg id="gantt" role="img" aria-label="Dock schedule"></svg></div><div class="legend2"><span><i style="background:#63b6d8"></i>Outbound</span><span><i style="background:#8fe3c8"></i>Inbound</span><span><i class="cold"></i>Cold load</span></div><div id="clashes"></div></div>
+</section>
+
+<section id="s-labour" aria-label="Labour planner">
+  <div class="sec-h"><h2>Gateway · labour planner</h2><span class="note">Pickers, forklift drivers and loaders per shift from the day's pallets, against the roster</span></div>
+  <div class="card"><div class="tblw"><table class="tb" id="labour"></table></div></div>
+</section>
+
+<section id="s-bill" aria-label="Client billing">
+  <div class="sec-h"><h2>Gateway · client billing</h2><span class="note">This month, as used, against each contract</span></div>
+  <div class="bills" id="bills"></div>
+</section>
+
+<section id="s-sup" aria-label="Supplier scorecards">
+  <div class="sec-h"><h2>Tōtara · supplier scorecards</h2><span class="note">On time 45% · in full 35% · steady lead times 20% · the one thing to raise at the quarterly review</span></div>
+  <div class="card"><div class="tblw"><table class="tb" id="sup"></table></div></div>
+</section>
+
+<section id="s-exp" aria-label="Expiry rescue">
+  <div class="sec-h"><h2>Tōtara · expiry rescue</h2><span class="note">Short-dated stock offered to the clients who'll use it in time (2 days to deliver)</span></div>
+  <div class="card" id="expiry"></div>
+</section>
+
+<section id="s-whatif" aria-label="What-if planner">
+  <div class="sec-h"><h2>Tōtara · what if a supplier is late?</h2><span class="note">Which SKUs run out, for how long, the revenue at stake and the best fix</span></div>
+  <div class="card"><div class="wi-ctl"><label>Supplier <select id="wiSup"></select></label><span class="chips" id="wiDelay" role="group" aria-label="Delay"></span></div><div id="wi"></div></div>
+</section>
+<p class="foot" id="foot"></p>
+</div>
+<script src="../data/ops.js"></script>
+<script src="../data/approvals.js"></script>
+<script src="app.js"></script>
+<script src="boot.js"></script>
+<script src="../kit/shelly-kit.js?v=2.2.0" data-page="ops" data-base="../"></script>
+</body>
+</html>

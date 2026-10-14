@@ -7,6 +7,14 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v2.2: Gateway and Tōtara operations
+
+- **Operations page** (`docs/ops/`, "⛓ Ops" on every page; `shelly/ops/`). **Gateway**: a dock scheduler that books every truck (today's runs and inbound deliveries) into a dock, cold loads only on chilled docks, and flags any truck waiting over 30 minutes with a fix; a labour planner (pickers, forklift drivers, loaders per shift from the day's pallets against the roster); client billing as used (storage by temperature, handling, deliveries, cold-chain monitoring) against each contract.
+- **Tōtara**: supplier scorecards (on time, in full, steady lead times; grade A–D and the one thing to raise at the quarterly review), expiry rescue (short-dated batches offered to clients who will use them in time; medicines and clinical items to hospitals and clinics only) and a what-if planner (any supplier 7, 14 or 28 days late: the SKUs that run short, sales at stake and the best fix).
+- **Followed end to end**: a store stock-out through ordering, the Gateway run, a dock slot and check-in; a Tōtara stock gap through expediting, a chilled inbound dock and hospital delivery, with who signs off at each step.
+- **Shelly talks on every page again**: the Shift, OS and Operations pages now have their own welcome and a line for every section (with live numbers) as she follows you down the page. A test makes sure no new page ships without them. The navigation stacks onto two rows on laptops so the business names stay readable.
+- `python -m shelly ops [docks|labour|billing|suppliers|expiry|whatif|flows]`; skills `ops.*` on the Gateway and Tōtara agents.
+
 ## What's new in v2.1: the Store Shift Pilot
 
 - **The Duty Manager's day** (`docs/shift/`, "⏱ Shift" on every page; `shelly/shift/pilot.py`): an **opening brief** at 06:00 (the forecast with its range and reasons, staff on vs staff needed by hour, recalls, orders waiting, the top three), a **live to-do list** you can play through the day (routine, compliance such as fridge logs and the liquor licence, forecast-driven tasks and tasks raised by the Shelly OS event bus, each with the role that owns it), and a **closing report with handover notes** for the next Duty Manager.

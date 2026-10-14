@@ -118,5 +118,13 @@
   $("#tfill").textContent = D.target_fill;
   $("#trials").innerHTML = `<table class="tb"><thead><tr><th>Safety setting</th><th>On the shelf</th><th>Average stock held</th><th></th></tr></thead><tbody>` +
     D.lab.reorder_trials.map(t => `<tr${t.k === D.lab.reorder_chosen ? ' class="pick"' : ""}><td>${t.k}</td><td>${t.fill}%</td><td>${$$(t.avg_stock_value)}</td><td>${t.k === D.lab.reorder_chosen ? "chosen" : t.fill < D.target_fill ? "too many empty shelves" : "more stock than needed"}</td></tr>`).join("") + "</tbody></table>";
+  /* ---- what Shelly says about each section (the guide reads these as you scroll) */
+  window.SHELLY_GUIDE = {
+    "s-open": `Today's forecast is <b>${$$(B.forecast)}</b> (${$$(B.low)}–${$$(B.high)}), ${B.why.join(", ").toLowerCase()}. First up: ${esc(B.top3[0])}.`,
+    "s-live": `${D.tasks.length} tasks today from the routine, compliance, the forecast and the event bus. Press <b>▶ Play the day</b> to watch them tick off; ${C.tasks.late} ran late and ${C.tasks.open} went to the handover.`,
+    "s-close": `Takings came in at <b>${$$(C.actual)}</b>, ${C.error_pct > 0 ? "+" : ""}${C.error_pct}% against the forecast. The handover has ${C.handover.length} notes for tomorrow's Duty Manager; tap Copy to send them.`,
+    "s-sense": `${esc(MODEL[M.live])} runs the roster. Over the last 14 days the best was ${esc(MODEL[E.champion])}; over 8 weeks it was ${esc(MODEL[M.exam56.champion])}. A new model only takes over when it wins both.`,
+    "s-lab": `Three shift skills sit an exam every day: forecasting ${D.lab.skills["shift.forecast"].avg}, reorder ${D.lab.skills["shift.reorder"].avg} and rostering ${D.lab.skills["shift.roster"].avg} out of 100.`,
+  };
   $("#foot").textContent = `Shift Pilot v${D.version} · built ${D.generated} · synthetic store and invented team names; real data stays on your own PC`;
 })();

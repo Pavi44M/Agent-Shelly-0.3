@@ -32,7 +32,7 @@
   .biz-side{flex-wrap:wrap}.biz-lp,.biz-ap{padding:8px 10px;flex:1 1 auto}
 }
 @media print{.biz{display:none}}
-@media (min-width:621px) and (max-width:1240px){.biz{grid-template-columns:1fr}.biz-track{grid-column:auto}.biz-side .biz-lp,.biz-side .biz-ap{flex:1 1 auto;padding:10px}}
+@media (min-width:621px) and (max-width:1560px){.biz{grid-template-columns:1fr}.biz-track{grid-column:auto}.biz-side .biz-lp,.biz-side .biz-ap{flex:1 1 auto;padding:10px}}
 /* three businesses: Neighbourhood store · Tōtara Medical · Gateway */
 .biz-track{grid-template-columns:repeat(3,1fr)}
 .biz-opt.gw[aria-current="page"]{background:linear-gradient(160deg,#13284a,#0d1a30);border-color:#2f6fd6;box-shadow:0 0 0 1px rgba(47,111,214,.3),0 6px 22px rgba(0,0,0,.35)}

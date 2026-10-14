@@ -8,7 +8,7 @@
   const me = document.currentScript;
   const PAGE = (me && me.dataset.page) || "launchpad";
   const BASE = (me && me.dataset.base) || "";
-  const KIT_V = "2.1.0";   // bump with each release so browsers fetch the new mascot files instead of an old saved copy
+  const KIT_V = "2.2.0";   // bump with each release so browsers fetch the new mascot files instead of an old saved copy
   const AP = window.SHELLY_APPROVALS || { items: [], store_asof: "" };
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const ls = {
@@ -152,6 +152,11 @@
       vision: [`${greeting()}! This is Store Vision: the store camera turned into numbers, everyone anonymised. ${ask}`, "Scroll to the Skill Lab to see how good each skill really is, tested every day."],
       lp: [`${greeting()}! This is Loss Prevention. I watch stock and places, never people, and a person checks every case. ${ask}`, "Watch the aisle: only the shopper who picks, conceals AND leaves without paying becomes a case."],
       report: [ask, "Print for white paper, Dark for the Shelly look, Present for one section per screen."],
+      shift: [`${greeting()}! This is the Shift Pilot: today's opening brief, the to-do list and the handover. ${ask}`, "Press ▶ Play the day in the Live to-do and watch the tasks tick off, or scroll and I'll walk you through the shift."],
+      os: [`${greeting()}! This is Shelly OS: one data model for every business and the event bus that lets departments talk. ${ask}`, "Each event shows which agent acted and who has to sign off. Scroll down to see one business acting for another."],
+      ops: [`${greeting()}! These are Gateway and Tōtara's operations: docks, people, billing, suppliers and short-dated stock. ${ask}`, "Start with the two flows at the top: one event followed through every department that touches it."],
+      group: [`${greeting()}! This is Group HQ: the finance close, people, procurement, the board pack and the rules every agent works within. ${ask}`, "Scroll and I'll walk you through each department."],
+      ask: [`${greeting()}! Ask me anything about the four businesses, by typing or with the 🎙 microphone. ${ask}`, "Try “why was Friday down?” or “what's short at Tōtara?”."],
     };
     return M[PAGE] || M.launchpad;
   }

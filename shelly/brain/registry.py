@@ -582,6 +582,11 @@ AGENTS += [
       work=[["doing", "Today's brief and to-do list"], ["next", "Roster from demand sensing once it wins both checks"], ["done", "14-day forecast exam published"]]),
 ]
 
+# v2.2 operations skills, added to the agents who own them
+for _a in AGENTS:
+    _a.skills += {"gw-warehouse": ["ops.docks", "ops.labour"], "gw-accounts": ["ops.billing"], "totara-suppliers": ["ops.scorecards", "ops.whatif"],
+                  "totara-stock": ["ops.expiry"]}.get(_a.id, [])
+
 # where each existing agent now sits: department + its team (business unit)
 _HOME = {
     "store-briefing": "mgmt", "totara-brief": "mgmt", "group-td": "mgmt", "group-governance": "mgmt",

@@ -1,0 +1,35 @@
+/* Operations page (uses the Store Vision dark look from ../vision/vision.css) */
+h1 b{color:#8fb8ff}.mt{margin-top:14px!important}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.chips button{background:var(--panel);border:1px solid var(--etch);color:var(--ink-2);border-radius:99px;padding:6px 12px;font:500 12px var(--mono);cursor:pointer}
+.chips button[aria-pressed="true"]{border-color:var(--accent);color:var(--ink);background:var(--panel-2)}
+.flow h3{font-size:14.5px}.steps{list-style:none;margin:0;padding:0;position:relative}
+.steps li{position:relative;padding:0 0 12px 20px;border-left:2px solid var(--etch);margin-left:6px}
+.steps li::before{content:"";position:absolute;left:-7px;top:3px;width:12px;height:12px;border-radius:50%;background:var(--c)}
+.steps li:last-child{border-left-color:transparent}
+.steps .who{font:600 12px var(--mono);color:var(--ink)}.steps .who i{font-style:normal;color:var(--ink-3);font-weight:400;margin-left:4px}
+.steps p{margin:2px 0 4px;font-size:13.5px}
+.gate{font:500 11px var(--mono);padding:2px 8px;border-radius:99px;background:rgba(63,184,127,.14);color:#8fe3c8}.gate.w{background:rgba(255,196,102,.12);color:#ffd59a}
+.gantt-wrap{overflow-x:auto}.gantt-wrap svg{min-width:700px;width:100%;height:auto;display:block}
+.legend2{display:flex;gap:14px;flex-wrap:wrap;font:11.5px var(--mono);color:var(--ink-3);margin-top:6px}.legend2 i{display:inline-block;width:14px;height:8px;border-radius:2px;margin-right:6px;vertical-align:0}
+.legend2 i.cold{border:1px dashed #eaf0f6;background:none}
+.clash{padding:7px 0;border-top:1px solid var(--etch);font-size:13.5px}.clash b{color:#ffd59a}
+.tblw{overflow-x:auto}
+.tb{width:100%;border-collapse:collapse;font-size:13px}.tb th,.tb td{padding:7px 8px;border-bottom:1px solid var(--etch);text-align:right;vertical-align:top}
+.tb th:first-child,.tb td:first-child{text-align:left}.tb th{font:500 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.tb td small{display:block;color:var(--ink-3);font-size:11.5px}.tb caption{caption-side:bottom;text-align:left;font-size:12px;color:var(--ink-3);padding-top:6px}
+.tb td.neg{color:#ffb4a8}.tb td.spare{color:#ffd59a}.tb td.ask{text-align:left;color:var(--ink-2);min-width:220px}
+.bills{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.bill .tot{font:600 24px var(--mono);color:var(--ink);display:block}.bill small{color:var(--ink-3);font:12px var(--mono)}
+.bill ul{list-style:none;padding:0;margin:10px 0 0}.bill li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;font-size:12.5px;padding:4px 0;border-top:1px dashed var(--etch)}.bill li b{font-family:var(--mono);color:var(--ink);font-weight:500}
+.up{color:var(--ok)}.down{color:var(--watch)}
+.gr{display:inline-block;width:26px;text-align:center;border-radius:6px;font:700 13px var(--mono);padding:2px 0}.gA{background:rgba(63,184,127,.2);color:#8fe3c8}.gB{background:rgba(99,182,216,.18);color:#9fc8ff}.gC{background:rgba(255,196,102,.16);color:#ffd59a}.gD{background:rgba(255,107,107,.16);color:#ffb4a8}
+.exp{padding:10px 0;border-bottom:1px solid var(--etch)}.exp .eh b{color:var(--ink)}.exp .eh span{display:block;font:12px var(--mono);color:var(--ink-3)}
+.offers{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.of{background:var(--panel-2);border-radius:8px;padding:4px 8px;font-size:12.5px}.of b{font-family:var(--mono);color:var(--ink);margin-left:4px}
+.res{font-size:13px}
+.wi-ctl{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:10px}.wi-ctl select{background:var(--panel-2);color:var(--ink);border:1px solid var(--etch);border-radius:8px;padding:6px 10px;font:500 13px inherit;max-width:100%}
+.wi-ctl .chips{margin:0}
+.big2{font:600 24px var(--mono);color:var(--ink);margin:4px 0 10px}.big2 small{font:400 12.5px var(--mono);color:var(--ink-3);margin-left:6px}
+.bo-dock{fill:#141e2c;stroke:#2a3a50;transition:fill .35s,stroke .35s}.bo-dock.on{fill:rgba(143,184,255,.18);stroke:#8fb8ff}
+.bo-truck{transition:transform 1s cubic-bezier(.3,.7,.2,1)}
+@media (max-width:620px){.kpis{grid-template-columns:repeat(2,1fr)}.bills{grid-template-columns:1fr}.tb td.ask{min-width:180px}}

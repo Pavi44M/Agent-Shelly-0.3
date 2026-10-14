@@ -146,6 +146,14 @@ def main():
              "Everyone anonymised; a Skill Lab tests every skill daily against a known truth and adds a new one.",
              f"{vd['visitors']}", f"visitors today · {round(100 - abs(vd['visitors'] - vd['truth']['people']) / max(1, vd['truth']['people']) * 100, 1)}% of the truth · {len(lab['skills'])} skills",
              "New · v" + vi["version"], "new", f'<span class="shelves" aria-hidden="true">{lv}</span>', "wide")
+    op_p = ROOT / "docs/data/ops.js"
+    if op_p.exists():
+        od2 = js_data(op_p, "SHELLY_OPS"); og, ot = od2["gateway"], od2["totara"]
+        card("../ops/", "Gateway · Tōtara · v2.2", "Operations",
+             "Gateway books every truck into a dock, sizes each shift from the day's pallets and bills clients as used. Tōtara scores suppliers, rescues short-dated stock "
+             "and asks what happens if a supplier is late. Two flows followed end to end through the event bus.",
+             f"{sum(len(x['jobs']) for x in og['docks'])}", f"trucks booked · {sum(len(x['clashes']) for x in og['docks'])} clashes · ${ot['expiry_saved']:,} of short-dated stock rescued",
+             "New · v" + od2["version"], "new", "", "wide")
     sh_p = ROOT / "docs/data/shift.js"
     if sh_p.exists():
         sd = js_data(sh_p, "SHELLY_SHIFT"); sb, sc_ = sd["brief"], sd["closing"]
@@ -216,7 +224,7 @@ def main():
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap">
 <link rel="stylesheet" href="launchpad.css">
 <link rel="stylesheet" href="../switch.css">
-<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.1.0">
+<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.2.0">
 </head>
 <body>
 {BOOT}
@@ -241,7 +249,7 @@ def main():
 </div>
 <script src="launchpad.js"></script>
 <script src="../data/approvals.js"></script>
-<script src="../kit/shelly-kit.js?v=2.1.0" data-page="launchpad" data-base="../"></script>
+<script src="../kit/shelly-kit.js?v=2.2.0" data-page="launchpad" data-base="../"></script>
 </body>
 </html>
 """)

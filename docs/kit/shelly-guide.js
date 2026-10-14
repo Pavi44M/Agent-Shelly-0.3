@@ -39,7 +39,8 @@ export function start(K) {
   const { w, btn, bubble, msg, acts, L, esc, PAGE } = K;
   const fine = matchMedia("(pointer: fine)").matches, still = matchMedia("(prefers-reduced-motion: reduce)").matches;
   let mode = LS.get("shelly.kit.mode", "guide");          // "guide" follows you · "stay" keeps her where you put her
-  const LINES = PAGE === "store" ? storeLines() : {};
+  // per-section lines: the store builds its own; other pages publish window.SHELLY_GUIDE = { sectionId: "what to say" } with their live numbers
+  const LINES = PAGE === "store" ? storeLines() : Object.fromEntries(Object.entries(window.SHELLY_GUIDE || {}).map(([k, v]) => [k, [v, null]]));
   const quiet = () => { try { return sessionStorage.getItem("shelly.kit.quiet") === "1"; } catch (e) { return false; } };
 
   /* ---------- placing her */
@@ -103,7 +104,7 @@ export function start(K) {
   const SKIP = el => el.closest(".sk-mascot, .sk-tray, #boot, nav.biz, footer");
   const sections = () => [...document.querySelectorAll("section, [data-guide]")].filter(s => !SKIP(s) && s.offsetHeight > 90);
   const titleOf = el => (el.dataset && el.dataset.guide) || (el.querySelector(":scope > h2, :scope > h3, :scope > .ph .t, :scope > header h2, .sec-h h2, h2, h3") || {}).textContent || el.getAttribute("aria-label") || "";
-  const aboutOf = el => { const a = el.querySelector("details.about p") || el.querySelector(".sub, p.note, p.small, p");
+  const aboutOf = el => { const a = el.querySelector("details.about p") || el.querySelector(".sub, p.note, p.small, .sec-h .note, p");
     return a ? trimTo(a.textContent, 230) : ""; };
   function explain(el, sec) {
     sec = sec || el.closest("section") || el; pending = sec;
@@ -114,7 +115,7 @@ export function start(K) {
     else { const own = trimTo((el.querySelector(".small, .note, p") || {}).textContent || "", 180);
       html = `<b>${esc(name)}</b>${own ? `: ${esc(own)}` : ""}${!own && line ? ` ${line[0]}` : ""}${!own && !line ? ` (part of ${esc(trimTo(titleOf(sec), 40))}). ${esc(aboutOf(sec))}` : ""}`; }
     const btns = [];
-    if (line && askFn()) btns.push(["ask", "💬 Ask Shelly", line[1]]);
+    if (line && line[1] && askFn()) btns.push(["ask", "💬 Ask Shelly", line[1]]);
     if (sec.querySelector("details.about")) btns.push(["more", "📖 More"]);
     btns.push(mode === "guide" ? ["stay", "📌 Stay here"] : ["guide", "🧭 Guide me"]);
     show(html, btns);
