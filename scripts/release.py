@@ -5,8 +5,8 @@
 What it does, in order (it stops at the first failure and changes nothing it has not reached):
   1. bump the version everywhere it lives: shelly/__init__.py, the version in the published data files,
      the mascot kit (KIT_V) and every ?v= tag on the pages, so phones never keep an old saved copy
-  2. rebuild the pages that show the version or the shared data (Brain, Launchpad, Tower, Gateway,
-     Store Vision, Loss Prevention, Shelly OS)
+  2. rebuild the pages that show the version or the shared data (Store Vision, Loss Prevention, Brain,
+     Shelly OS, Shift Pilot, Tower, Gateway and, last, the Launchpad that reads them)
   3. run the tests, including every page opened on a desktop and a phone (no script errors, no sideways scroll)
   4. commit as Pavithra (with the session's attribution lines) and write a git bundle of the new commit,
      ready to push from the PC: git fetch <bundle> HEAD && git merge --ff-only FETCH_HEAD && git push
@@ -20,7 +20,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-BUILDERS = ["build_brain", "build_launchpad", "build_tower", "build_gateway", "build_vision", "build_lp", "build_os"]
+BUILDERS = ["build_vision", "build_lp", "build_brain", "build_os", "build_shift", "build_tower", "build_gateway", "build_launchpad"]   # launchpad last: it reads the others
 DATA_FILES = ["docs/data/shelly-data.js", "docs/data/shelly-reports.js", "docs/data/store-floor.js"]
 TRAILER = ("Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n"
            "Claude-Session: https://claude.ai/code/session_01VXjp7DwK3tLyLAJcafn74e")

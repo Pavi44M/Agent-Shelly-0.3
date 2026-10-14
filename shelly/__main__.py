@@ -20,6 +20,7 @@
     python -m shelly vision run --source store.mp4 [--show] [--save-video]   Shelly Vision on a video, webcam (0) or CCTV stream
     python -m shelly vision demo | lab [--days 7] | approve vision.conversion | purge   synthetic day, Skill Lab, go-live, retention
     python -m shelly lp demo [--days 7] | tune | approve | pia --site store | pose --source aisle.mp4   Loss Prevention (Shelly sites only)
+    python -m shelly shift [brief|todo|close|sense|lab] [--day 2026-09-25]   Store Shift Pilot
     python -m shelly os [run|tables|db]               Shelly OS: one data model + the event bus (db: save outputs/shelly.db)
     python -m shelly live path/to/pos_export.csv [--watch 60]   live POS feed for the Store Floor (docs/data/live.json, never published)
     python -m shelly report all [--data ...] [--pdf]   every report: Excel (dashboard, model, pivots, raw, lookups) + web page (+ PDF)
@@ -64,6 +65,8 @@ def main(argv=None):
     lp = sub.add_parser("lp", help="Loss Prevention: patterns about stock and places, never people (Shelly's own sites only)")
     lp.add_argument("action", choices=["demo", "tune", "approve", "pia", "pose", "pack"]); lp.add_argument("--days", type=int, default=7)
     lp.add_argument("--site", default="store"); lp.add_argument("--source"); lp.add_argument("--model", default="yolo11n-pose.pt")
+    sh = sub.add_parser("shift", help="Store Shift Pilot: opening brief, to-do, closing report and handover")
+    sh.add_argument("action", nargs="?", default="brief", choices=["brief", "todo", "close", "sense", "lab"]); sh.add_argument("--day", default="2026-09-25")
     os_ = sub.add_parser("os", help="Shelly OS: the shared data model and the event bus")
     os_.add_argument("action", nargs="?", default="run", choices=["run", "tables", "db"]); os_.add_argument("--db", default=str(ROOT / "outputs/shelly.db"))
     sf = sub.add_parser("store"); sf.add_argument("--web", default=str(ROOT / "docs/data/shelly-data.js"))
@@ -151,6 +154,26 @@ def main(argv=None):
             st = L.approve(L.load(), a.target, a.action == "approve", a.note); L.save(st); print(f"{a.target}: {a.action}d")
         elif a.action == "purge":
             print(f"deleted {V.purge(a.out)} old event logs")
+    elif a.cmd == "shift":
+        from datetime import date as _d
+        from .shift.pilot import build as _build
+        day = _build(_d.fromisoformat(a.day)); b, c = day["brief"], day["closing"]
+        if a.action == "brief":
+            print(f"Opening brief · {b['dow']} {b['date']} · {b['weather']['temp_c']}°C, {b['weather']['rain_mm']} mm")
+            print(f"  forecast ${b['forecast']:,} (${b['low']:,}-${b['high']:,}) by {b['model']}: {', '.join(b['why'])}")
+            for i, t in enumerate(b["top3"], 1): print(f"  {i}. {t}")
+        elif a.action == "todo":
+            for t in day["tasks"]: print(f"  {t['at']}  {t['role']:<14} {t['title']}  [{t['source']}]")
+        elif a.action == "close":
+            print(f"Closing · takings ${c['actual']:,.0f} ({c['error_pct']:+.1f}% vs forecast) · tasks {c['tasks']}")
+            for i, t in enumerate(c["handover"], 1): print(f"  {i}. {t}")
+        elif a.action == "sense":
+            m = day["model"]; print(f"Roster model: {m['live']} ({m['why']}); 14-day WAPE {m['exam14']['wape']}, 8-week {m['exam56']['wape']}")
+            for d in day["next7"]: print(f"  {d['date']}  ${d['forecast']:,}  {', '.join(d['why'])}")
+        else:
+            from .shift import lab as _lab
+            for k, v in _lab.run(_d.fromisoformat(a.day))["skills"].items(): print(f"  {v['name']:<16} {v['avg']:>5}  level {v['level']} · {v['level_name']}")
+
     elif a.cmd == "os":
         from .os.model import TABLES, build, counts
         from .os.bus import run_day, summary

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en-NZ">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Shift Pilot · Neighbourhood Store</title>
+<meta name="description" content="Shelly's Store Shift Pilot: the opening brief, a live to-do list through the day, the closing report and handover notes, daily demand sensing with an honest 14-day exam, and a Skill Lab for forecasting, reorder and rostering. Synthetic store, invented team names.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../vision/vision.css">
+<link rel="stylesheet" href="shift.css">
+<link rel="stylesheet" href="../switch.css">
+<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.1.0">
+</head>
+<body>
+<div id="boot" aria-live="polite"><div class="boot-in">
+  <span class="tag">Shelly · Store Shift Pilot</span>
+  <svg class="boot-sv" id="bootSv" viewBox="0 0 420 175" aria-hidden="true"></svg>
+  <h2 class="boot-h" id="bootH">Opening <b>the shift</b></h2>
+  <pre id="bootLog"></pre><button id="skipBoot" type="button">Skip</button></div></div>
+{{SWITCH}}
+<div class="wrap">
+<header>
+  <span class="tag">Neighbourhood Store · Shift Pilot · v<span id="ver"></span> · synthetic store</span>
+  <h1>Run the shift. <b>Hand over clean.</b></h1>
+  <p class="sub">The Duty Manager's day with Shelly beside them: an opening brief with the day's forecast and the reasons, a to-do list that fills itself from the roster, compliance, the forecast and the event bus, then a closing report and handover notes for the next shift. Every forecast is marked against what really happened.</p>
+</header>
+
+<section class="kpis" id="kpis" aria-label="The shift at a glance"></section>
+
+<section id="s-open" aria-label="Opening brief">
+  <div class="sec-h"><h2>Opening brief · <span id="dayName"></span></h2><span class="note">Ready at 06:00, before the doors open</span></div>
+  <div class="grid2">
+    <div class="card"><h3>Today <small id="wx"></small></h3><div id="today"></div><h3 class="mt">Top three</h3><ol class="top3" id="top3"></ol></div>
+    <div class="card"><h3>Staff on vs staff needed <small>by hour, from the forecast and sales per labour hour</small></h3><svg id="staff" viewBox="0 0 640 230" role="img" aria-label="Staff on and staff needed by hour"></svg><div class="team" id="team"></div></div>
+  </div>
+</section>
+
+<section id="s-live" aria-label="Live to-do">
+  <div class="sec-h"><h2>Live to-do</h2><span class="note">Drag through the day: what's done, what's due, what's late</span></div>
+  <div class="card">
+    <div class="clock"><button type="button" id="playDay" aria-pressed="false">▶ Play the day</button><input type="range" id="tm" min="6" max="21.5" step="0.25" value="12" aria-label="Time of day"><b id="tmL">12:00</b></div>
+    <div class="till" id="till"></div>
+    <ul class="todo" id="todo"></ul>
+  </div>
+</section>
+
+<section id="s-close" aria-label="Closing report">
+  <div class="sec-h"><h2>Closing report and handover</h2><span class="note">Written at 21:30 for the next Duty Manager</span></div>
+  <div class="grid2">
+    <div class="card"><h3>The day in numbers</h3><div id="closeNums"></div></div>
+    <div class="card"><h3>Handover notes <small>for tomorrow's opening Duty Manager</small></h3><ol class="hand" id="hand"></ol><button type="button" class="copy" id="copyHand">Copy handover</button></div>
+  </div>
+</section>
+
+<section id="s-sense" aria-label="Demand sensing">
+  <div class="sec-h"><h2>Demand sensing</h2><span class="note">Weather, school holidays, Eden Park nights, paydays · marked one day ahead on days it never saw</span></div>
+  <div class="card decide" id="decide"></div>
+  <div class="grid2">
+    <div class="card"><h3>The last 14 days, one day ahead <small>actual vs each model</small></h3><svg id="exam" viewBox="0 0 640 260" role="img" aria-label="Actual takings and each model's forecast over the last 14 days"></svg><div class="legend2" id="examLeg"></div></div>
+    <div class="card"><h3>Average error <small>lower is better</small></h3><div id="wape"></div><h3 class="mt">What moves the store <small>learned vs the truth built into the synthetic store</small></h3><div id="effects"></div></div>
+  </div>
+  <div class="card"><h3>The next 7 days <small>forecast, range and the reasons</small></h3><div class="next7" id="next7"></div></div>
+</section>
+
+<section id="s-lab" aria-label="Skill Lab">
+  <div class="sec-h"><h2>Skill Lab · the shift skills</h2><span class="note">Examined every day for 14 days against what really happened</span></div>
+  <div class="skills" id="skills"></div>
+  <div class="card"><h3>Reorder: how much safety stock? <small>the lab tries each setting on the same 14 days and keeps the leanest that holds <span id="tfill"></span>% on the shelf</small></h3><div id="trials"></div></div>
+</section>
+<p class="foot" id="foot"></p>
+</div>
+<script src="../data/shift.js"></script>
+<script src="../data/approvals.js"></script>
+<script src="app.js"></script>
+<script src="boot.js"></script>
+<script src="../kit/shelly-kit.js?v=2.1.0" data-page="shift" data-base="../"></script>
+</body>
+</html>

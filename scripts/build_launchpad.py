@@ -146,6 +146,14 @@ def main():
              "Everyone anonymised; a Skill Lab tests every skill daily against a known truth and adds a new one.",
              f"{vd['visitors']}", f"visitors today · {round(100 - abs(vd['visitors'] - vd['truth']['people']) / max(1, vd['truth']['people']) * 100, 1)}% of the truth · {len(lab['skills'])} skills",
              "New · v" + vi["version"], "new", f'<span class="shelves" aria-hidden="true">{lv}</span>', "wide")
+    sh_p = ROOT / "docs/data/shift.js"
+    if sh_p.exists():
+        sd = js_data(sh_p, "SHELLY_SHIFT"); sb, sc_ = sd["brief"], sd["closing"]
+        card("../shift/", "Neighbourhood Store · v2.1", "Shift Pilot",
+             "The Duty Manager's day: an opening brief with the forecast and its reasons, a live to-do list, the closing report and handover notes. "
+             "Demand sensing (weather, holidays, Eden Park nights, paydays) is marked honestly on 14 days it never saw.",
+             f"${sb['forecast']:,}", f"forecast today · actual ${sc_['actual']:,.0f} ({sc_['error_pct']:+.1f}%) · {sc_['tasks']['done'] + sc_['tasks']['late']}/{sc_['tasks']['total']} tasks done",
+             "New · v" + sd["version"], "new", "", "wide")
     os_p = ROOT / "docs/data/os.js"
     if os_p.exists():
         od = js_data(os_p, "SHELLY_OS"); osm = od["summary"]
@@ -208,7 +216,7 @@ def main():
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap">
 <link rel="stylesheet" href="launchpad.css">
 <link rel="stylesheet" href="../switch.css">
-<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.0.0">
+<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.1.0">
 </head>
 <body>
 {BOOT}
@@ -233,7 +241,7 @@ def main():
 </div>
 <script src="launchpad.js"></script>
 <script src="../data/approvals.js"></script>
-<script src="../kit/shelly-kit.js?v=2.0.0" data-page="launchpad" data-base="../"></script>
+<script src="../kit/shelly-kit.js?v=2.1.0" data-page="launchpad" data-base="../"></script>
 </body>
 </html>
 """)

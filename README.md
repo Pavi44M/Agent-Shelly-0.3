@@ -7,6 +7,13 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v2.1: the Store Shift Pilot
+
+- **The Duty Manager's day** (`docs/shift/`, "⏱ Shift" on every page; `shelly/shift/pilot.py`): an **opening brief** at 06:00 (the forecast with its range and reasons, staff on vs staff needed by hour, recalls, orders waiting, the top three), a **live to-do list** you can play through the day (routine, compliance such as fridge logs and the liquor licence, forecast-driven tasks and tasks raised by the Shelly OS event bus, each with the role that owns it), and a **closing report with handover notes** for the next Duty Manager.
+- **Daily demand sensing** (`shelly/shift/sensing.py`): weather, public and school holidays, big nights at Eden Park and paydays. Every model is marked one day ahead on the last 14 days it never saw, and over 8 weeks. **A new model only runs the roster when it beats the current one on both**, so one lucky fortnight can't change it; the page says which model is in charge and why. The store's history is synthetic, so what the model learned is shown next to the true effect of each driver.
+- **Skill Lab for the shift skills** (`shelly/shift/lab.py`): forecasting, reorder (the lab tries five safety-stock settings and keeps the leanest that holds 95% on the shelf) and rostering (an hour short counts double an hour over), each scored daily for 14 days with a level.
+- New agent **Shift Pilot** in the Brain, skills `shift.brief / todo / close / sense / lab`, and `python -m shelly shift [brief|todo|close|sense|lab]`.
+
 ## What's new in v2.0: the Shelly OS foundation
 
 - **One data model** (`shelly/os/model.py`): 13 SQLite tables with the same names and keys for all four businesses (businesses, departments, agents, sites, stock, sales, service, expiry, KPIs, flags, approvals, events, actions). It is built from the published synthetic data; real-data mode will fill the same tables on your own PC. `python -m shelly os tables`, or `python -m shelly os db` to save `outputs/shelly.db`.

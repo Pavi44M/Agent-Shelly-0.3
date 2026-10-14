@@ -84,6 +84,9 @@ runpy_brain.run_path(str(ROOT / "scripts" / "build_tower.py"), run_name="__main_
 runpy_brain.run_path(str(ROOT / "scripts" / "build_vision.py"), run_name="__main__")
 # Shelly Intelligence · Loss Prevention: patterns about stock and places on every Shelly site (docs/lp/; tuning cached, rebuild with --tune)
 runpy_brain.run_path(str(ROOT / "scripts" / "build_lp.py"), run_name="__main__")
+# Shelly OS (v2.0): the shared data model + event bus; Store Shift Pilot (v2.1)
+runpy_brain.run_path(str(ROOT / "scripts" / "build_os.py"), run_name="__main__")
+runpy_brain.run_path(str(ROOT / "scripts" / "build_shift.py"), run_name="__main__")
 
 # Launchpad: refresh the figures on docs/launchpad/ (retail numbers change every week)
 import runpy  # noqa: E402

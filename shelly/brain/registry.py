@@ -572,6 +572,14 @@ AGENTS += [
       escalates_when=["False alarms over budget on any camera", "A request to use it outside Shelly's businesses"], hands_off_to=["mgmt-head"], owner="Licence Manager",
       page="../lp/#s-cases", team="Shelly Intelligence · Loss Prevention",
       work=[["doing", "Case queue and evidence packs"], ["next", "Six-monthly privacy review"], ["done", "Policy checks refuse faces, biometrics and other businesses"]]),
+    A("store-shift", "Shift Pilot", "store", "mgmt", "Runs the store's day beside the Duty Manager: the opening brief with the forecast and its reasons, the to-do list from the roster, compliance, the forecast and the event bus, then the closing report and handover notes.",
+      skills=["shift.brief", "shift.todo", "shift.close", "shift.sense", "shift.lab"], inputs=["daily takings", "weather, school and public holidays, Eden Park events, paydays", "roster", "event bus (orders, recalls, category reviews)"],
+      outputs=["opening brief", "live to-do list", "closing report", "handover notes", "7-day forecast"],
+      triggers=["opening brief", "what's on today", "handover", "closing report", "who is on", "are we short"], schedule="Daily 05:45 and 21:30 NZ", autonomy="auto",
+      guardrails=["A new forecast model runs the roster only after beating the current one on the last 14 days and the last 8 weeks", "Liquor and food-safety checks are never skipped", "Synthetic store and invented names on the public site"],
+      escalates_when=["Short of staff for 2+ hours", "A recall or a food-safety check still open at handover"], hands_off_to=["store-roster", "store-ordering", "store-compliance"], owner="Duty Manager",
+      page="../shift/", team="Store · Shift Pilot",
+      work=[["doing", "Today's brief and to-do list"], ["next", "Roster from demand sensing once it wins both checks"], ["done", "14-day forecast exam published"]]),
 ]
 
 # where each existing agent now sits: department + its team (business unit)
