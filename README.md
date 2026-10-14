@@ -7,6 +7,15 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v2.3: Group HQ, the Tower departments at work
+
+- **Group HQ page** (`docs/group/`, "🏛 Group" on every page; `shelly/group/hq.py`). **Finance**: the month-end close (business day, owner, status; the board pack waits for Pavi), P&L by business to EBITDA with **intercompany eliminations** (Gateway's warehousing for Tōtara and deliveries to the store come off both sides), the biggest variance in each business explained, and a **13-week cash-flow forecast** (store takings, Tōtara 30-day terms, Gateway billing on the 20th, tower rent on the 1st; fortnightly wages, imports as shipments land, GST) with its low point against a $600k buffer.
+- **People and HR, roles only**: headcount and weekly pay by business and role, leave owed, and the licences that keep each site legal (Manager's Certificates, forklift F endorsements, a first aider on every shift, GDP training, food safety) with what's expiring.
+- **Procurement**: categories several businesses buy separately, what one group tender saves, and buying gloves from Tōtara instead of outside suppliers.
+- **Board pack**: results, risks, decisions only Pavi makes, compliance.
+- **Governance**: every agent's **action limit** (what it does alone, a cap of $500 or its department limit, what always escalates) and an **audit log** of every action and approval. The limits themselves wait in Pavi's approvals queue.
+- `python -m shelly group [pnl|close|cash|people|procurement|board|limits|audit]`; skills `group.*` on the finance, HR and management agents. Grid cards now shrink properly on phones everywhere.
+
 ## What's new in v2.2: Gateway and Tōtara operations
 
 - **Operations page** (`docs/ops/`, "⛓ Ops" on every page; `shelly/ops/`). **Gateway**: a dock scheduler that books every truck (today's runs and inbound deliveries) into a dock, cold loads only on chilled docks, and flags any truck waiting over 30 minutes with a fix; a labour planner (pickers, forklift drivers, loaders per shift from the day's pallets against the roster); client billing as used (storage by temperature, handling, deliveries, cold-chain monitoring) against each contract.

@@ -585,7 +585,10 @@ AGENTS += [
 # v2.2 operations skills, added to the agents who own them
 for _a in AGENTS:
     _a.skills += {"gw-warehouse": ["ops.docks", "ops.labour"], "gw-accounts": ["ops.billing"], "totara-suppliers": ["ops.scorecards", "ops.whatif"],
-                  "totara-stock": ["ops.expiry"]}.get(_a.id, [])
+                  "totara-stock": ["ops.expiry"],
+                  # v2.3 Group HQ
+                  "fin-head": ["group.pnl", "group.close", "group.board"], "fin-cash": ["group.cash"], "hr-head": ["group.people"], "hr-leave": ["group.people"],
+                  "mgmt-head": ["group.board", "group.governance"], "group-governance": ["group.governance"], "fin-funds": ["group.procurement"]}.get(_a.id, [])
 
 # where each existing agent now sits: department + its team (business unit)
 _HOME = {

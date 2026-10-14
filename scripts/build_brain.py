@@ -117,6 +117,12 @@ def main():
                                  "title": f"Store Vision: put the new skill '{p['name']}' live", "text": p["text"] + " Trained a week in suggest-only."})
         except Exception:
             pass
+    # v2.3 governance: every agent's action limits wait for Pavi (policy decision; computed from the registry, so always current)
+    n_auto = sum(1 for a in AGENTS if a.autonomy == "auto")
+    reqs.append({"id": "gov-limits", "agent": "mgmt-head", "dept": "mgmt", "area": "Policy", "amount": 0,
+                 "title": f"Approve the action limits for all {len(AGENTS)} agents",
+                 "text": f"{n_auto} agents may act alone on routine work (spend capped at $500 or their department limit, whichever is lower); the rest prepare and recommend. "
+                         "Policy, pricing, hiring, credit, customer terms, budgets, pay runs, markdowns and write-offs always come to a person. See Group HQ › Governance."})
     lpp = ROOT / "docs/data/lp.js"        # Loss Prevention: tuned settings wait for Pavi (policy decision)
     if lpp.exists():
         try:

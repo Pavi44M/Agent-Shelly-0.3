@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en-NZ">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Group HQ · Shelly Tower departments</title>
+<meta name="description" content="Shelly Group HQ v2.3: the month-end close, P&L by business with intercompany eliminations, a 13-week cash-flow forecast, people and HR (roles only), group procurement, the monthly board pack, and every agent's action limits with an audit log. Synthetic data.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../vision/vision.css">
+<link rel="stylesheet" href="../ops/ops.css">
+<link rel="stylesheet" href="group.css">
+<link rel="stylesheet" href="../switch.css">
+<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.3.0">
+</head>
+<body>
+<div id="boot" aria-live="polite"><div class="boot-in">
+  <span class="tag">Shelly Group · Group HQ</span>
+  <svg class="boot-sv" id="bootSv" viewBox="0 0 420 175" aria-hidden="true"></svg>
+  <h2 class="boot-h" id="bootH">Closing <b>the month</b></h2>
+  <pre id="bootLog"></pre><button id="skipBoot" type="button">Skip</button></div></div>
+{{SWITCH}}
+<div class="wrap">
+<header>
+  <span class="tag">Shelly Group · Group HQ · <span id="month"></span> · v<span id="ver"></span> · synthetic data</span>
+  <h1>One group. <b>Every number owned.</b></h1>
+  <p class="sub">The Tower's departments at work: finance closes the month and looks 13 weeks ahead, people and HR keep every site legal, procurement buys as one group, and the board pack asks for the few decisions only you can make. Every agent works inside a limit you approve, and every action is in the audit log.</p>
+</header>
+
+<section class="kpis" id="kpis" aria-label="The group at a glance"></section>
+
+<section id="s-board" aria-label="Board pack">
+  <div class="sec-h"><h2>Board pack · <span id="bpMonth"></span></h2><span class="note">One page: results, risks, decisions, compliance</span></div>
+  <div class="card" id="board"></div>
+</section>
+
+<section id="s-pnl" aria-label="Profit and loss">
+  <div class="sec-h"><h2>Finance · P&amp;L by business</h2><span class="note">Month to EBITDA · what the businesses charge each other comes off at group level</span></div>
+  <div class="card"><div class="tblw"><table class="tb" id="pnl"></table></div><p class="note" id="pnlNote"></p></div>
+  <div class="card mt2"><h3>Against budget <small>the biggest variance in each business, explained</small></h3><div id="var"></div></div>
+</section>
+
+<section id="s-close" aria-label="Month-end close">
+  <div class="sec-h"><h2>Finance · month-end close</h2><span class="note">Business days from 1 October · owner and status</span></div>
+  <div class="card"><ol class="close" id="close"></ol></div>
+</section>
+
+<section id="s-cash" aria-label="Cash flow">
+  <div class="sec-h"><h2>Finance · 13-week cash flow</h2><span class="note">Receipts and payments by week, the closing balance and the buffer</span></div>
+  <div class="card"><svg id="cashC" viewBox="0 0 960 300" role="img" aria-label="Weekly cash in, out and closing balance"></svg><p id="cashAdv"></p></div>
+</section>
+
+<section id="s-people" aria-label="People and HR">
+  <div class="sec-h"><h2>People and HR</h2><span class="note">Roles and counts only, never names</span></div>
+  <div class="grid2">
+    <div class="card"><h3>Headcount and weekly pay <small>by business</small></h3><div id="ppl"></div></div>
+    <div class="card"><h3>Licences that keep each site legal</h3><div id="certs"></div></div>
+  </div>
+</section>
+
+<section id="s-proc" aria-label="Procurement">
+  <div class="sec-h"><h2>Procurement · buying as one group</h2><span class="note">Categories several businesses buy separately today</span></div>
+  <div class="card"><div class="tblw"><table class="tb" id="proc"></table></div></div>
+</section>
+
+<section id="s-gov" aria-label="Governance">
+  <div class="sec-h"><h2>Governance · action limits and audit log</h2><span class="note">What each agent may do alone · everything it did or asked for</span></div>
+  <div class="card gov-top" id="govTop"></div>
+  <div class="grid2">
+    <div class="card"><h3>Action limits <small id="limN"></small></h3><div class="chips" id="limF" role="group" aria-label="Filter agents"></div><div class="tblw lim"><table class="tb" id="lim"></table></div></div>
+    <div class="card"><h3>Audit log <small id="audN"></small></h3><div class="audit" id="aud"></div></div>
+  </div>
+</section>
+<p class="foot" id="foot"></p>
+</div>
+<script src="../data/group.js"></script>
+<script src="../data/approvals.js"></script>
+<script src="app.js"></script>
+<script src="boot.js"></script>
+<script src="../kit/shelly-kit.js?v=2.3.0" data-page="group" data-base="../"></script>
+</body>
+</html>

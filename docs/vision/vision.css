@@ -77,3 +77,4 @@ svg text{font:11px var(--mono);fill:var(--ink-3)}
 .bl-body{fill:#ffc466}.bl-shackle{fill:none;stroke:#ffc466;stroke-width:5;stroke-linecap:round;transform:translateY(-9px);transition:transform .5s cubic-bezier(.5,1.6,.4,1)}
 .locked .bl-shackle{transform:translateY(0)}
 @media (prefers-reduced-motion:reduce){.bv-ring,.bl-shield{animation:none;stroke-dashoffset:0}.on .bv-beam{animation:none}}
+.grid2>*{min-width:0}

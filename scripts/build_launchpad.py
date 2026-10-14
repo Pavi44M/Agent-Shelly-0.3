@@ -146,6 +146,14 @@ def main():
              "Everyone anonymised; a Skill Lab tests every skill daily against a known truth and adds a new one.",
              f"{vd['visitors']}", f"visitors today · {round(100 - abs(vd['visitors'] - vd['truth']['people']) / max(1, vd['truth']['people']) * 100, 1)}% of the truth · {len(lab['skills'])} skills",
              "New · v" + vi["version"], "new", f'<span class="shelves" aria-hidden="true">{lv}</span>', "wide")
+    gp_p = ROOT / "docs/data/group.js"
+    if gp_p.exists():
+        gd = js_data(gp_p, "SHELLY_GROUP"); gpl = gd["pnl"]
+        card("../group/", "Shelly Group · v2.3", "Group HQ",
+             "The Tower's departments at work: the month-end close, P&L by business with eliminations, a 13-week cash flow, people and licences (roles only), "
+             "buying as one group, the board pack, and every agent's action limits with an audit log.",
+             f"${gpl['group_revenue'] / 1e6:.2f}M", f"group revenue · EBITDA {gpl['group_margin_pct']}% · cash low ${gd['cash']['low']['close']:,}",
+             "New · v" + gd["version"], "new", "", "wide")
     op_p = ROOT / "docs/data/ops.js"
     if op_p.exists():
         od2 = js_data(op_p, "SHELLY_OPS"); og, ot = od2["gateway"], od2["totara"]
@@ -224,7 +232,7 @@ def main():
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap">
 <link rel="stylesheet" href="launchpad.css">
 <link rel="stylesheet" href="../switch.css">
-<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.2.0">
+<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.3.0">
 </head>
 <body>
 {BOOT}
@@ -249,7 +257,7 @@ def main():
 </div>
 <script src="launchpad.js"></script>
 <script src="../data/approvals.js"></script>
-<script src="../kit/shelly-kit.js?v=2.2.0" data-page="launchpad" data-base="../"></script>
+<script src="../kit/shelly-kit.js?v=2.3.0" data-page="launchpad" data-base="../"></script>
 </body>
 </html>
 """)

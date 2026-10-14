@@ -88,6 +88,7 @@ runpy_brain.run_path(str(ROOT / "scripts" / "build_lp.py"), run_name="__main__")
 runpy_brain.run_path(str(ROOT / "scripts" / "build_os.py"), run_name="__main__")
 runpy_brain.run_path(str(ROOT / "scripts" / "build_shift.py"), run_name="__main__")
 runpy_brain.run_path(str(ROOT / "scripts" / "build_ops.py"), run_name="__main__")
+runpy_brain.run_path(str(ROOT / "scripts" / "build_group.py"), run_name="__main__")
 
 # Launchpad: refresh the figures on docs/launchpad/ (retail numbers change every week)
 import runpy  # noqa: E402

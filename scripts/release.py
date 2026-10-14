@@ -20,7 +20,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-BUILDERS = ["build_vision", "build_lp", "build_brain", "build_os", "build_shift", "build_ops", "build_tower", "build_gateway", "build_launchpad"]   # launchpad last: it reads the others
+BUILDERS = ["build_vision", "build_lp", "build_brain", "build_os", "build_shift", "build_ops", "build_group", "build_tower", "build_gateway", "build_launchpad"]   # launchpad last: it reads the others
 DATA_FILES = ["docs/data/shelly-data.js", "docs/data/shelly-reports.js", "docs/data/store-floor.js"]
 TRAILER = ("Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n"
            "Claude-Session: https://claude.ai/code/session_01VXjp7DwK3tLyLAJcafn74e")

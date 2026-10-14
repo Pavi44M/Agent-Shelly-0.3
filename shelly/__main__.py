@@ -20,6 +20,7 @@
     python -m shelly vision run --source store.mp4 [--show] [--save-video]   Shelly Vision on a video, webcam (0) or CCTV stream
     python -m shelly vision demo | lab [--days 7] | approve vision.conversion | purge   synthetic day, Skill Lab, go-live, retention
     python -m shelly lp demo [--days 7] | tune | approve | pia --site store | pose --source aisle.mp4   Loss Prevention (Shelly sites only)
+    python -m shelly group [pnl|close|cash|people|procurement|board|limits|audit]   Group HQ
     python -m shelly ops [docks|labour|billing|suppliers|expiry|whatif|flows]   Gateway and Tōtara operations
     python -m shelly shift [brief|todo|close|sense|lab] [--day 2026-09-25]   Store Shift Pilot
     python -m shelly os [run|tables|db]               Shelly OS: one data model + the event bus (db: save outputs/shelly.db)
@@ -66,6 +67,8 @@ def main(argv=None):
     lp = sub.add_parser("lp", help="Loss Prevention: patterns about stock and places, never people (Shelly's own sites only)")
     lp.add_argument("action", choices=["demo", "tune", "approve", "pia", "pose", "pack"]); lp.add_argument("--days", type=int, default=7)
     lp.add_argument("--site", default="store"); lp.add_argument("--source"); lp.add_argument("--model", default="yolo11n-pose.pt")
+    gp = sub.add_parser("group", help="Group HQ: finance close, P&L, cash, people, procurement, board pack, governance")
+    gp.add_argument("action", nargs="?", default="board", choices=["pnl", "close", "cash", "people", "procurement", "board", "limits", "audit"])
     op = sub.add_parser("ops", help="Operations: Gateway docks, labour, billing; Tōtara suppliers, expiry, what-if; flows end to end")
     op.add_argument("action", nargs="?", default="flows", choices=["docks", "labour", "billing", "suppliers", "expiry", "whatif", "flows"])
     op.add_argument("--supplier"); op.add_argument("--delay", type=int, default=14)
@@ -158,6 +161,32 @@ def main(argv=None):
             st = L.approve(L.load(), a.target, a.action == "approve", a.note); L.save(st); print(f"{a.target}: {a.action}d")
         elif a.action == "purge":
             print(f"deleted {V.purge(a.out)} old event logs")
+    elif a.cmd == "group":
+        from .group import hq
+        r = hq.run(); P = r["pnl"]
+        if a.action == "pnl":
+            for b, v in P["by_business"].items(): print(f"  {b:<8} revenue ${v['revenue']:>11,}  EBITDA ${v['ebitda']:>10,}  {v['margin_pct']:>5}%")
+            print(f"  group    revenue ${P['group_revenue']:>11,}  EBITDA ${P['group_ebitda']:>10,}  {P['group_margin_pct']:>5}%  (eliminations ${P['eliminations']:,})")
+            for v in r["variances"]: print(f"  {v['business']:<8} {v['line']:<8} {v['var']:>+10,}  {v['why']}")
+        elif a.action == "close":
+            for c in r["close"]: print(f"  BD{c['bd']} {c['status']:<16} {c['task']}  ({c['owner']})")
+        elif a.action == "cash":
+            for w in r["cash"]["weeks"]: print(f"  {w['week']}  in {w['in']:>11,}  out {w['out']:>12,}  cash {w['close']:>11,}")
+            print("  " + r["cash"]["advice"])
+        elif a.action == "people":
+            for b, v in r["people"]["by_business"].items(): print(f"  {b:<8} {v['headcount']:>4} people  ${v['pay_week']:,} a week")
+            for c in r["people"]["certs"]: print(f"  {c['held']}/{c['needed']} {c['what']}: {c['action']}")
+        elif a.action == "procurement":
+            for x in r["procurement"]: print(f"  {x['category']:<28} ${x['monthly_spend']:>8,}  save ${x['saving_month']:>6,}  {x['action']}")
+        elif a.action == "limits":
+            for l in r["limits"]: print(f"  {l['agent']:<20} {l['autonomy']:<8} {l['alone']}")
+        elif a.action == "audit":
+            for e in r["audit"][:30]: print(f"  {e['when']}  {e['agent']:<18} {e['status']:<40} {e['what'][:70]}")
+        else:
+            b = r["board"]; print(b["headline"])
+            for d in b["decisions"]: print(f"  decide: {d['what']}")
+            for x in b["risks"]: print(f"  risk: {x['area']}: {x['text']}")
+
     elif a.cmd == "ops":
         from .ops import gateway_ops as GO, totara_ops as TO, flow as FL
         if a.action in ("docks", "labour", "billing", "flows"):
