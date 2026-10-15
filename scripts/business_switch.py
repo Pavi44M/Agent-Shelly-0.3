@@ -20,7 +20,8 @@ GROUPS = [
                        ("floors/", "🏢", "Floors", "floors", "ride the lift, floor by floor"),
                        ("clinic/", "✚", "Clinic", "clinic", "Tōtara Clinic, L5 to L7"), ("hotel/", "🛎", "Hotel", "hotel", "rooms, dining, events")]),
     ("Shelly", [("ask/", "💬", "Ask", "ask", "ask anything"), ("brain/", "🧠", "Brain", "brain", "every agent"),
-                ("os/", "⚙", "OS", "os", "data model + event bus"), ("launchpad/", "⌘", "Launchpad", "launchpad", "everything, one tap")]),
+                ("os/", "⚙", "OS", "os", "data model + event bus"), ("launchpad/", "⌘", "Launchpad", "launchpad", "everything, one tap"),
+                ("case/", "🎓", "Case study", "case", "the 5-minute story")]),
 ]
 
 

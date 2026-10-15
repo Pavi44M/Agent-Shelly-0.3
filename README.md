@@ -7,6 +7,11 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v2.5.3: case-study mode
+
+- **Case-study mode** (`docs/case/`, "🎓 Case study" in the Workspaces menu): the Commercial lab told as a five-minute CRISP-DM story for a hiring manager. Six steps (the business question, the data, the baseline, the model, how the numbers were checked, and what changes on Monday) with Next and Back, a progress bar and a link to every piece of evidence. Every number is read live from the lab's data, so the story never drifts from the model.
+- The same case study lives on the portfolio at pavi44m.github.io/pavibamunu/case-study.html, and the CV cites it.
+
 ## What's new in v2.5.2: Tōtara Clinic and the Shelly Tower Hotel
 
 - **Tōtara Clinic** (`docs/clinic/`, levels 5 to 7; `shelly/tower_biz/clinic.py`): a mini hospital with GP and nurse clinics, urgent care, X-ray, ultrasound, a lab, a minor procedures room, an eight-bed day ward, physio and the Tōtara pharmacy. One day hour by hour: arrivals by stream, waits against target, day-ward beds, staffing by role against need, and the supplies it uses from Tōtara Medical's own stock. Counts only, never patient records; nothing is medical advice.

@@ -8,7 +8,7 @@
   const me = document.currentScript;
   const PAGE = (me && me.dataset.page) || "launchpad";
   const BASE = (me && me.dataset.base) || "";
-  const KIT_V = "2.5.2";   // bump with each release so browsers fetch the new mascot files instead of an old saved copy
+  const KIT_V = "2.5.3";   // bump with each release so browsers fetch the new mascot files instead of an old saved copy
   const AP = window.SHELLY_APPROVALS || { items: [], store_asof: "" };
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const ls = {
@@ -159,6 +159,7 @@
       floors: [`${greeting()}! Let's ride the lift: every floor of Shelly Tower, its plan, the people at work and the technology helping them. ${ask}`, "Press ▶ Ride the lift, or pick a level."],
       clinic: [`${greeting()}! This is Tōtara Clinic, our mini hospital on levels 5 to 7: patient flow, rooms and beds, staffing and supplies. Counts only, never records. ${ask}`, "Scroll and I'll show you where the waits build up."],
       hotel: [`${greeting()}! Welcome to the Shelly Tower Hotel: rooms and rates, reservations, housekeeping, dining, events and the five-star checklist. ${ask}`, "Scroll and I'll walk you through the hotel."],
+      case: [`${greeting()}! This is case-study mode: the Commercial lab told as a five-minute story, step by step. ${ask}`, "Press Next → to go through it, or pick a step."],
       commercial: [`${greeting()}! This is the Commercial lab: was every promo worth it, how deep to discount, and what sells together. ${ask}`, "Scroll and I'll show you where the promo margin went."],
       ask: [`${greeting()}! Ask me anything about the four businesses, by typing or with the 🎙 microphone. ${ask}`, "Try “why was Friday down?” or “what's short at Tōtara?”."],
     };

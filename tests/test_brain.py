@@ -123,7 +123,7 @@ def test_every_page_has_its_own_mascot_lines():
         m = re.search(r'shelly-kit\.js[^"]*" data-page="([a-z]+)"', html.read_text())
         if m:
             assert re.search(rf"\n\s+{m.group(1)}: \[", kit), f"{html}: no welcome for data-page={m.group(1)}"
-    for page in ("shift", "os", "ops", "group", "ask", "commercial", "floors", "clinic", "hotel"):
+    for page in ("shift", "os", "ops", "group", "ask", "commercial", "floors", "clinic", "hotel", "case"):
         js = (ROOT / f"docs/{page}/app.js").read_text()
         ids = set(re.findall(r'<section id="([^"]+)"', (ROOT / f"docs/{page}/index.html").read_text()))
         said = set(re.findall(r'"(s-[a-z0-9-]+)": ', js.split("window.SHELLY_GUIDE", 1)[1]))

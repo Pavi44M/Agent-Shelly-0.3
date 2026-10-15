@@ -163,6 +163,11 @@ def main():
              "then the fit-out), the people at work by role, the technology that helps them, and the building's own numbers.",
              f"{ft['floors']}", f"levels · {ft['here_now']} people in now · {ft['washrooms']} washrooms", "New · v" + fd["version"], "new", "", "wide")
     co_p = ROOT / "docs/data/commercial.js"
+    if co_p.exists() and (ROOT / "docs/case/index.html").exists():
+        cd0 = js_data(co_p, "SHELLY_COMMERCIAL")
+        card("../case/", "Case-study mode · v2.5", "Was the promo worth it?",
+             "The Commercial lab told as a five-minute story for a hiring manager: the business question, the data, the baseline, the model, the checks and what changes on Monday. Step by step, numbers live from the lab.",
+             "5 min", f"six CRISP-DM steps · {len(cd0['events'])} promos · {cd0['share_worth_it']}% paid their way", "New · v" + cd0["version"], "new", "", "wide")
     if co_p.exists():
         cd = js_data(co_p, "SHELLY_COMMERCIAL")
         card("../commercial/", "Neighbourhood Store · v2.5", "Commercial lab",
@@ -263,8 +268,8 @@ def main():
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap">
 <link rel="stylesheet" href="launchpad.css">
-<link rel="stylesheet" href="../switch.css?v=2.5.2">
-<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.5.2">
+<link rel="stylesheet" href="../switch.css?v=2.5.3">
+<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.5.3">
 </head>
 <body>
 {BOOT}
@@ -290,7 +295,7 @@ def main():
 </div>
 <script src="launchpad.js"></script>
 <script src="../data/approvals.js"></script>
-<script src="../kit/shelly-kit.js?v=2.5.2" data-page="launchpad" data-base="../"></script>
+<script src="../kit/shelly-kit.js?v=2.5.3" data-page="launchpad" data-base="../"></script>
 </body>
 </html>
 """)
