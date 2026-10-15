@@ -1,0 +1,7 @@
+h1 b{color:#8fe3c8}.mt2{margin-top:14px}
+#an .ax{font:11px var(--mono);fill:#7d8a9c}
+.lgr{display:grid;grid-template-columns:150px minmax(0,1fr) 56px 90px;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--etch);font-size:13.5px}
+.lgr i{display:block;height:12px;border-radius:6px;background:#5b6b80}.lgr.top i{background:#8fe3c8}.lgr.top span{color:var(--ink);font-weight:600}
+.lgr b{font:600 13px var(--mono);color:var(--ink);text-align:right}.lgr small{font:11px var(--mono);color:var(--ink-3)}
+#bh p{margin:12px 0 0;font-size:14px}
+@media (max-width:620px){.lgr{grid-template-columns:110px minmax(0,1fr) 50px}.lgr small{display:none}}

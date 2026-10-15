@@ -7,6 +7,10 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v2.5.4: quality you can see
+
+- **Quality page** (`docs/quality/`, "✓ Quality" in the Workspaces menu; `shelly/quality.py`): the forecast league table (every model's error on weeks it never saw, the best model by category, and why the day-ahead weekday average stays in charge), an anomaly radar that flags unusual trading days against a same-weekday baseline with the likely reason and how sure it is, the data checks run on the raw store data before any model, and build health (automated tests, pages rendered at desktop and phone width on every release, CI on every push and the Monday rebuild).
+
 ## What's new in v2.5.3: case-study mode
 
 - **Case-study mode** (`docs/case/`, "🎓 Case study" in the Workspaces menu): the Commercial lab told as a five-minute CRISP-DM story for a hiring manager. Six steps (the business question, the data, the baseline, the model, how the numbers were checked, and what changes on Monday) with Next and Back, a progress bar and a link to every piece of evidence. Every number is read live from the lab's data, so the story never drifts from the model.

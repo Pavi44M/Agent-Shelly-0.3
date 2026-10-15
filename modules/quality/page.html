@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en-NZ">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Quality · can the numbers be trusted?</title>
+<meta name="description" content="Shelly quality v2.5.4: the forecast league table, an anomaly radar for unusual trading days with the likely reason, the data checks run before any model, and the automated tests that guard every release. Synthetic data.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../vision/vision.css">
+<link rel="stylesheet" href="../ops/ops.css">
+<link rel="stylesheet" href="../commercial/commercial.css">
+<link rel="stylesheet" href="quality.css">
+<link rel="stylesheet" href="../switch.css?v=2.5.4">
+<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.5.4">
+</head>
+<body>
+{{SWITCH}}
+<div class="wrap">
+<header>
+  <span class="tag">Shelly · quality · v<span id="ver"></span> · synthetic data</span>
+  <h1>Can the numbers <b>be trusted?</b></h1>
+  <p class="sub">An analyst's work is only as good as its checks. This page shows them: how every forecasting model scores and which one is in charge, the trading days that don't look right and the likely reason, what was checked in the raw data before any model ran, and the automated tests that guard every release.</p>
+</header>
+<section class="kpis" id="kpis" aria-label="Quality at a glance"></section>
+<section id="s-league" aria-label="Forecast league table">
+  <div class="sec-h"><h2>Forecast league table</h2><span class="note">Error on weeks the models never saw · lower is better</span></div>
+  <div class="grid2"><div class="card"><div id="lg"></div><p class="note" id="lgN"></p></div><div class="card"><h3>Best model by category</h3><div class="tblw"><table class="tb" id="lgc"></table></div><p class="note" id="lgD"></p></div></div>
+</section>
+<section id="s-anom" aria-label="Anomaly radar">
+  <div class="sec-h"><h2>Anomaly radar</h2><span class="note" id="anN"></span></div>
+  <div class="card"><div class="wide-sv"><svg id="an" viewBox="0 0 960 280" role="img" aria-label="Daily sales against the expected level, unusual days marked"></svg></div></div>
+  <div class="card mt2"><div class="tblw"><table class="tb" id="anT"></table></div></div>
+</section>
+<section id="s-data" aria-label="Data checks">
+  <div class="sec-h"><h2>Data checks · before any model ran</h2><span class="note">What was found in the raw store data, and what was done about it</span></div>
+  <div class="card"><div class="tblw"><table class="tb" id="dc"></table></div></div>
+</section>
+<section id="s-build" aria-label="Build health">
+  <div class="sec-h"><h2>Build health</h2><span class="note">What guards every release</span></div>
+  <div class="card" id="bh"></div>
+</section>
+<p class="foot" id="foot"></p>
+</div>
+<script src="../data/quality.js"></script>
+<script src="app.js"></script>
+<script src="../kit/shelly-kit.js?v=2.5.4" data-page="quality" data-base="../"></script>
+</body>
+</html>

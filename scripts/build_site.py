@@ -93,7 +93,8 @@ runpy_brain.run_path(str(ROOT / "scripts" / "build_commercial.py"), run_name="__
 runpy_brain.run_path(str(ROOT / "scripts" / "build_case.py"), run_name="__main__")         # v2.5.3 case-study mode
 runpy_brain.run_path(str(ROOT / "scripts" / "build_tower_biz.py"), run_name="__main__")    # v2.5.2 Tōtara Clinic and the hotel
 runpy_brain.run_path(str(ROOT / "scripts" / "build_floors.py"), run_name="__main__")       # v2.5.1 Tower floor by floor
-runpy_brain.run_path(str(ROOT / "scripts" / "build_mind.py"), run_name="__main__")   # v2.4 Shelly's mind (reads the pages above)
+runpy_brain.run_path(str(ROOT / "scripts" / "build_mind.py"), run_name="__main__")
+runpy_brain.run_path(str(ROOT / "scripts" / "build_quality.py"), run_name="__main__")      # v2.5.4 quality   # v2.4 Shelly's mind (reads the pages above)
 
 # Launchpad: refresh the figures on docs/launchpad/ (retail numbers change every week)
 import runpy  # noqa: E402

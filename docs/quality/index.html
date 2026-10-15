@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en-NZ">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Quality · can the numbers be trusted?</title>
+<meta name="description" content="Shelly quality v2.5.4: the forecast league table, an anomaly radar for unusual trading days with the likely reason, the data checks run before any model, and the automated tests that guard every release. Synthetic data.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../vision/vision.css">
+<link rel="stylesheet" href="../ops/ops.css">
+<link rel="stylesheet" href="../commercial/commercial.css">
+<link rel="stylesheet" href="quality.css">
+<link rel="stylesheet" href="../switch.css?v=2.5.4">
+<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.5.4">
+</head>
+<body>
+<nav class="biz" aria-label="Choose a business"><div class="biz-track"><a class="biz-opt " href="../"><span class="ic" aria-hidden="true">🛒</span><span class="tx"><b>Neighbourhood store</b><small>Retail · Shelly store agent</small></span></a><a class="biz-opt med" href="../supply-chain/"><span class="ic" aria-hidden="true">✚</span><span class="tx"><b>Tōtara Medical</b><small>Supply Chain Command</small></span></a><a class="biz-opt gw" href="../gateway/"><span class="ic" aria-hidden="true">⛟</span><span class="tx"><b>Gateway</b><small>Warehousing & Transport</small></span></a></div><div class="biz-side"><details class="biz-more"><summary class="biz-ws on"><span aria-hidden="true">✓</span> Quality <i aria-hidden="true">▾</i></summary><div class="biz-menu"><div class="biz-grp"><span class="biz-gh">Store</span><a class="biz-lp" href="../store/"><span aria-hidden="true">▦</span><b>Floor</b><small>3D store plan</small></a><a class="biz-lp" href="../shift/"><span aria-hidden="true">⏱</span><b>Shift</b><small>the Duty Manager's day</small></a><a class="biz-lp" href="../vision/"><span aria-hidden="true">👁</span><b>Vision</b><small>camera counts</small></a><a class="biz-lp" href="../lp/"><span aria-hidden="true">🛡</span><b>Loss</b><small>loss prevention</small></a><a class="biz-lp" href="../commercial/"><span aria-hidden="true">💲</span><b>Commercial</b><small>promos, price, baskets</small></a></div><div class="biz-grp"><span class="biz-gh">Ops & HQ</span><a class="biz-lp" href="../ops/"><span aria-hidden="true">⛓</span><b>Ops</b><small>docks, suppliers, flows</small></a><a class="biz-lp" href="../group/"><span aria-hidden="true">🏛</span><b>Group</b><small>finance, people, board</small></a><a class="biz-lp" href="../tower/"><span aria-hidden="true">🏙</span><b>Tower</b><small>head office in 3D</small></a><a class="biz-lp" href="../floors/"><span aria-hidden="true">🏢</span><b>Floors</b><small>ride the lift, floor by floor</small></a><a class="biz-lp" href="../clinic/"><span aria-hidden="true">✚</span><b>Clinic</b><small>Tōtara Clinic, L5 to L7</small></a><a class="biz-lp" href="../hotel/"><span aria-hidden="true">🛎</span><b>Hotel</b><small>rooms, dining, events</small></a></div><div class="biz-grp"><span class="biz-gh">Shelly</span><a class="biz-lp" href="../ask/"><span aria-hidden="true">💬</span><b>Ask</b><small>ask anything</small></a><a class="biz-lp" href="../brain/"><span aria-hidden="true">🧠</span><b>Brain</b><small>every agent</small></a><a class="biz-lp" href="../os/"><span aria-hidden="true">⚙</span><b>OS</b><small>data model + event bus</small></a><a class="biz-lp" href="../launchpad/"><span aria-hidden="true">⌘</span><b>Launchpad</b><small>everything, one tap</small></a><a class="biz-lp" href="../case/"><span aria-hidden="true">🎓</span><b>Case study</b><small>the 5-minute story</small></a><a class="biz-lp" href="../quality/" aria-current="page"><span aria-hidden="true">✓</span><b>Quality</b><small>can the numbers be trusted?</small></a></div></div></details><button class="biz-ap" type="button" id="apBadge" hidden aria-haspopup="dialog"><span aria-hidden="true">🔔</span> <span class="lbl">Approvals</span> <b id="apCount">0</b></button></div></nav>
+<div class="wrap">
+<header>
+  <span class="tag">Shelly · quality · v<span id="ver"></span> · synthetic data</span>
+  <h1>Can the numbers <b>be trusted?</b></h1>
+  <p class="sub">An analyst's work is only as good as its checks. This page shows them: how every forecasting model scores and which one is in charge, the trading days that don't look right and the likely reason, what was checked in the raw data before any model ran, and the automated tests that guard every release.</p>
+</header>
+<section class="kpis" id="kpis" aria-label="Quality at a glance"></section>
+<section id="s-league" aria-label="Forecast league table">
+  <div class="sec-h"><h2>Forecast league table</h2><span class="note">Error on weeks the models never saw · lower is better</span></div>
+  <div class="grid2"><div class="card"><div id="lg"></div><p class="note" id="lgN"></p></div><div class="card"><h3>Best model by category</h3><div class="tblw"><table class="tb" id="lgc"></table></div><p class="note" id="lgD"></p></div></div>
+</section>
+<section id="s-anom" aria-label="Anomaly radar">
+  <div class="sec-h"><h2>Anomaly radar</h2><span class="note" id="anN"></span></div>
+  <div class="card"><div class="wide-sv"><svg id="an" viewBox="0 0 960 280" role="img" aria-label="Daily sales against the expected level, unusual days marked"></svg></div></div>
+  <div class="card mt2"><div class="tblw"><table class="tb" id="anT"></table></div></div>
+</section>
+<section id="s-data" aria-label="Data checks">
+  <div class="sec-h"><h2>Data checks · before any model ran</h2><span class="note">What was found in the raw store data, and what was done about it</span></div>
+  <div class="card"><div class="tblw"><table class="tb" id="dc"></table></div></div>
+</section>
+<section id="s-build" aria-label="Build health">
+  <div class="sec-h"><h2>Build health</h2><span class="note">What guards every release</span></div>
+  <div class="card" id="bh"></div>
+</section>
+<p class="foot" id="foot"></p>
+</div>
+<script src="../data/quality.js"></script>
+<script src="app.js"></script>
+<script src="../kit/shelly-kit.js?v=2.5.4" data-page="quality" data-base="../"></script>
+</body>
+</html>

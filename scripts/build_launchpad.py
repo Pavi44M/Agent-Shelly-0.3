@@ -162,6 +162,12 @@ def main():
              "Ride the lift from the loading dock to the vertiport. Every level has its plan (four lifts, two fire stairs, accessible and all-gender washrooms, "
              "then the fit-out), the people at work by role, the technology that helps them, and the building's own numbers.",
              f"{ft['floors']}", f"levels · {ft['here_now']} people in now · {ft['washrooms']} washrooms", "New · v" + fd["version"], "new", "", "wide")
+    q_p = ROOT / "docs/data/quality.js"
+    if q_p.exists():
+        qd = js_data(q_p, "SHELLY_QUALITY")
+        card("../quality/", "Shelly · v2.5", "Quality",
+             "Can the numbers be trusted? The forecast league table, an anomaly radar that flags unusual trading days with the likely reason, the data checks run before any model, and the automated tests behind every release.",
+             f"{qd['build']['test_functions']}", f"automated tests · {qd['build']['pages_rendered']} pages checked · best forecast {qd['league']['overall'][0]['wape']}% error", "New · v" + qd["version"], "new", "", "wide")
     co_p = ROOT / "docs/data/commercial.js"
     if co_p.exists() and (ROOT / "docs/case/index.html").exists():
         cd0 = js_data(co_p, "SHELLY_COMMERCIAL")
@@ -268,8 +274,8 @@ def main():
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap">
 <link rel="stylesheet" href="launchpad.css">
-<link rel="stylesheet" href="../switch.css?v=2.5.3">
-<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.5.3">
+<link rel="stylesheet" href="../switch.css?v=2.5.4">
+<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.5.4">
 </head>
 <body>
 {BOOT}
@@ -295,7 +301,7 @@ def main():
 </div>
 <script src="launchpad.js"></script>
 <script src="../data/approvals.js"></script>
-<script src="../kit/shelly-kit.js?v=2.5.3" data-page="launchpad" data-base="../"></script>
+<script src="../kit/shelly-kit.js?v=2.5.4" data-page="launchpad" data-base="../"></script>
 </body>
 </html>
 """)
