@@ -88,4 +88,13 @@ def build(shift, ops, group, osd, huddles) -> list:
                f"{w['name']}: {w['events']} promos, net {m(w['net'])}. {w['action']}.", "../commercial/#s-lines"),
               ("com-basket", "What sells together?", "together basket pair pairs cross sell bundle placement mission",
                f"{pr['a_name']} and {pr['b_name']}: {pr['lift']}× more often than chance (simulated baskets, real method).", "../commercial/#s-basket")]
+    if (ROOT / "docs/data/clinic.js").exists():           # v2.5.2 Tōtara Clinic and the hotel
+        CL = _js("docs/data/clinic.js"); HO = _js("docs/data/hotel.js"); ck = CL["kpis"]; hk = HO["kpis"]
+        u = next(x for x in CL["streams"] if x["stream"].startswith("Urgent"))
+        I += [("clinic-today", "How busy is the clinic?", "clinic patients wait waiting urgent care gp doctor nurse hospital",
+               f"Tōtara Clinic: {ck['patients']} patients today, busiest at {ck['peak_hour']}:00. Urgent care: {u['within_target_pct']}% seen within {u['target_min']} minutes.", "../clinic/#s-flow"),
+              ("hotel-today", "How is the hotel doing?", "hotel occupancy rooms rate adr revpar booking bookings guests",
+               f"Shelly Tower Hotel: {hk['occ_pct']}% occupancy over 30 nights at ${hk['adr']} a night (RevPAR ${hk['revpar']}); {hk['on_books_30d_pct']}% already on the books for the next 30.", "../hotel/#s-rev"),
+              ("hotel-events", "What events are coming up?", "event events function wedding conference ballroom gala",
+               "; ".join(f"{e['date']}: {e['event']} ({e['guests']} guests)" for e in HO["events"][:3]) + ".", "../hotel/#s-events")]
     return [{"id": i, "q": q, "keys": keys.split(), "a": a, "link": link} for i, q, keys, a, link in I]

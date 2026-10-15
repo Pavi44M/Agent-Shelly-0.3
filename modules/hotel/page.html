@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en-NZ">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Shelly Tower Hotel</title>
+<meta name="description" content="Shelly Tower Hotel v2.5: rooms and suites, reservations, occupancy, ADR and RevPAR, housekeeping, the restaurant with menu engineering, the events diary, and guest experience against a five-star standard. Synthetic data: no guest names.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../vision/vision.css">
+<link rel="stylesheet" href="../ops/ops.css">
+<link rel="stylesheet" href="../commercial/commercial.css">
+<link rel="stylesheet" href="hotel.css">
+<link rel="stylesheet" href="../switch.css?v=2.5.2">
+<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.5.2">
+</head>
+<body>
+<div id="boot" aria-live="polite"><div class="boot-in">
+  <span class="tag">Shelly Tower · Hotel</span>
+  <svg class="boot-sv" id="bootSv" viewBox="0 0 420 175" aria-hidden="true"></svg>
+  <h2 class="boot-h" id="bootH">Opening <b>the doors</b></h2>
+  <pre id="bootLog"></pre><button id="skipBoot" type="button">Skip</button></div></div>
+{{SWITCH}}
+<div class="wrap">
+<header>
+  <span class="tag">Shelly Tower · L16 to L18 · Shelly Tower Hotel · v<span id="ver"></span> · synthetic data</span>
+  <h1>Rooms, tables, events. <b>Five-star in the numbers.</b></h1>
+  <p class="sub">Delegation rooms, suites and serviced apartments on levels 16 and 17; the restaurant, ballroom and conference centre on level 18. Shelly runs the rate and the reservation book, tells housekeeping which rooms to turn first, scores every dish, keeps the events diary and tracks what a five-star stay needs. Bookings are counts and room numbers, never guest names.</p>
+</header>
+<section class="kpis" id="kpis" aria-label="The hotel at a glance"></section>
+<section id="s-act" aria-label="Today's actions"><div class="sec-h"><h2>Today's actions</h2><span class="note">From the numbers below · the general manager decides</span></div><div class="card"><ol class="acts" id="acts"></ol></div></section>
+<section id="s-rev" aria-label="Revenue management">
+  <div class="sec-h"><h2>Revenue management</h2><span class="note">Occupancy and rate, 60 nights back and 30 on the books</span></div>
+  <div class="card"><div class="wide-sv"><svg id="occ" viewBox="0 0 960 300" role="img" aria-label="Occupancy by night"></svg></div><p class="note" id="occN"></p></div>
+</section>
+<section id="s-res" aria-label="Reservations">
+  <div class="sec-h"><h2>Reservations · who books, how, how early</h2><span class="note">420 recent bookings · counts only</span></div>
+  <div class="grid2"><div class="card"><h3>Segments</h3><div class="tblw"><table class="tb" id="seg"></table></div></div>
+  <div class="card"><h3>Channels <small>and how far ahead</small></h3><div id="ch"></div><div id="lead"></div></div></div>
+</section>
+<section id="s-hk" aria-label="Housekeeping">
+  <div class="sec-h"><h2>Housekeeping · this morning</h2><span class="note">Every room's status · check-outs first</span></div>
+  <div class="card"><div class="hkl" id="hkl"></div><div class="hk" id="hk"></div></div>
+</section>
+<section id="s-dine" aria-label="Dining">
+  <div class="sec-h"><h2>Dining · covers and menu engineering</h2><span class="note">Stars, plough-horses, puzzles and dogs</span></div>
+  <div class="grid2"><div class="card"><h3>Covers today</h3><div id="cov"></div></div><div class="card"><div class="tblw"><table class="tb" id="menu"></table></div></div></div>
+</section>
+<section id="s-events" aria-label="Events and functions">
+  <div class="sec-h"><h2>Events and functions · next 30 days</h2><span class="note">Each one tells the store, the kitchen and housekeeping</span></div>
+  <div class="card"><div class="tblw"><table class="tb" id="ev"></table></div></div>
+</section>
+<section id="s-gx" aria-label="Guest experience">
+  <div class="sec-h"><h2>Guest experience · against a five-star standard</h2><span class="note" id="gxN"></span></div>
+  <div class="card"><div id="gx"></div></div>
+</section>
+<p class="foot" id="foot"></p>
+</div>
+<script src="../data/hotel.js"></script>
+<script src="app.js"></script>
+<script src="boot.js"></script>
+<script src="../kit/shelly-kit.js?v=2.5.2" data-page="hotel" data-base="../"></script>
+</body>
+</html>

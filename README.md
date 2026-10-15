@@ -7,6 +7,18 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v2.5.2: Tōtara Clinic and the Shelly Tower Hotel
+
+- **Tōtara Clinic** (`docs/clinic/`, levels 5 to 7; `shelly/tower_biz/clinic.py`): a mini hospital with GP and nurse clinics, urgent care, X-ray, ultrasound, a lab, a minor procedures room, an eight-bed day ward, physio and the Tōtara pharmacy. One day hour by hour: arrivals by stream, waits against target, day-ward beds, staffing by role against need, and the supplies it uses from Tōtara Medical's own stock. Counts only, never patient records; nothing is medical advice.
+- **Shelly Tower Hotel** (`docs/hotel/`, levels 16 to 18; `shelly/tower_biz/hotel.py`): occupancy, ADR and RevPAR for 60 nights back and 30 on the books, reservations by segment, channel and lead time, repeat guests, every room's housekeeping status, covers per sitting, menu engineering (stars, plough-horses, puzzles, dogs), the events diary and guest experience against a five-star standard. Guest scores are synthetic and labelled so; no guest names anywhere.
+- The Tower now lists the clinic on L5 to L7 (replacing the fictional Rimu Health Clinic tenancy) and the hotel's restaurant, ballroom and conference centre on L18.
+
+## What's new in v2.5.1: Shelly Tower floor by floor
+
+- **Floors page** (`docs/floors/`; `shelly/floors.py`): ride the lift from B3 to the rooftop. Every level has a plan on its real area: four lifts, two fire stairs, women's, men's, all-gender and accessible washrooms (and a parents' room on working floors), then the fit-out for what the floor is for. The people at work as dots and counts by role, the technology on the floor, and building systems (energy, CO₂, lift wait, washroom visits driving cleaning rounds).
+- **Store Floor**: tap a shelf to see its lines' promo verdicts and what they sell best with, from the Commercial lab.
+- The Workspaces menu gains Commercial, Floors, Clinic and Hotel.
+
 ## What's new in v2.5.0: the Commercial lab
 
 - **Commercial lab page** (`docs/commercial/`, "💲 Commercial" in the Workspaces menu; `shelly/commercial/`). Every in-store promotion in the two years of sample data (317 of them) is scored against what the line would have sold anyway (same weekday, 4 weeks before, promo days left out): extra units, margin on those units, the discount given on units that would have sold anyway, margin taken from other lines in the same category, and the dip in the 3 days after. A margin bridge shows where it all went, then a keep / shallower / stop call for every line.

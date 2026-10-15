@@ -1,0 +1,31 @@
+/* Shelly Tower floor by floor */
+h1 b{color:#ffd27a}
+.tour{display:grid;grid-template-columns:280px minmax(0,1fr);gap:14px;align-items:start}
+.lift{position:sticky;top:12px;padding:12px;max-height:calc(100vh - 24px);display:flex;flex-direction:column}
+.lift-h{display:flex;gap:6px;margin-bottom:8px}.lift-h button{background:var(--panel-2);border:1px solid var(--etch);color:var(--ink);border-radius:10px;padding:8px 10px;font:600 12px var(--mono);cursor:pointer}
+.lift-h #ride{flex:1;background:#ffd27a;color:#1d1503;border-color:#ffd27a}
+.levels{list-style:none;margin:0;padding:0;overflow:auto;flex:1}
+.levels button{width:100%;display:grid;grid-template-columns:34px minmax(0,1fr) 30px;gap:8px;align-items:center;text-align:left;background:none;border:1px solid transparent;border-left:3px solid var(--c);border-radius:8px;padding:6px 8px;color:var(--ink-2);cursor:pointer;font:inherit}
+.levels button:hover{background:var(--panel-2)}.levels button.on{background:rgba(255,210,122,.1);border-color:#ffd27a;border-left-color:var(--c);color:var(--ink)}
+.levels .lv{font:600 12px var(--mono);color:var(--ink)}.levels .nm{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.levels .pp{font:11px var(--mono);color:var(--ink-3);text-align:right}
+.fl-h{display:flex;gap:12px;align-items:flex-start}.fl-h h3{margin:0;font-size:20px;color:var(--ink)}.fl-h small{color:var(--ink-3);font-size:12.5px}.fl-h p{margin:6px 0 0;font-size:14px}
+.lvb{flex:none;min-width:52px;text-align:center;padding:8px 6px;border-radius:10px;background:var(--c);color:#0b111b;font:700 15px var(--mono)}
+.plan-w{margin-top:12px;overflow-x:auto}#plan{display:block;width:100%;min-width:560px;height:auto}
+#plan .slab{fill:#0b111b;stroke:#3d4a5c;stroke-width:1.5}
+#plan .rl{font:600 12px "Plus Jakarta Sans",sans-serif;fill:#eaf0f6}
+#plan .cl{font:600 9.5px "JetBrains Mono",monospace;fill:#b0bac8}
+#plan .core{fill:#1f2a38;stroke:#3d4a5c}#plan .liftc{fill:#2a3546;stroke:#ffd27a}#plan .stair{fill:#3a2424;stroke:#ff8a7a}#plan .wash{fill:#173040;stroke:#63b6d8}
+#plan .pd{fill:#eaf0f6;opacity:.85;animation:pd 3s ease-in-out infinite}
+@keyframes pd{50%{transform:translate(2px,-2px)}}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 0 0;font-size:12px;color:var(--ink-3)}.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-2px;opacity:.75}
+.legend .lg-wash{background:#173040;border:1px solid #63b6d8}.legend .lg-lift{background:#2a3546;border:1px solid #ffd27a}.legend .lg-stair{background:#3a2424;border:1px solid #ff8a7a}
+.fl-b{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:14px}.fl-b h3{font-size:14px;margin:0 0 8px}.fl-b small{color:var(--ink-3);font-weight:400}
+.rr{display:flex;justify-content:space-between;border-top:1px solid var(--etch);padding:5px 0;font-size:13px}.rr b{font-family:var(--mono);color:var(--ink)}
+.tech{list-style:none;margin:0;padding:0}.tech li{border-top:1px solid var(--etch);padding:6px 0;font-size:13px}.tech b{display:block;color:var(--ink);font-weight:600}.tech span{color:var(--ink-3);font-size:12.5px}
+.sys{display:grid;grid-template-columns:1fr 1fr;gap:8px}.sys div{background:var(--panel-2);border:1px solid var(--etch);border-radius:10px;padding:8px}.sys b{display:block;font:600 15px var(--mono);color:var(--ink)}.sys span{font-size:11.5px;color:var(--ink-3)}
+.future{margin:14px 0 0;font-size:13.5px;color:var(--ink-2)}.future b{color:#ffd27a}
+.corel{margin:0;padding-left:18px}.corel li{margin:0 0 8px;font-size:14.5px}.corel b{color:var(--ink)}
+.bo-f{fill:#141e2c;stroke:#2a3a50;transition:fill .3s,stroke .3s}.bo-f.on{fill:rgba(255,210,122,.25);stroke:#ffd27a}
+@media (max-width:900px){.tour{grid-template-columns:1fr}.lift{position:static;max-height:260px}.fl-b{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){#plan .pd{animation:none}}
+.tour>*{min-width:0}.fl-h>div{min-width:0}

@@ -146,6 +146,22 @@ def main():
              "Everyone anonymised; a Skill Lab tests every skill daily against a known truth and adds a new one.",
              f"{vd['visitors']}", f"visitors today · {round(100 - abs(vd['visitors'] - vd['truth']['people']) / max(1, vd['truth']['people']) * 100, 1)}% of the truth · {len(lab['skills'])} skills",
              "New · v" + vi["version"], "new", f'<span class="shelves" aria-hidden="true">{lv}</span>', "wide")
+    for key, var, title, tag, blurb in (("clinic", "SHELLY_CLINIC", "Tōtara Clinic", "Shelly Tower · L5 to L7 · v2.5",
+                                         "A mini hospital: GP and nurse clinics, urgent care, imaging, a lab, a day ward and physio. Patient flow and waits against target, staffing by role and supplies from Tōtara Medical. Counts only, never records."),
+                                        ("hotel", "SHELLY_HOTEL", "Shelly Tower Hotel", "Shelly Tower · L16 to L18 · v2.5",
+                                         "Rooms and suites, occupancy, ADR and RevPAR, reservations by segment and channel, housekeeping, dining with menu engineering, the events diary and a five-star checklist.")):
+        p_ = ROOT / f"docs/data/{key}.js"
+        if p_.exists():
+            dd = js_data(p_, var); kk = dd["kpis"]
+            big, small = (f"{kk['patients']}", f"patients today · {kk['within_target_pct']}% seen within target") if key == "clinic" else (f"{kk['occ_pct']}%", f"occupancy · ADR ${kk['adr']} · RevPAR ${kk['revpar']}")
+            card(f"../{key}/", tag, title, blurb, big, small, "New · v" + dd["version"], "new", "", "wide")
+    fl_p = ROOT / "docs/data/floors.js"
+    if fl_p.exists():
+        fd = js_data(fl_p, "SHELLY_FLOORS"); ft = fd["totals"]
+        card("../floors/", "Shelly Tower · v2.5", "Floor by floor",
+             "Ride the lift from the loading dock to the vertiport. Every level has its plan (four lifts, two fire stairs, accessible and all-gender washrooms, "
+             "then the fit-out), the people at work by role, the technology that helps them, and the building's own numbers.",
+             f"{ft['floors']}", f"levels · {ft['here_now']} people in now · {ft['washrooms']} washrooms", "New · v" + fd["version"], "new", "", "wide")
     co_p = ROOT / "docs/data/commercial.js"
     if co_p.exists():
         cd = js_data(co_p, "SHELLY_COMMERCIAL")
@@ -247,8 +263,8 @@ def main():
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap">
 <link rel="stylesheet" href="launchpad.css">
-<link rel="stylesheet" href="../switch.css?v=2.5.0">
-<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.5.0">
+<link rel="stylesheet" href="../switch.css?v=2.5.2">
+<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.5.2">
 </head>
 <body>
 {BOOT}
@@ -274,7 +290,7 @@ def main():
 </div>
 <script src="launchpad.js"></script>
 <script src="../data/approvals.js"></script>
-<script src="../kit/shelly-kit.js?v=2.5.0" data-page="launchpad" data-base="../"></script>
+<script src="../kit/shelly-kit.js?v=2.5.2" data-page="launchpad" data-base="../"></script>
 </body>
 </html>
 """)

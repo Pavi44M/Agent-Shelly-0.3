@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en-NZ">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tōtara Clinic · Shelly Tower</title>
+<meta name="description" content="Tōtara Clinic v2.5: a mini hospital on levels 5 to 7 of Shelly Tower. Patient flow and waits against target, rooms and day-ward beds, no-shows, staffing by role, and the supplies it re-orders from Tōtara Medical. Synthetic counts only: no patient records, no medical advice.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../vision/vision.css">
+<link rel="stylesheet" href="../ops/ops.css">
+<link rel="stylesheet" href="../commercial/commercial.css">
+<link rel="stylesheet" href="clinic.css">
+<link rel="stylesheet" href="../switch.css?v=2.5.2">
+<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.5.2">
+</head>
+<body>
+<div id="boot" aria-live="polite"><div class="boot-in">
+  <span class="tag">Shelly Tower · Tōtara Clinic</span>
+  <svg class="boot-sv" id="bootSv" viewBox="0 0 420 175" aria-hidden="true"></svg>
+  <h2 class="boot-h" id="bootH">Opening <b>the clinic</b></h2>
+  <pre id="bootLog"></pre><button id="skipBoot" type="button">Skip</button></div></div>
+<nav class="biz" aria-label="Choose a business"><div class="biz-track"><a class="biz-opt " href="../"><span class="ic" aria-hidden="true">🛒</span><span class="tx"><b>Neighbourhood store</b><small>Retail · Shelly store agent</small></span></a><a class="biz-opt med" href="../supply-chain/"><span class="ic" aria-hidden="true">✚</span><span class="tx"><b>Tōtara Medical</b><small>Supply Chain Command</small></span></a><a class="biz-opt gw" href="../gateway/"><span class="ic" aria-hidden="true">⛟</span><span class="tx"><b>Gateway</b><small>Warehousing & Transport</small></span></a></div><div class="biz-side"><details class="biz-more"><summary class="biz-ws on"><span aria-hidden="true">✚</span> Clinic <i aria-hidden="true">▾</i></summary><div class="biz-menu"><div class="biz-grp"><span class="biz-gh">Store</span><a class="biz-lp" href="../store/"><span aria-hidden="true">▦</span><b>Floor</b><small>3D store plan</small></a><a class="biz-lp" href="../shift/"><span aria-hidden="true">⏱</span><b>Shift</b><small>the Duty Manager's day</small></a><a class="biz-lp" href="../vision/"><span aria-hidden="true">👁</span><b>Vision</b><small>camera counts</small></a><a class="biz-lp" href="../lp/"><span aria-hidden="true">🛡</span><b>Loss</b><small>loss prevention</small></a><a class="biz-lp" href="../commercial/"><span aria-hidden="true">💲</span><b>Commercial</b><small>promos, price, baskets</small></a></div><div class="biz-grp"><span class="biz-gh">Ops & HQ</span><a class="biz-lp" href="../ops/"><span aria-hidden="true">⛓</span><b>Ops</b><small>docks, suppliers, flows</small></a><a class="biz-lp" href="../group/"><span aria-hidden="true">🏛</span><b>Group</b><small>finance, people, board</small></a><a class="biz-lp" href="../tower/"><span aria-hidden="true">🏙</span><b>Tower</b><small>head office in 3D</small></a><a class="biz-lp" href="../floors/"><span aria-hidden="true">🏢</span><b>Floors</b><small>ride the lift, floor by floor</small></a><a class="biz-lp" href="../clinic/" aria-current="page"><span aria-hidden="true">✚</span><b>Clinic</b><small>Tōtara Clinic, L5 to L7</small></a><a class="biz-lp" href="../hotel/"><span aria-hidden="true">🛎</span><b>Hotel</b><small>rooms, dining, events</small></a></div><div class="biz-grp"><span class="biz-gh">Shelly</span><a class="biz-lp" href="../ask/"><span aria-hidden="true">💬</span><b>Ask</b><small>ask anything</small></a><a class="biz-lp" href="../brain/"><span aria-hidden="true">🧠</span><b>Brain</b><small>every agent</small></a><a class="biz-lp" href="../os/"><span aria-hidden="true">⚙</span><b>OS</b><small>data model + event bus</small></a><a class="biz-lp" href="../launchpad/"><span aria-hidden="true">⌘</span><b>Launchpad</b><small>everything, one tap</small></a></div></div></details><button class="biz-ap" type="button" id="apBadge" hidden aria-haspopup="dialog"><span aria-hidden="true">🔔</span> <span class="lbl">Approvals</span> <b id="apCount">0</b></button></div></nav>
+<div class="wrap">
+<header>
+  <span class="tag">Shelly Tower · L5 to L7 · Tōtara Clinic · <span id="day"></span> · v<span id="ver"></span> · synthetic counts</span>
+  <h1>A mini hospital. <b>Every minute counted.</b></h1>
+  <p class="sub">GP and nurse clinics, urgent care, imaging, a lab, a day ward, physio and the Tōtara pharmacy on three floors. Shelly follows the day hour by hour: who's waiting and for how long, which rooms and beds are in use, where staff fall short, and what supplies to re-order from Tōtara Medical. Patients are counts, never records; nothing here is medical advice.</p>
+</header>
+<section class="kpis" id="kpis" aria-label="The clinic today"></section>
+<section id="s-act" aria-label="Today's actions"><div class="sec-h"><h2>Today's actions</h2><span class="note">From the numbers below · the clinic manager decides</span></div><div class="card"><ol class="acts" id="acts"></ol></div></section>
+<section id="s-flow" aria-label="Patient flow">
+  <div class="sec-h"><h2>Patient flow</h2><span class="note">Arrivals by hour and stream, and the wait against target</span></div>
+  <div class="card"><ol class="flow" id="flow"></ol><div class="wide-sv"><svg id="arr" viewBox="0 0 960 280" role="img" aria-label="Arrivals by hour"></svg></div></div>
+  <div class="card mt2"><div class="tblw"><table class="tb" id="streams"></table></div></div>
+</section>
+<section id="s-rooms" aria-label="Rooms and beds">
+  <div class="sec-h"><h2>Rooms and beds</h2><span class="note">Three floors · the day ward's eight beds by hour</span></div>
+  <div class="grid2"><div class="card"><div id="rooms"></div></div><div class="card"><h3>Day ward <small>beds in use</small></h3><div class="wide-sv"><svg id="ward" viewBox="0 0 480 220" role="img" aria-label="Day-ward beds in use by hour"></svg></div></div></div>
+</section>
+<section id="s-staff" aria-label="Staffing">
+  <div class="sec-h"><h2>Staffing by role</h2><span class="note">On shift against need, hour by hour · roles only</span></div>
+  <div class="card"><div class="tblw"><table class="tb hm" id="staff"></table></div><p class="note">Green: enough people on. Red: short. Need comes from the arrivals each role serves in that hour.</p></div>
+</section>
+<section id="s-supply" aria-label="Supplies">
+  <div class="sec-h"><h2>Supplies from Tōtara Medical</h2><span class="note">What the clinic uses a day, and the stock position at the importer</span></div>
+  <div class="card"><div class="tblw"><table class="tb" id="sup"></table></div></div>
+</section>
+<p class="foot" id="foot"></p>
+</div>
+<script src="../data/clinic.js"></script>
+<script src="app.js"></script>
+<script src="boot.js"></script>
+<script src="../kit/shelly-kit.js?v=2.5.2" data-page="clinic" data-base="../"></script>
+</body>
+</html>

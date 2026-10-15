@@ -20,6 +20,7 @@
     python -m shelly vision run --source store.mp4 [--show] [--save-video]   Shelly Vision on a video, webcam (0) or CCTV stream
     python -m shelly vision demo | lab [--days 7] | approve vision.conversion | purge   synthetic day, Skill Lab, go-live, retention
     python -m shelly lp demo [--days 7] | tune | approve | pia --site store | pose --source aisle.mp4   Loss Prevention (Shelly sites only)
+    python -m shelly clinic | hotel | floors            Tōtara Clinic, the Shelly Tower Hotel, the tower floor by floor
     python -m shelly commercial [promo|depth|basket]   Commercial lab: was each promo worth it, discount depth, what sells together
     python -m shelly mind ask "how did the store do?" | huddles | memory   Shelly's mind: answers, huddles, agent memory
     python -m shelly group [pnl|close|cash|people|procurement|board|limits|audit]   Group HQ
@@ -69,6 +70,9 @@ def main(argv=None):
     lp = sub.add_parser("lp", help="Loss Prevention: patterns about stock and places, never people (Shelly's own sites only)")
     lp.add_argument("action", choices=["demo", "tune", "approve", "pia", "pose", "pack"]); lp.add_argument("--days", type=int, default=7)
     lp.add_argument("--site", default="store"); lp.add_argument("--source"); lp.add_argument("--model", default="yolo11n-pose.pt")
+    sub.add_parser("clinic", help="Tōtara Clinic: patient flow, waits, staffing, supplies (counts only)")
+    sub.add_parser("hotel", help="Shelly Tower Hotel: occupancy, rate, reservations, housekeeping, dining, events")
+    sub.add_parser("floors", help="Shelly Tower floor by floor")
     co = sub.add_parser("commercial", help="Commercial lab: promo scorecard, discount depth, baskets")
     co.add_argument("action", nargs="?", default="promo", choices=["promo", "depth", "basket"])
     mi = sub.add_parser("mind", help="Shelly's mind: ask anything, cross-department huddles, agent memory")
@@ -167,6 +171,18 @@ def main(argv=None):
             st = L.approve(L.load(), a.target, a.action == "approve", a.note); L.save(st); print(f"{a.target}: {a.action}d")
         elif a.action == "purge":
             print(f"deleted {V.purge(a.out)} old event logs")
+    elif a.cmd == "clinic":
+        from .tower_biz import clinic
+        r = clinic.run(); print(f"  {r['name']} · {r['day']}: {r['kpis']['patients']} patients, {r['kpis']['within_target_pct']}% within target")
+        for s_ in r["streams"]: print(f"  {s_['stream']:<22} {s_['patients']:>4}  median {s_['median_wait']:>3} min  within {s_['within_target_pct']}%")
+        for x in r["actions"]: print("  → " + x)
+    elif a.cmd == "hotel":
+        from .tower_biz import hotel
+        r = hotel.run(); k = r["kpis"]; print(f"  {r['name']}: occupancy {k['occ_pct']}%, ADR ${k['adr']}, RevPAR ${k['revpar']}, on the books {k['on_books_30d_pct']}%")
+        for x in r["actions"]: print("  → " + x)
+    elif a.cmd == "floors":
+        from . import floors
+        for f in floors.run()["floors"]: print(f"  {f['level']:>3}  {f['name']:<48} {f['here_now']:>3} in now  {f['systems']['energy_kwh']:>5} kWh")
     elif a.cmd == "commercial":
         from . import commercial
         r = commercial.run(); T = r["totals"]

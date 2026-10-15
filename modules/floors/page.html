@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en-NZ">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Shelly Tower · floor by floor</title>
+<meta name="description" content="Shelly Tower v2.5: ride the lift floor by floor. Every level has a plan (lifts, fire stairs, accessible and all-gender washrooms, the fit-out), the people at work by role, the technology on the floor and the building's own numbers. Synthetic data.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../vision/vision.css">
+<link rel="stylesheet" href="../ops/ops.css">
+<link rel="stylesheet" href="floors.css">
+<link rel="stylesheet" href="../switch.css?v=2.5.2">
+<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.5.2">
+</head>
+<body>
+<div id="boot" aria-live="polite"><div class="boot-in">
+  <span class="tag">Shelly Tower · floor by floor</span>
+  <svg class="boot-sv" id="bootSv" viewBox="0 0 420 175" aria-hidden="true"></svg>
+  <h2 class="boot-h" id="bootH">Calling <b>the lift</b></h2>
+  <pre id="bootLog"></pre><button id="skipBoot" type="button">Skip</button></div></div>
+{{SWITCH}}
+<div class="wrap">
+<header>
+  <span class="tag">Shelly Tower · Auckland · floor by floor · v<span id="ver"></span> · synthetic data</span>
+  <h1>Ride the lift. <b>Every floor at work.</b></h1>
+  <p class="sub">Thirty-five levels, from the loading dock to the vertiport. Each floor has its plan (the shared core of lifts, fire stairs and washrooms, then the fit-out), the people at work by role, the technology that helps them, and the building's own numbers. People are counts by role, never names or faces.</p>
+</header>
+
+<section class="kpis" id="kpis" aria-label="The tower right now"></section>
+
+<section id="s-tour" aria-label="Floor by floor">
+  <div class="sec-h"><h2>Floor by floor</h2><span class="note">Pick a level, or ride the lift</span></div>
+  <div class="tour">
+    <div class="card lift">
+      <div class="lift-h"><button type="button" id="ride">▶ Ride the lift</button><button type="button" id="up" aria-label="Up one floor">▲</button><button type="button" id="down" aria-label="Down one floor">▼</button></div>
+      <ol class="levels" id="levels" aria-label="Levels"></ol>
+    </div>
+    <div class="card fl">
+      <div class="fl-h" id="flH"></div>
+      <div class="plan-w"><svg id="plan" role="img" aria-label="Floor plan"></svg></div>
+      <div class="legend" id="legend"></div>
+      <div class="fl-b">
+        <div><h3>At work now <small>roles and counts only</small></h3><div id="roles"></div></div>
+        <div><h3>Technology on this floor</h3><ul class="tech" id="tech"></ul></div>
+        <div><h3>Building systems <small>today</small></h3><div class="sys" id="sys"></div></div>
+      </div>
+      <p class="future" id="future"></p>
+    </div>
+  </div>
+</section>
+
+<section id="s-core" aria-label="Every floor's core">
+  <div class="sec-h"><h2>The same core on every floor</h2><span class="note">What every level shares, by design</span></div>
+  <div class="card"><ul class="corel">
+    <li><b>Four lifts</b> in the middle of the floor, so no desk or room is more than a short walk away.</li>
+    <li><b>Two fire stairs</b> at opposite ends of the core, so there is always a second way out.</li>
+    <li><b>Washrooms on every floor:</b> women's, men's and all-gender, an accessible washroom, and a parents' room on every working floor.</li>
+    <li><b>Risers and a cleaner's room</b> beside the lifts: services and cleaning reach the floor without crossing the workspace.</li>
+    <li><b>Cleaning follows use:</b> washroom visits are counted by door sensors (never cameras) and set how often each floor is cleaned.</li>
+  </ul></div>
+</section>
+<p class="foot" id="foot"></p>
+</div>
+<script src="../data/floors.js"></script>
+<script src="app.js"></script>
+<script src="boot.js"></script>
+<script src="../kit/shelly-kit.js?v=2.5.2" data-page="floors" data-base="../"></script>
+</body>
+</html>

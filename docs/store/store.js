@@ -126,6 +126,19 @@ function actionHtml(a) {
   } else if (a.owner) ctl = `<span class="st">${esc(a.owner)} · ${esc(a.when || "")}</span>`;
   return `<div class="act ${esc(a.priority)}"><b>${esc(a.priority)} · ${esc(a.action)}</b><small>${esc(a.why)}</small><div class="row">${ctl}</div></div>`;
 }
+// v2.5.1: what the Commercial lab knows about this shelf's lines (promo verdict and the line it sells best with)
+function commercialHtml(f) {
+  const C = window.SHELLY_COMMERCIAL; if (!C || !f.products || !f.products.length) return "";
+  const names = new Set(f.products.map(p => p.name));
+  const sc = C.scorecard.filter(x => names.has(x.name));
+  const pr = C.basket.pairs.filter(p => names.has(p.a_name) || names.has(p.b_name)).slice(0, 2);
+  if (!sc.length && !pr.length) return "";
+  const m = v => (v < 0 ? "−$" : "$") + Math.abs(Math.round(v)).toLocaleString("en-NZ");
+  return `<div><p class="sub-h">Promos and pairs · Commercial lab</p><table class="pr"><thead><tr><th>Line</th><th class="n">Promos</th><th class="n">Net</th></tr></thead><tbody>` +
+    sc.slice(0, 4).map(x => `<tr><td>${esc(x.name)}<small>${esc(x.action)}</small></td><td class="n">${x.events}</td><td class="n">${m(x.net)}</td></tr>`).join("") + `</tbody></table>` +
+    pr.map(p => `<p class="empty-d" style="margin:6px 0 0">Sells with <b>${esc(names.has(p.a_name) ? p.b_name : p.a_name)}</b> ${p.lift}× more than chance: keep them in sight of each other.</p>`).join("") +
+    `<div class="links"><a href="../commercial/#s-lines">Open the Commercial lab</a></div></div>`;
+}
 function renderDetail() {
   const d = $("#detail");
   if (sel < 0) {
@@ -157,6 +170,7 @@ function renderDetail() {
     h += `<div><p class="sub-h">Typical range here</p><ul class="chips">${f.items.map(t => `<li>${esc(t)}</li>`).join("")}</ul></div>`;
     if (f.status === "empty") h += `<p class="empty-d">To see numbers here, add SKUs or categories to <code>${esc(f.id)}</code> in planogram.yaml.</p>`;
   }
+  h += commercialHtml(f);
   if (gl) h += `<button type="button" class="go" id="walkHere">🚶 Walk to this shelf</button>`;
   d.innerHTML = h;
 }

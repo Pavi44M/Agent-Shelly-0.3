@@ -16,7 +16,9 @@ GROUPS = [
                ("vision/", "👁", "Vision", "vision", "camera counts"), ("lp/", "🛡", "Loss", "lp", "loss prevention"),
                ("commercial/", "💲", "Commercial", "commercial", "promos, price, baskets")]),
     ("Ops & HQ", [("ops/", "⛓", "Ops", "ops", "docks, suppliers, flows"), ("group/", "🏛", "Group", "group", "finance, people, board"),
-                         ("tower/", "🏙", "Tower", "tower", "head office in 3D"))]),
+                         ("tower/", "🏙", "Tower", "tower", "head office in 3D"),
+                       ("floors/", "🏢", "Floors", "floors", "ride the lift, floor by floor"),
+                       ("clinic/", "✚", "Clinic", "clinic", "Tōtara Clinic, L5 to L7"), ("hotel/", "🛎", "Hotel", "hotel", "rooms, dining, events")]),
     ("Shelly", [("ask/", "💬", "Ask", "ask", "ask anything"), ("brain/", "🧠", "Brain", "brain", "every agent"),
                 ("os/", "⚙", "OS", "os", "data model + event bus"), ("launchpad/", "⌘", "Launchpad", "launchpad", "everything, one tap")]),
 ]
