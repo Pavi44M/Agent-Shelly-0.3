@@ -8,7 +8,7 @@
   const me = document.currentScript;
   const PAGE = (me && me.dataset.page) || "launchpad";
   const BASE = (me && me.dataset.base) || "";
-  const KIT_V = "2.4.1";   // bump with each release so browsers fetch the new mascot files instead of an old saved copy
+  const KIT_V = "2.4.2";   // bump with each release so browsers fetch the new mascot files instead of an old saved copy
   const AP = window.SHELLY_APPROVALS || { items: [], store_asof: "" };
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const ls = {
@@ -473,6 +473,9 @@
   }
 
   function refresh() { paintBadge(); renderTray(); }
+  // the Workspaces menu closes when you tap elsewhere or press Escape
+  document.addEventListener("click", e => { document.querySelectorAll(".biz-more[open]").forEach(d => { if (!d.contains(e.target)) d.open = false; }); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") document.querySelectorAll(".biz-more[open]").forEach(d => { d.open = false; }); });
   // her mood follows the work: thinking while you review approvals
   document.addEventListener("click", e => { if (e.target.closest && e.target.closest("#apBadge, [data-k='tray']")) dispatchEvent(new CustomEvent("shelly:mood", { detail: { mood: "thinking", ms: 4000 } })); }, true);
   window.addEventListener("shelly:approvals", refresh);

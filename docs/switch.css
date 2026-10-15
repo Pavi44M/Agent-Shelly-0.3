@@ -29,12 +29,39 @@
   .biz-opt{padding:10px;gap:9px}.biz-opt .ic{width:32px;height:32px;font-size:16px}
   .biz-opt b,.biz-opt small{white-space:normal;overflow:visible}
   .biz-opt b{font-size:13.5px;line-height:1.2}.biz-opt small{font-size:9px;letter-spacing:.04em;line-height:1.3;margin-top:2px}
-  .biz-side{flex-wrap:wrap}.biz-lp,.biz-ap{padding:8px 10px;flex:1 1 auto}
 }
 @media print{.biz{display:none}}
-@media (min-width:621px){.biz{grid-template-columns:1fr}.biz-side{flex-wrap:wrap}.biz-track{grid-column:auto}.biz-side .biz-lp,.biz-side .biz-ap{flex:1 1 auto;padding:10px}}
 /* three businesses: Neighbourhood store · Tōtara Medical · Gateway */
 .biz-track{grid-template-columns:repeat(3,1fr)}
 .biz-opt.gw[aria-current="page"]{background:linear-gradient(160deg,#13284a,#0d1a30);border-color:#2f6fd6;box-shadow:0 0 0 1px rgba(47,111,214,.3),0 6px 22px rgba(0,0,0,.35)}
 .biz-opt.gw[aria-current="page"] .ic{background:#2f6fd6;border-color:#2f6fd6;color:#fff}
 @media (max-width:620px){.biz-track{grid-template-columns:1fr 1fr 1fr}.biz-opt{flex-direction:column;gap:4px;padding:8px 6px;text-align:center}.biz-opt .ic{width:30px;height:30px;font-size:16px}.biz-opt b{font-size:13px}.biz-opt small{display:none}}
+
+/* v2.4.1 · one calm row: three businesses, one Workspaces menu, the approvals bell */
+.biz{grid-template-columns:minmax(0,1fr) auto}
+.biz-track{grid-column:auto}
+.biz-side{position:relative;display:flex;gap:8px;align-items:stretch}
+.biz-more{position:relative;display:flex}
+.biz-ws{list-style:none;display:flex;align-items:center;gap:8px;padding:0 16px;border:1px solid #1f2a38;border-radius:14px;background:#0b111b;color:#b0bac8;cursor:pointer;
+  font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;letter-spacing:.06em;white-space:nowrap;user-select:none}
+.biz-ws::-webkit-details-marker{display:none}
+.biz-ws i{font-style:normal;color:#7d8a9c;transition:transform .2s}
+.biz-more[open] .biz-ws i{transform:rotate(180deg)}
+.biz-ws:hover,.biz-ws:focus-visible,.biz-more[open] .biz-ws{color:#eaf0f6;border-color:#63b6d8;outline:none}
+.biz-ws.on{color:#63b6d8;border-color:#63b6d8}
+.biz-menu{position:absolute;right:0;top:calc(100% + 8px);z-index:80;width:min(640px,calc(100vw - 32px));display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;
+  padding:16px;border:1px solid #1f2a38;border-radius:16px;background:rgba(11,17,27,.97);backdrop-filter:blur(12px);box-shadow:0 18px 50px rgba(0,0,0,.5);animation:biz-in .18s ease-out}
+@keyframes biz-in{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.biz-grp{display:grid;gap:4px;align-content:start}
+.biz-gh{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#7d8a9c;padding:0 8px 4px}
+.biz-menu .biz-lp{display:grid;grid-template-columns:22px 1fr;column-gap:8px;align-items:center;place-items:initial;padding:8px;border:1px solid transparent;border-radius:10px;
+  background:none;color:#b0bac8;text-decoration:none;font-family:"Plus Jakarta Sans",system-ui,sans-serif;font-size:13.5px;letter-spacing:0;white-space:normal}
+.biz-menu .biz-lp span{grid-row:1/3;font-size:16px;text-align:center}
+.biz-menu .biz-lp b{font-weight:600;color:#eaf0f6}
+.biz-menu .biz-lp small{font-size:11.5px;color:#7d8a9c}
+.biz-menu .biz-lp:hover,.biz-menu .biz-lp:focus-visible{background:#141e2c;border-color:#1f2a38;outline:none}
+.biz-menu .biz-lp[aria-current="page"]{border-color:#63b6d8;background:rgba(99,182,216,.08)}
+@media (max-width:900px){.biz{grid-template-columns:1fr}.biz-side{justify-content:stretch}.biz-more{flex:1}.biz-ws{flex:1;justify-content:center;padding:10px 14px}
+  .biz-ap{padding:10px 14px}.biz-menu{left:0;right:auto;width:100%}}
+@media (max-width:620px){.biz-menu{grid-template-columns:1fr 1fr;gap:10px;padding:12px}.biz-menu .biz-grp:last-child{grid-column:1/-1;grid-template-columns:1fr 1fr}
+  .biz-menu .biz-grp:last-child .biz-gh{grid-column:1/-1}.biz-menu .biz-lp small{display:none}.biz-ap .lbl{display:none}}
