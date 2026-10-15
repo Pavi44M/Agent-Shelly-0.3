@@ -54,3 +54,8 @@ def test_page_keeps_the_2d_fallback():
     assert 'type="module" src="view3d.js"' in html and 'id="plan"' in html and 'data-mode="plan"' in html
     js = (ROOT / "docs/floors/view3d.js").read_text()
     assert "no3d" in js and "http" not in js.replace("http-equiv", "")
+
+
+def test_tower_drawer_uses_the_blender_floor():
+    js = (ROOT / "docs/tower/world.js").read_text()
+    assert 'from "../kit/glb.js"' in js and "../floors/model/" in js and "buildInteriorDrawn(x)" in js

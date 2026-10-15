@@ -8,6 +8,7 @@
    docs/data/tower.js. Units: metres; ground at y = 0, the tower centred on x = z = 0. */
 import * as THREE from "../kit/vendor/three.module.min.js";
 import { makePerson, pose } from "../store/v3/people.js";
+import { loadGLB as loadModel } from "../kit/glb.js";
 
 const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const touch = matchMedia("(pointer: coarse)").matches;
@@ -327,7 +328,22 @@ export function createTower(canvas, T, hooks = {}) {
   const spots = [[0, PD / 2 + 4], [-40, 40], [40, 40], [-20, 55], [20, 55], [-48, 0], [48, 0], [0, 58]];
 
   /* ------------------------------------------------ a floor opens like a drawer */
+  /* v2.6: the open drawer shows the floor modelled in Blender (docs/floors/model/L<level>.glb): real walls and
+     doors, hotel guest rooms closed with nobody inside, washrooms as a door and a sign, people as faceless
+     figures by role. If the model can't load, the older drawn interior is used instead. */
+  const FLOOR_GLB = new URL("../floors/model/", location.href).href;
   function buildInterior(x) {
+    const f = x.f, g = new THREE.Group(); x.inner.add(g); g.position.y = .36;
+    const lb = label(`L${f.level} · ${f.occupant}`, f.kind_label, f.colour); lb.position.set(0, x.h + 3.5, 0); g.add(lb);
+    const it = x.interior = { g, P: [], model: true };
+    loadModel(FLOOR_GLB + "L" + f.level + ".glb").then(root => {
+      if (x.interior !== it) return;                       // closed again before it arrived
+      const bb = new THREE.Box3().setFromObject(root), sz = bb.getSize(new THREE.Vector3()), c = bb.getCenter(new THREE.Vector3());
+      const s = Math.min((x.w - .8) / sz.x, (x.d - .8) / sz.z);
+      root.position.set(-c.x * s, -bb.min.y * s, -c.z * s); root.scale.setScalar(s); g.add(root);
+    }).catch(e => { console.warn("floor model not loaded, using the drawn interior", e); if (x.interior !== it) return; x.inner.remove(g); x.interior = null; buildInteriorDrawn(x); });
+  }
+  function buildInteriorDrawn(x) {
     const f = x.f, g = new THREE.Group(); x.inner.add(g); g.position.y = .36;
     const w = x.w - 3, d = x.d - 3, desk = mat("#e9edf2"), chair = mat("#2b2f36"), col = f.colour;
     const tab = (px, pz, ww, dd) => box(g, ww, .72, dd, px, .36, pz, desk, false);

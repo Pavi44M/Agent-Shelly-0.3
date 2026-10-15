@@ -7,6 +7,10 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v2.6.1: the Tower page uses the 3D floors too
+
+- Opening a floor on the Tower page now slides out the floor modelled in Blender (closed hotel rooms with doors, washrooms as a door and a sign, faceless figures by role) instead of the older open drawing. The GLB reader is shared at `docs/kit/glb.js`.
+
 ## What's new in v2.6.0: Shelly Tower in 3D, built in Blender
 
 - **The tower and all 35 floors are real 3D models** (`docs/floors/model/*.glb`), generated headless by `scripts/blender/build_tower_3d.py` (`pip install bpy`, then `python scripts/blender/build_tower_3d.py`) from each floor's plan in `docs/data/floors.js`.
