@@ -55,7 +55,7 @@ def bump(old: str, new: str, dry=False) -> list:
     sub(ROOT / "docs/kit/shelly-kit.js", [(f'const KIT_V = "{old}"', f'const KIT_V = "{new}"')])
     for p in stamp_targets():
         s = p.read_text(encoding="utf-8")
-        t = re.sub(r'(shelly-kit\.(?:js|css))\?v=[0-9.]+', rf"\1?v={new}", s)
+        t = re.sub(r'(shelly-kit\.(?:js|css)|switch\.css)\?v=[0-9.]+', rf"\1?v={new}", s)
         if t != s:
             changed.append(str(p.relative_to(ROOT)))
             if not dry: p.write_text(t, encoding="utf-8")
