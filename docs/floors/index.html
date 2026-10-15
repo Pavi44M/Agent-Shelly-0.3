@@ -5,14 +5,14 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Shelly Tower · floor by floor</title>
-<meta name="description" content="Shelly Tower v2.5: ride the lift floor by floor. Every level has a plan (lifts, fire stairs, accessible and all-gender washrooms, the fit-out), the people at work by role, the technology on the floor and the building's own numbers. Synthetic data.">
+<meta name="description" content="Shelly Tower v2.6: the tower and every floor in 3D, modelled in Blender. Ride the lift floor by floor. Every level has a plan (lifts, fire stairs, accessible and all-gender washrooms, the fit-out), the people at work by role, the technology on the floor and the building's own numbers. Synthetic data.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="../vision/vision.css">
 <link rel="stylesheet" href="../ops/ops.css">
 <link rel="stylesheet" href="floors.css">
-<link rel="stylesheet" href="../switch.css?v=2.5.4">
-<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.5.4">
+<link rel="stylesheet" href="../switch.css?v=2.6.0">
+<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.6.0">
 </head>
 <body>
 <div id="boot" aria-live="polite"><div class="boot-in">
@@ -30,6 +30,13 @@
 
 <section class="kpis" id="kpis" aria-label="The tower right now"></section>
 
+<section id="s-3d" aria-label="The tower in 3D">
+  <div class="sec-h"><h2>The tower in 3D</h2><span class="note">Modelled in Blender · drag to spin, tap a floor to go in</span></div>
+  <div class="card t3"><canvas id="tw3d" aria-label="Shelly Tower in 3D. Tap a floor to open it below." role="img"></canvas>
+    <div class="t3-tip" id="tw3dTip" aria-live="polite">Tap a floor to go in</div>
+    <p class="t3-msg">Loading the tower model…</p></div>
+</section>
+
 <section id="s-tour" aria-label="Floor by floor">
   <div class="sec-h"><h2>Floor by floor</h2><span class="note">Pick a level, or ride the lift</span></div>
   <div class="tour">
@@ -37,8 +44,12 @@
       <div class="lift-h"><button type="button" id="ride">▶ Ride the lift</button><button type="button" id="up" aria-label="Up one floor">▲</button><button type="button" id="down" aria-label="Down one floor">▼</button></div>
       <ol class="levels" id="levels" aria-label="Levels"></ol>
     </div>
-    <div class="card fl">
+    <div class="card fl" data-mode="3d">
       <div class="fl-h" id="flH"></div>
+      <div class="modes" role="group" aria-label="How to show the floor"><button type="button" data-mode="3d" aria-pressed="true">3D model</button><button type="button" data-mode="plan" aria-pressed="false">2D plan</button>
+        <span class="views"><button type="button" data-view="angle" aria-pressed="true">Angle</button><button type="button" data-view="top" aria-pressed="false">From above</button><button type="button" data-view="eye" aria-pressed="false">Eye level</button></span></div>
+      <div class="f3"><canvas id="fl3d" role="img" aria-label="This floor in 3D: walls, doors, lift core, fire stairs, furniture and people by role"></canvas><div class="f3-tags" id="fl3dTags" aria-hidden="true"></div><p class="t3-msg">Calling the lift…</p></div>
+      <p class="f3-note" id="fl3dNote"></p>
       <div class="plan-w"><svg id="plan" role="img" aria-label="Floor plan"></svg></div>
       <div class="legend" id="legend"></div>
       <div class="fl-b">
@@ -66,6 +77,7 @@
 <script src="../data/floors.js"></script>
 <script src="app.js"></script>
 <script src="boot.js"></script>
-<script src="../kit/shelly-kit.js?v=2.5.4" data-page="floors" data-base="../"></script>
+<script type="module" src="view3d.js"></script>
+<script src="../kit/shelly-kit.js?v=2.6.0" data-page="floors" data-base="../"></script>
 </body>
 </html>

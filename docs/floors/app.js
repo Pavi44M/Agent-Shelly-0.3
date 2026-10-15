@@ -53,9 +53,16 @@
       [`${y.lift_wait_s} s`, "average lift wait"], [y.washroom_visits, "washroom visits today"], [y.cleaning_rounds, "cleaning rounds booked"]].map(([v, l]) => `<div><b>${esc(v)}</b><span>${esc(l)}</span></div>`).join("");
     $("#future").innerHTML = f.future ? `<b>Next for this floor:</b> ${esc(f.future)}` : "";
     try { history.replaceState(null, "", "#L" + f.level); } catch (e) { /* file:// */ }
+    window.SHELLY_FLOORS_CUR = f.level; dispatchEvent(new CustomEvent("floors:show", { detail: { level: f.level } }));
   }
   const go = i => { cur = Math.max(0, Math.min(n - 1, i)); draw(); };
   $("#levels").addEventListener("click", e => { const b = e.target.closest("[data-i]"); if (b) { stop(); go(+b.dataset.i); } });
+  // a tap on a floor of the 3D tower flies into that floor
+  addEventListener("floors:go", e => { const i = F.findIndex(f => f.level === e.detail.level); if (i < 0) return; stop(); go(i);
+    if (e.detail.from === "tower") $(".card.fl").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" }); });
+  // 3D model or the 2D plan
+  document.querySelectorAll("[data-mode]").forEach(b => b.addEventListener("click", () => { $(".card.fl").dataset.mode = b.dataset.mode;
+    document.querySelectorAll("[data-mode]").forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false")); }));
   $("#up").onclick = () => { stop(); go(cur - 1); }; $("#down").onclick = () => { stop(); go(cur + 1); };
   // the lift ride: from the basement up to the roof, a few seconds a floor
   let timer = null;
@@ -67,7 +74,8 @@
   draw();
   $("#foot").textContent = `Shelly v${D.version} · built ${D.generated} · plans drawn from each floor's area · people are counts by role · synthetic data`;
   window.SHELLY_GUIDE = {
-    "s-tour": `<b>Floor by floor.</b> Pick a level or press ▶ to ride the lift from the dock to the roof. Every dot is a person at work: a count, never a face.`,
+    "s-3d": `<b>The tower in 3D.</b> Modelled in Blender: drag to spin, pinch or scroll to zoom, and tap any floor to go in. The floor you are on slides out like a drawer.`,
+    "s-tour": `<b>Floor by floor.</b> In 3D you see the walls, doors, lift core, fire stairs and furniture; guest rooms stay closed, with nobody shown inside. Pick a level or press ▶ to ride the lift from the dock to the roof. Every dot is a person at work: a count, never a face.`,
     "s-core": `<b>The same core on every floor.</b> Lifts in the middle, two fire stairs, and accessible and all-gender washrooms on every level.`,
   };
 })();

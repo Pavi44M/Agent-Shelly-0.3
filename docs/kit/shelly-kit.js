@@ -8,7 +8,7 @@
   const me = document.currentScript;
   const PAGE = (me && me.dataset.page) || "launchpad";
   const BASE = (me && me.dataset.base) || "";
-  const KIT_V = "2.5.4";   // bump with each release so browsers fetch the new mascot files instead of an old saved copy
+  const KIT_V = "2.6.0";   // bump with each release so browsers fetch the new mascot files instead of an old saved copy
   const AP = window.SHELLY_APPROVALS || { items: [], store_asof: "" };
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const ls = {
@@ -156,7 +156,7 @@
       os: [`${greeting()}! This is Shelly OS: one data model for every business and the event bus that lets departments talk. ${ask}`, "Each event shows which agent acted and who has to sign off. Scroll down to see one business acting for another."],
       ops: [`${greeting()}! These are Gateway and Tōtara's operations: docks, people, billing, suppliers and short-dated stock. ${ask}`, "Start with the two flows at the top: one event followed through every department that touches it."],
       group: [`${greeting()}! This is Group HQ: the finance close, people, procurement, the board pack and the rules every agent works within. ${ask}`, "Scroll and I'll walk you through each department."],
-      floors: [`${greeting()}! Let's ride the lift: every floor of Shelly Tower, its plan, the people at work and the technology helping them. ${ask}`, "Press ▶ Ride the lift, or pick a level."],
+      floors: [`${greeting()}! Let's ride the lift: Shelly Tower in 3D, modelled in Blender, and every floor with its walls, doors, the people at work and the technology helping them. ${ask}`, "Tap a floor of the tower, press ▶ Ride the lift, or pick a level."],
       clinic: [`${greeting()}! This is Tōtara Clinic, our mini hospital on levels 5 to 7: patient flow, rooms and beds, staffing and supplies. Counts only, never records. ${ask}`, "Scroll and I'll show you where the waits build up."],
       hotel: [`${greeting()}! Welcome to the Shelly Tower Hotel: rooms and rates, reservations, housekeeping, dining, events and the five-star checklist. ${ask}`, "Scroll and I'll walk you through the hotel."],
       quality: [`${greeting()}! This is where I prove my numbers: the forecast league, unusual days, data checks and the tests behind every release. ${ask}`, "Scroll and I'll show you what I checked."],

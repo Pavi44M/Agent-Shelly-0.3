@@ -7,6 +7,14 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v2.6.0: Shelly Tower in 3D, built in Blender
+
+- **The tower and all 35 floors are real 3D models** (`docs/floors/model/*.glb`), generated headless by `scripts/blender/build_tower_3d.py` (`pip install bpy`, then `python scripts/blender/build_tower_3d.py`) from each floor's plan in `docs/data/floors.js`.
+- **The tower** (top of the Floors page): drag to spin, pinch or scroll to zoom, tap any floor to fly in; the chosen floor slides out like a drawer.
+- **Every floor**: slab, curtain-wall glazing, the core (four lifts, two fire stairs, risers, washrooms), walls with doors, and furniture for what the floor is for: aisles, chillers and checkouts on the Store floor; consult rooms, urgent-care bays with curtains, X-ray and a day ward in Tōtara Clinic; desks, meeting rooms and kitchens on the offices. Three views (Angle, From above, Eye level), room labels, and the floor rises into place when you arrive by lift.
+- **Privacy by design**: hotel guest rooms, suites and apartments are closed rooms with closed doors, and nobody is drawn inside them; washrooms are a door and a sign only. People are plain figures coloured by role, never faces.
+- Phones get a lighter renderer; without WebGL the 2D plan is shown instead, and it stays one tap away for everyone. The Tower page links straight to the floors in 3D.
+
 ## What's new in v2.5.4: quality you can see
 
 - **Quality page** (`docs/quality/`, "✓ Quality" in the Workspaces menu; `shelly/quality.py`): the forecast league table (every model's error on weeks it never saw, the best model by category, and why the day-ahead weekday average stays in charge), an anomaly radar that flags unusual trading days against a same-weekday baseline with the likely reason and how sure it is, the data checks run on the raw store data before any model, and build health (automated tests, pages rendered at desktop and phone width on every release, CI on every push and the Monday rebuild).

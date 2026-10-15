@@ -29,3 +29,20 @@ h1 b{color:#ffd27a}
 @media (max-width:900px){.tour{grid-template-columns:1fr}.lift{position:static;max-height:260px}.fl-b{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){#plan .pd{animation:none}}
 .tour>*{min-width:0}.fl-h>div{min-width:0}
+
+/* v2.6: the tower and the floors in 3D */
+.t3,.f3{position:relative;padding:0;overflow:hidden;border-radius:14px;background:#0d1522}
+.t3{height:min(70vh,620px)}.f3{height:min(62vh,520px);margin-top:10px;border:1px solid var(--etch)}
+#tw3d,#fl3d{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+.t3-tip{position:absolute;left:12px;bottom:12px;background:rgba(11,17,27,.82);border:1px solid #ffd27a;color:#ffd27a;border-radius:10px;padding:6px 10px;font:600 12.5px var(--mono);pointer-events:none;max-width:calc(100% - 24px)}
+.t3-msg{position:absolute;inset:0;display:grid;place-items:center;margin:0;color:var(--ink-3);font:600 13px var(--mono);pointer-events:none}
+.t3.ready .t3-msg,.f3.ready:not(.loading) .t3-msg{display:none}.t3.fail .t3-msg::after,.f3.fail .t3-msg::after{content:" (couldn't load: use the 2D plan)"}
+.f3.loading canvas{opacity:.55;transition:opacity .2s}
+.f3-tags{position:absolute;inset:0;pointer-events:none;overflow:hidden}.f3-tags span{position:absolute;left:0;top:0;white-space:nowrap;background:rgba(11,17,27,.78);color:#eaf0f6;border-radius:6px;padding:2px 6px;font:600 11px "Plus Jakarta Sans",sans-serif}
+.f3-note{margin:6px 0 0;font:12px var(--mono);color:var(--ink-3)}
+.modes{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;align-items:center}.modes button{background:var(--panel-2);border:1px solid var(--etch);color:var(--ink-2);border-radius:9px;padding:6px 10px;font:600 12px var(--mono);cursor:pointer}
+.modes button[aria-pressed="true"]{background:#ffd27a;border-color:#ffd27a;color:#1d1503}.modes .views{display:flex;gap:6px;margin-left:auto}
+.fl[data-mode="3d"] .plan-w,.fl[data-mode="3d"] .legend{display:none}.fl[data-mode="plan"] .f3,.fl[data-mode="plan"] .f3-note,.fl[data-mode="plan"] .views{display:none}
+html:not(.has3d) #s-3d,html:not(.has3d) .modes,html:not(.has3d) .f3,html:not(.has3d) .f3-note{display:none}
+html:not(.has3d) .fl .plan-w,html:not(.has3d) .fl .legend{display:block}html:not(.has3d) .fl .legend{display:flex}
+@media (max-width:600px){.t3{height:62vh}.f3{height:52vh}.modes .views{margin-left:0}}
