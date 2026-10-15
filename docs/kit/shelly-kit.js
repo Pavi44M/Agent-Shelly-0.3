@@ -8,7 +8,7 @@
   const me = document.currentScript;
   const PAGE = (me && me.dataset.page) || "launchpad";
   const BASE = (me && me.dataset.base) || "";
-  const KIT_V = "2.4.2";   // bump with each release so browsers fetch the new mascot files instead of an old saved copy
+  const KIT_V = "2.5.0";   // bump with each release so browsers fetch the new mascot files instead of an old saved copy
   const AP = window.SHELLY_APPROVALS || { items: [], store_asof: "" };
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const ls = {
@@ -156,6 +156,7 @@
       os: [`${greeting()}! This is Shelly OS: one data model for every business and the event bus that lets departments talk. ${ask}`, "Each event shows which agent acted and who has to sign off. Scroll down to see one business acting for another."],
       ops: [`${greeting()}! These are Gateway and Tōtara's operations: docks, people, billing, suppliers and short-dated stock. ${ask}`, "Start with the two flows at the top: one event followed through every department that touches it."],
       group: [`${greeting()}! This is Group HQ: the finance close, people, procurement, the board pack and the rules every agent works within. ${ask}`, "Scroll and I'll walk you through each department."],
+      commercial: [`${greeting()}! This is the Commercial lab: was every promo worth it, how deep to discount, and what sells together. ${ask}`, "Scroll and I'll show you where the promo margin went."],
       ask: [`${greeting()}! Ask me anything about the four businesses, by typing or with the 🎙 microphone. ${ask}`, "Try “why was Friday down?” or “what's short at Tōtara?”."],
     };
     return M[PAGE] || M.launchpad;

@@ -589,6 +589,8 @@ for _a in AGENTS:
                   # v2.3 Group HQ
                   "fin-head": ["group.pnl", "group.close", "group.board"], "fin-cash": ["group.cash"], "hr-head": ["group.people"], "hr-leave": ["group.people"],
                   "mgmt-head": ["group.board", "group.governance"], "group-governance": ["group.governance", "mind.huddle"], "fin-funds": ["group.procurement"],
+                  # v2.5 Commercial lab
+                  "store-category": ["commercial.promo", "commercial.depth", "commercial.basket"], "store-budget": ["commercial.promo"],
                   # v2.4 Shelly's mind
                   "group-learning": ["mind.memory", "mind.ask"]}.get(_a.id, [])
 

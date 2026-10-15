@@ -1,0 +1,21 @@
+/* Commercial lab (Store Vision dark look + the Operations table styles) */
+h1 b{color:#8fe3c8}.mt2{margin-top:14px}
+.neg{color:#ffb4a8!important}.pos{color:#8fe3c8}
+.acts{margin:0;padding-left:20px}.acts li{margin:0 0 8px;font-size:15px;color:var(--ink)}
+#bridge .bv{font:600 13px var(--mono);fill:#eaf0f6}#bridge .bv.b{font-size:15px}
+#bridge .bl{font-size:12px;line-height:1.3;color:#b0bac8;text-align:center;padding:0 6px}#bridge .bl b{color:#eaf0f6}
+.tb tr.pick{cursor:pointer}.tb tr.pick:hover td,.tb tr.pick.on td{background:rgba(99,182,216,.08)}
+#ev h3{margin:16px 0 8px}
+.lab{display:flex;align-items:center;gap:10px;margin:0 0 12px;font-size:13px;color:var(--ink-2)}
+.lab select{flex:1;min-width:0;background:var(--panel-2);color:var(--ink);border:1px solid var(--etch);border-radius:8px;padding:8px}
+.lab input[type=range]{flex:1;accent-color:#63b6d8}.lab b{font:600 13px var(--mono);color:var(--ink);min-width:70px}
+.dk{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.dk div{background:var(--panel-2);border:1px solid var(--etch);border-radius:10px;padding:10px}
+.dk b{display:block;font:600 20px var(--mono);color:var(--ink)}.dk span{font-size:12px;color:var(--ink-3)}
+#dChart .ax{font:11px var(--mono);fill:#7d8a9c}#dChart .bv{font:600 13px var(--mono);fill:#eaf0f6}
+.ms{display:grid;grid-template-columns:minmax(0,1fr) 88px;gap:3px 8px;align-items:center;padding:8px 0;border-top:1px solid var(--etch)}
+.ms span{grid-column:1/-1;font-size:13.5px;color:var(--ink)}.ms small{color:var(--ink-3);font:11px var(--mono)}
+.ms i{display:block;height:8px;border-radius:4px}.ms i.bk{background:#5b6b80}.ms i.sl{background:#63b6d8}.ms em{font:normal 11px var(--mono);color:var(--ink-3)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}.chip{background:var(--panel-2);border:1px solid var(--etch);color:var(--ink-2);border-radius:99px;padding:5px 12px;font:500 12px var(--mono);cursor:pointer}.chip.on{border-color:#63b6d8;color:var(--ink)}
+.bo-b{fill:#141e2c;stroke:#2a3a50;transition:fill .35s,stroke .35s}.bo-b.on{fill:rgba(143,227,200,.25);stroke:#8fe3c8}
+#bridge .bv.dark{fill:#0b111b}
+.wide-sv{overflow-x:auto}@media (max-width:620px){.wide-sv svg{min-width:660px}}

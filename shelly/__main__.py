@@ -20,6 +20,7 @@
     python -m shelly vision run --source store.mp4 [--show] [--save-video]   Shelly Vision on a video, webcam (0) or CCTV stream
     python -m shelly vision demo | lab [--days 7] | approve vision.conversion | purge   synthetic day, Skill Lab, go-live, retention
     python -m shelly lp demo [--days 7] | tune | approve | pia --site store | pose --source aisle.mp4   Loss Prevention (Shelly sites only)
+    python -m shelly commercial [promo|depth|basket]   Commercial lab: was each promo worth it, discount depth, what sells together
     python -m shelly mind ask "how did the store do?" | huddles | memory   Shelly's mind: answers, huddles, agent memory
     python -m shelly group [pnl|close|cash|people|procurement|board|limits|audit]   Group HQ
     python -m shelly ops [docks|labour|billing|suppliers|expiry|whatif|flows]   Gateway and Tōtara operations
@@ -68,6 +69,8 @@ def main(argv=None):
     lp = sub.add_parser("lp", help="Loss Prevention: patterns about stock and places, never people (Shelly's own sites only)")
     lp.add_argument("action", choices=["demo", "tune", "approve", "pia", "pose", "pack"]); lp.add_argument("--days", type=int, default=7)
     lp.add_argument("--site", default="store"); lp.add_argument("--source"); lp.add_argument("--model", default="yolo11n-pose.pt")
+    co = sub.add_parser("commercial", help="Commercial lab: promo scorecard, discount depth, baskets")
+    co.add_argument("action", nargs="?", default="promo", choices=["promo", "depth", "basket"])
     mi = sub.add_parser("mind", help="Shelly's mind: ask anything, cross-department huddles, agent memory")
     mi.add_argument("action", nargs="?", default="huddles", choices=["ask", "huddles", "memory"]); mi.add_argument("question", nargs="?", default="")
     gp = sub.add_parser("group", help="Group HQ: finance close, P&L, cash, people, procurement, board pack, governance")
@@ -164,6 +167,19 @@ def main(argv=None):
             st = L.approve(L.load(), a.target, a.action == "approve", a.note); L.save(st); print(f"{a.target}: {a.action}d")
         elif a.action == "purge":
             print(f"deleted {V.purge(a.out)} old event logs")
+    elif a.cmd == "commercial":
+        from . import commercial
+        r = commercial.run(); T = r["totals"]
+        if a.action == "depth":
+            for l in r["price_lab"]: print(f"  {l['name']:<26} response {l['response']:>6}  usual {l['usual_depth_pct']}% off  supplier must fund {l['funding_at_usual_pct']}%")
+        elif a.action == "basket":
+            for p in r["basket"]["pairs"]: print(f"  {p['a_name']} + {p['b_name']}: lift {p['lift']}x, {p['support_pct']}% of baskets")
+            for m in r["basket"]["missions"]: print(f"  {m['mission']:<16} {m['share_pct']:>5}% of baskets  {m['sales_share_pct']:>5}% of sales")
+        else:
+            print(f"  {len(r['events'])} promos, {r['share_worth_it']}% paid their way; extra-unit margin ${T['extra_gp']:,.0f}, discount on base ${T['subsidy']:,.0f}, "
+                  f"cannibalised ${T['cannibalised']:,.0f}, dip ${T['dip']:,.0f}, net ${T['net']:,.0f}")
+            for s_ in r["scorecard"][:10]: print(f"  {s_['name']:<26} {s_['events']:>3} promos  net ${s_['net']:>8,.0f}  {s_['action']}")
+            for a_ in r["actions"]: print("  → " + a_)
     elif a.cmd == "mind":
         from .packs.mind import _mind
         d = _mind()

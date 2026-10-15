@@ -79,4 +79,13 @@ def build(shift, ops, group, osd, huddles) -> list:
         ("shelly-privacy", "Do you track people?", "privacy faces track people identify data safe", "No. No faces, no names, no scores on people. Cameras count and pixelate; loss prevention watches stock and places; HR shows roles and counts only. The public site uses synthetic data only.", "../lp/#s-law"),
         ("shelly-what", "What can you do?", "what can you do help shelly who are you", "I run four businesses' numbers: the store's shift, Tōtara's stock and suppliers, Gateway's docks and billing, and the group's finance, people and governance. Ask about sales, stock, cash, people, suppliers or what to decide.", "../launchpad/"),
     ]
+    cp = ROOT / "docs/data/commercial.js"
+    if cp.exists():                                   # v2.5 Commercial lab
+        C = _js("docs/data/commercial.js"); CT = C["totals"]; w = C["scorecard"][0]; pr = C["basket"]["pairs"][0]
+        I += [("com-promo", "Are our promos worth it?", "promo promotion promos worth discount uplift deal special",
+               f"{C['share_worth_it']}% of {len(C['events'])} promos paid their way. Net margin {m(CT['net'])} over {C['years']} years: shoppers buy more, but the discount on sales we'd have made anyway ({m(CT['subsidy'])}) is the biggest cost.", "../commercial/#s-promo"),
+              ("com-stop", "Which promo should we stop?", "stop worst promo losing lose supplier fund funding",
+               f"{w['name']}: {w['events']} promos, net {m(w['net'])}. {w['action']}.", "../commercial/#s-lines"),
+              ("com-basket", "What sells together?", "together basket pair pairs cross sell bundle placement mission",
+               f"{pr['a_name']} and {pr['b_name']}: {pr['lift']}× more often than chance (simulated baskets, real method).", "../commercial/#s-basket")]
     return [{"id": i, "q": q, "keys": keys.split(), "a": a, "link": link} for i, q, keys, a, link in I]

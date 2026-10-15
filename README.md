@@ -7,6 +7,13 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v2.5.0: the Commercial lab
+
+- **Commercial lab page** (`docs/commercial/`, "💲 Commercial" in the Workspaces menu; `shelly/commercial/`). Every in-store promotion in the two years of sample data (317 of them) is scored against what the line would have sold anyway (same weekday, 4 weeks before, promo days left out): extra units, margin on those units, the discount given on units that would have sold anyway, margin taken from other lines in the same category, and the dip in the 3 days after. A margin bridge shows where it all went, then a keep / shallower / stop call for every line.
+- **Discount depth lab**: each line's promo response from its own history, the margin a day at 5% to 30% off, and how much of the discount a supplier must fund for the store to break even.
+- **What sells together**: pairs with support, confidence and lift, and six shopping missions (share of baskets against share of sales). The sample data has daily totals, not receipts, so baskets are simulated and labelled that way; no basket is ever linked to a person.
+- CLI: `python -m shelly commercial promo | depth | basket`; new `commercial` pack skills owned by the Category agent; three new answers on the Ask page.
+
 ## What's new in v2.4: Smarter Shelly
 
 - **Ask Shelly page** (`docs/ask/`, "💬 Ask" on every page; `shelly/mind/ask.py`). Ask a plain question about any of the four businesses, by typing or with the 🎙 microphone (the browser's own speech recognition, en-NZ), and get today's number with a link to where the full picture lives. Every answer is computed from the same data the pages show; typos and other words for the same thing are forgiven, and Shelly says plainly when she doesn't know.

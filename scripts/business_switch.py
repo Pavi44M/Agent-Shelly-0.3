@@ -13,9 +13,10 @@ CUR = ' aria-current="page"'
 # every other workspace, grouped, behind one "Workspaces" button (v2.4.1: the row of 11 links was too crowded)
 GROUPS = [
     ("Store", [("store/", "▦", "Floor", "store", "3D store plan"), ("shift/", "⏱", "Shift", "shift", "the Duty Manager's day"),
-               ("vision/", "👁", "Vision", "vision", "camera counts"), ("lp/", "🛡", "Loss", "lp", "loss prevention")]),
+               ("vision/", "👁", "Vision", "vision", "camera counts"), ("lp/", "🛡", "Loss", "lp", "loss prevention"),
+               ("commercial/", "💲", "Commercial", "commercial", "promos, price, baskets")]),
     ("Ops & HQ", [("ops/", "⛓", "Ops", "ops", "docks, suppliers, flows"), ("group/", "🏛", "Group", "group", "finance, people, board"),
-                         ("tower/", "🏙", "Tower", "tower", "head office in 3D")]),
+                         ("tower/", "🏙", "Tower", "tower", "head office in 3D"))]),
     ("Shelly", [("ask/", "💬", "Ask", "ask", "ask anything"), ("brain/", "🧠", "Brain", "brain", "every agent"),
                 ("os/", "⚙", "OS", "os", "data model + event bus"), ("launchpad/", "⌘", "Launchpad", "launchpad", "everything, one tap")]),
 ]
