@@ -241,6 +241,21 @@ def main():
     card("https://github.com/Pavi44M/Agent-Shelly-0.3/blob/main/skills/INDEX.md", "Open source", "Skills library",
          "Every capability is a documented skill that OpenJarvis or any LLM planner can call.",
          str(len(skills)), f"skills across {len(packs)} packs", "GitHub")
+    # v2.6.2: an even grid. Every row is full, like the first rows: one wide tile beside one tile (the wide one
+    # swaps sides each time), then a row of three, and so on. Order is kept; no gaps at the end.
+    import re as _re
+    cards[:] = [_re.sub(r'class="card( static)? [^"]*"', lambda m: f'class="card{m.group(1) or ""} @@"', c, count=1) for c in cards]
+    ROWS = (["wide", ""], ["", "wide"], ["", "", ""])      # wide + one, one + wide, three: repeat
+    layout, rk = [], 0
+    while len(layout) < len(cards):
+        left = len(cards) - len(layout)
+        row = ROWS[rk % 3]
+        if left == 3:
+            row = ["", "", ""]
+        elif left < len(row):
+            row = {1: ["full"], 2: ["wide", ""]}[left]
+        layout += row; rk += 1
+    cards[:] = [c.replace(" @@", f" {cls}" if cls else "") for c, cls in zip(cards, layout)]
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "launchpad.css").write_text(CSS)
     sys.path.insert(0, str(ROOT / "scripts"))
@@ -274,8 +289,8 @@ def main():
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap">
 <link rel="stylesheet" href="launchpad.css">
-<link rel="stylesheet" href="../switch.css?v=2.6.1">
-<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.6.1">
+<link rel="stylesheet" href="../switch.css?v=2.6.2">
+<link rel="stylesheet" href="../kit/shelly-kit.css?v=2.6.2">
 </head>
 <body>
 {BOOT}
@@ -301,7 +316,7 @@ def main():
 </div>
 <script src="launchpad.js"></script>
 <script src="../data/approvals.js"></script>
-<script src="../kit/shelly-kit.js?v=2.6.1" data-page="launchpad" data-base="../"></script>
+<script src="../kit/shelly-kit.js?v=2.6.2" data-page="launchpad" data-base="../"></script>
 </body>
 </html>
 """)
@@ -326,14 +341,14 @@ h1{font-size:clamp(32px,6.2vw,56px);font-weight:300;letter-spacing:-.03em;line-h
 h1 b{font-weight:600}
 .sub{font-size:clamp(16px,2.2vw,18px);max-width:60ch;margin:18px 0 0}
 .who{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:20px;font-family:var(--mono);font-size:11.5px;color:var(--ink-3);letter-spacing:.05em}
-.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-flow:dense;gap:12px;margin-top:40px;padding-top:32px;border-top:1px solid var(--etch-2)}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-flow:row;gap:12px;margin-top:40px;padding-top:32px;border-top:1px solid var(--etch-2)}
 .card{position:relative;display:flex;flex-direction:column;gap:8px;min-width:0;padding:18px 18px 16px;border:1px solid var(--etch);border-radius:3px;
   background:linear-gradient(165deg,var(--panel-2),var(--panel) 62%);color:inherit;text-decoration:none;transition:border-color .2s,transform .2s}
 a.card:hover,a.card:focus-visible{border-color:var(--accent);transform:translateY(-2px);outline:none}
 a.card:focus-visible{box-shadow:0 0 0 2px var(--accent)}
-.card.wide{grid-column:span 2}
+.card.wide{grid-column:span 2}.card.full{grid-column:1/-1}
 @media (max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:620px){.grid{grid-template-columns:minmax(0,1fr)}.card.wide{grid-column:auto}}
+@media (max-width:900px){.card.full{grid-column:1/-1}}@media (max-width:620px){.grid{grid-template-columns:minmax(0,1fr)}.card.wide,.card.full{grid-column:auto}}
 .top{display:flex;justify-content:space-between;gap:10px;align-items:center}
 .top .tag{letter-spacing:.16em;font-size:9.5px}
 .chip{font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:10px;border:1px solid var(--etch);color:var(--ink-3);white-space:nowrap}

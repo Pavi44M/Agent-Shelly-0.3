@@ -16,14 +16,14 @@ h1{font-size:clamp(32px,6.2vw,56px);font-weight:300;letter-spacing:-.03em;line-h
 h1 b{font-weight:600}
 .sub{font-size:clamp(16px,2.2vw,18px);max-width:60ch;margin:18px 0 0}
 .who{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:20px;font-family:var(--mono);font-size:11.5px;color:var(--ink-3);letter-spacing:.05em}
-.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-flow:dense;gap:12px;margin-top:40px;padding-top:32px;border-top:1px solid var(--etch-2)}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-flow:row;gap:12px;margin-top:40px;padding-top:32px;border-top:1px solid var(--etch-2)}
 .card{position:relative;display:flex;flex-direction:column;gap:8px;min-width:0;padding:18px 18px 16px;border:1px solid var(--etch);border-radius:3px;
   background:linear-gradient(165deg,var(--panel-2),var(--panel) 62%);color:inherit;text-decoration:none;transition:border-color .2s,transform .2s}
 a.card:hover,a.card:focus-visible{border-color:var(--accent);transform:translateY(-2px);outline:none}
 a.card:focus-visible{box-shadow:0 0 0 2px var(--accent)}
-.card.wide{grid-column:span 2}
+.card.wide{grid-column:span 2}.card.full{grid-column:1/-1}
 @media (max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:620px){.grid{grid-template-columns:minmax(0,1fr)}.card.wide{grid-column:auto}}
+@media (max-width:900px){.card.full{grid-column:1/-1}}@media (max-width:620px){.grid{grid-template-columns:minmax(0,1fr)}.card.wide,.card.full{grid-column:auto}}
 .top{display:flex;justify-content:space-between;gap:10px;align-items:center}
 .top .tag{letter-spacing:.16em;font-size:9.5px}
 .chip{font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:10px;border:1px solid var(--etch);color:var(--ink-3);white-space:nowrap}

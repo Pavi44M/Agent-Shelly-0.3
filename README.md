@@ -7,6 +7,10 @@
 
 ![Shelly v0.2](docs/screenshot.png)
 
+## What's new in v2.6.2: a tidy Launchpad
+
+- Every row of Launchpad tiles is now full, like the first rows: one wide tile beside one tile (swapping sides), then a row of three. The order is kept and there are no gaps at the end, on desktop, tablet and phone.
+
 ## What's new in v2.6.1: the Tower page uses the 3D floors too
 
 - Opening a floor on the Tower page now slides out the floor modelled in Blender (closed hotel rooms with doors, washrooms as a door and a sign, faceless figures by role) instead of the older open drawing. The GLB reader is shared at `docs/kit/glb.js`.
