@@ -22,21 +22,24 @@ def run(gw_ops: dict) -> list:
     ev = {e["id"]: e for e in bus.events()}
     acts = bus.actions()
     flows = []
-    # 1 · store -> Gateway
-    e = next(x for x in ev.values() if x["type"] == "store.stock.below_cover")
-    a = [x for x in acts if x["event_id"] == e["id"]]
-    po = next(x for x in a if x["agent"] == "store-ordering"); run_ = next(x for x in a if x["agent"] == "gw-transport")
-    wiri = next(d for d in gw_ops["docks"] if d["site"] == "WH-01")
-    truck = next((j for j in wiri["jobs"] if j["kind"] == "out" and "Neighbourhood" in j["client"]), None)
-    steps = [
-        {"who": "Shelly OS · stock detector", "biz": "store", "what": f"{e['subject']} is below lead-time cover ({e['payload']['cover_days']} days left)", "when": e["ts"], "gate": ""},
-        {"who": _agent(po["agent"]), "biz": "store", "what": po["action"], "when": e["ts"], "gate": "waits: " + po["needs"]},
-        {"who": _agent(run_["agent"]), "biz": "gateway", "what": run_["action"], "when": e["ts"], "gate": "waits: " + run_["needs"]},
-    ]
-    if truck:
-        steps.append({"who": "Gateway dock scheduler", "biz": "gateway", "what": f"{truck['truck']} loads {truck['pallets']} pallets for the store at Wiri dock {truck['dock']} ({truck['dock_kind']}), {truck['start']}–{truck['end']}", "when": gw_ops["asof"], "gate": "booked"})
-    steps.append({"who": "Shift Pilot", "biz": "store", "what": "Delivery check-in when the truck arrives, chilled first; the product goes back on the shelf", "when": "next delivery day", "gate": "on the to-do list"})
-    flows.append({"id": "store-gateway", "title": f"Store stock-out to Gateway delivery: {e['subject']}", "steps": steps})
+    # 1 · store -> Gateway (only on days a store product is below cover; some weeks none is, and the flow is skipped
+    #     like the Tōtara one below, instead of crashing the weekly build)
+    e = next((x for x in ev.values() if x["type"] == "store.stock.below_cover"), None)
+    if e:
+        a = [x for x in acts if x["event_id"] == e["id"]]
+        po = next((x for x in a if x["agent"] == "store-ordering"), None)
+        run_ = next((x for x in a if x["agent"] == "gw-transport"), None)
+        wiri = next((d for d in gw_ops["docks"] if d["site"] == "WH-01"), {"jobs": []})
+        truck = next((j for j in wiri["jobs"] if j["kind"] == "out" and "Neighbourhood" in j["client"]), None)
+        steps = [{"who": "Shelly OS · stock detector", "biz": "store", "what": f"{e['subject']} is below lead-time cover ({e['payload']['cover_days']} days left)", "when": e["ts"], "gate": ""}]
+        if po:
+            steps.append({"who": _agent(po["agent"]), "biz": "store", "what": po["action"], "when": e["ts"], "gate": "waits: " + po["needs"]})
+        if run_:
+            steps.append({"who": _agent(run_["agent"]), "biz": "gateway", "what": run_["action"], "when": e["ts"], "gate": "waits: " + run_["needs"]})
+        if truck:
+            steps.append({"who": "Gateway dock scheduler", "biz": "gateway", "what": f"{truck['truck']} loads {truck['pallets']} pallets for the store at Wiri dock {truck['dock']} ({truck['dock_kind']}), {truck['start']}–{truck['end']}", "when": gw_ops["asof"], "gate": "booked"})
+        steps.append({"who": "Shift Pilot", "biz": "store", "what": "Delivery check-in when the truck arrives, chilled first; the product goes back on the shelf", "when": "next delivery day", "gate": "on the to-do list"})
+        flows.append({"id": "store-gateway", "title": f"Store stock-out to Gateway delivery: {e['subject']}", "steps": steps})
     # 2 · Tōtara -> Gateway
     e2 = next((x for x in ev.values() if x["type"] in ("totara.stock.gap", "totara.stock.out")), None)
     if e2:
