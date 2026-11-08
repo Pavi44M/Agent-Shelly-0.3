@@ -1,17 +1,17 @@
 # Shelly · Wholesale & distribution report
-_Generated 05 Nov 2026 · demo data unless stated_
+_Generated 08 Nov 2026 · demo data unless stated_
 
 ## Actions
 
 | Priority | Area | Action | $/week | Confirm? |
 |---|---|---|---:|---|
-| P1 | Credit | Put Metro Foods on credit hold until 60+ day balance is cleared ($788) <br><sub>total owed $14,886; $788 is 60+ days overdue (exposure, not a weekly cost)</sub> | +0 | ⏳ D-f0941bd5 |
-| P1 | Credit | Put Harbour Superette on credit hold until 60+ day balance is cleared ($1,382) <br><sub>total owed $12,816; $1,382 is 60+ days overdue (exposure, not a weekly cost)</sub> | +0 | ⏳ D-aae30b00 |
-| P1 | Credit | Put Coast Mart on credit hold until 60+ day balance is cleared ($1,402) <br><sub>total owed $4,993; $1,402 is 60+ days overdue (exposure, not a weekly cost)</sub> | +0 | ⏳ D-f73b0789 |
-| P2 | Customer terms | Review terms for North Grocers: minimum order or delivery fee (avg order $18) <br><sub>66 orders in 90 days, margin $144 < cost-to-serve $1,188</sub> | +80 | ⏳ D-29d66cfb |
-| P2 | Customer terms | Review terms for Kiwi Mart: minimum order or delivery fee (avg order $63) <br><sub>74 orders in 90 days, margin $301 < cost-to-serve $1,332</sub> | +79 | ⏳ D-4126529a |
-| P2 | Customer terms | Review terms for Kiwi Foods: minimum order or delivery fee (avg order $83) <br><sub>50 orders in 90 days, margin $465 < cost-to-serve $900</sub> | +33 | ⏳ D-13cf34bb |
-| P2 | Customer terms | Review terms for Harbour Cafe: minimum order or delivery fee (avg order $219) <br><sub>28 orders in 90 days, margin $477 < cost-to-serve $504</sub> | +2 | ⏳ D-6042ca41 |
+| P1 | Credit | Put Metro Foods on credit hold until 60+ day balance is cleared ($788) <br><sub>total owed $14,886; $788 is 60+ days overdue (exposure, not a weekly cost)</sub> | +0 | ⏳ D-3dd2849b |
+| P1 | Credit | Put Harbour Superette on credit hold until 60+ day balance is cleared ($1,382) <br><sub>total owed $12,816; $1,382 is 60+ days overdue (exposure, not a weekly cost)</sub> | +0 | ⏳ D-3a9b96c4 |
+| P1 | Credit | Put Coast Mart on credit hold until 60+ day balance is cleared ($1,402) <br><sub>total owed $4,993; $1,402 is 60+ days overdue (exposure, not a weekly cost)</sub> | +0 | ⏳ D-0aaffd12 |
+| P2 | Customer terms | Review terms for North Grocers: minimum order or delivery fee (avg order $18) <br><sub>66 orders in 90 days, margin $144 < cost-to-serve $1,188</sub> | +80 | ⏳ D-a8ddf081 |
+| P2 | Customer terms | Review terms for Kiwi Mart: minimum order or delivery fee (avg order $63) <br><sub>74 orders in 90 days, margin $301 < cost-to-serve $1,332</sub> | +79 | ⏳ D-467f4fd3 |
+| P2 | Customer terms | Review terms for Kiwi Foods: minimum order or delivery fee (avg order $83) <br><sub>50 orders in 90 days, margin $465 < cost-to-serve $900</sub> | +33 | ⏳ D-df53d8f2 |
+| P2 | Customer terms | Review terms for Harbour Cafe: minimum order or delivery fee (avg order $219) <br><sub>28 orders in 90 days, margin $477 < cost-to-serve $504</sub> | +2 | ⏳ D-c30a50ea |
 | P2 | Service | Lift OTIF from 63% to 90%: find the SKUs causing short shipments <br><sub>short-shipped orders drive credit notes and lost customers</sub> | +0 | auto |
 
 ## Customer profitability (90 days)  (`wholesale.customer_profitability`)
